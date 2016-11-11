@@ -9,7 +9,6 @@
 
 class FrameView
 {
-	Q_OBJECT
 
 public:
 	FrameView(QWidget* widget);

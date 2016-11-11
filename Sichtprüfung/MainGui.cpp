@@ -15,5 +15,5 @@ MainGui::~MainGui()
 void MainGui::setInputImage(cv::Mat* img)
 {
 	inputImg_.reset(img);
-	inputView_->showImage()
+	inputView_->showImage(*img);
 }

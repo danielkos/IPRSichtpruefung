@@ -1,28 +1,40 @@
 #ifndef FRAMEVIEW_H
 #define FRAMEVIEW_H
 
-#include <QWidget>
-#include <QImage>
-#include <QPainter>
-#include <memory>
-#include <opencv2/opencv.hpp>
+#include <QLabel>
 
-class FrameView
+namespace cv
 {
+	class Mat;
+}
+
+
+class FrameView : public QLabel
+{
+	Q_OBJECT
 
 public:
-	FrameView(QWidget* widget);
-	~FrameView();
+	explicit FrameView(QWidget* parent = 0);
+	virtual ~FrameView();
 
 public slots:
-	void showImage(const cv::Mat& img);
-
-protected:
-	void paintEvent(QPaintEvent*);
+	/**
+	* \brief Displays an image in the parent widget
+	*/
+	virtual void showImage(const cv::Mat* img);
 
 private:
+	/**
+	* \brief Converts the OpenCV image into a QImage and sets it
+	*/
+	void convertToQtImage(const cv::Mat *img);
+
+	/**
+	* \brief Displays the current stored image
+	*/
+	void displayImage();
+
 	QImage qImg_;
-    std::shared_ptr<QWidget> widFrame_;
 };
 
 #endif // !FRAMEVIEW_H

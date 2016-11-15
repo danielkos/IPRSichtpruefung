@@ -4,23 +4,32 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_MainGui.h"
 
-#include "FrameView.h"
+class FrameView;
+
+namespace cv
+{
+	class Mat;
+}
 
 class MainGui : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	MainGui(QWidget *parent = 0);
-	~MainGui();
+	explicit MainGui(QWidget *parent = 0);
+	virtual ~MainGui();
 
+	/**
+	* \brief Sets the input image vor each available view
+	*/
 	void setInputImage(cv::Mat* img);
 
 private:
 	Ui::MainGui ui;
-	std::shared_ptr<FrameView> inputView_;
-
-	std::shared_ptr<cv::Mat> inputImg_;
+	/**
+	* \brief Views: Input, Processed, Result
+	*/
+	FrameView* inputView_;
 };
 
 #endif // MAINGUI_H

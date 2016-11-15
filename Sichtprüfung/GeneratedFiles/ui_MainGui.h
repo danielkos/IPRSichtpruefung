@@ -44,12 +44,17 @@ public:
     QVBoxLayout *verticalLayout;
     QWidget *gridWidget;
     QGridLayout *gridLayout;
+    QWidget *widInputImage;
+    QHBoxLayout *horizontalLayout_4;
+    QVBoxLayout *verticalLayout_9;
     QLabel *labelPreprocessed;
     QLabel *labelInput;
-    QFrame *widInputImage;
-    QFrame *widPreprocessed;
+    QVBoxLayout *verticalLayout_7;
+    QLabel *labPreprocessed;
     QLabel *labelResult;
-    QFrame *frame;
+    QFrame *frameResult;
+    QVBoxLayout *verticalLayout_8;
+    QVBoxLayout *verticalLayout_6;
     QTabWidget *tabWidget;
     QWidget *tabInputImages;
     QVBoxLayout *verticalLayout_3;
@@ -75,13 +80,13 @@ public:
     {
         if (MainGui->objectName().isEmpty())
             MainGui->setObjectName(QStringLiteral("MainGui"));
-        MainGui->resize(1200, 900);
+        MainGui->resize(1200, 1000);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(MainGui->sizePolicy().hasHeightForWidth());
         MainGui->setSizePolicy(sizePolicy);
-        MainGui->setMinimumSize(QSize(1200, 900));
+        MainGui->setMinimumSize(QSize(1200, 1000));
         MainGui->setMaximumSize(QSize(16777215, 16777215));
         MainGui->setToolButtonStyle(Qt::ToolButtonIconOnly);
         action_About = new QAction(MainGui);
@@ -128,13 +133,35 @@ public:
         gridLayout->setHorizontalSpacing(3);
         gridLayout->setVerticalSpacing(2);
         gridLayout->setContentsMargins(0, 6, 0, 6);
-        labelPreprocessed = new QLabel(gridWidget);
-        labelPreprocessed->setObjectName(QStringLiteral("labelPreprocessed"));
-        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        widInputImage = new QWidget(gridWidget);
+        widInputImage->setObjectName(QStringLiteral("widInputImage"));
+        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Preferred);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(labelPreprocessed->sizePolicy().hasHeightForWidth());
-        labelPreprocessed->setSizePolicy(sizePolicy1);
+        sizePolicy1.setHeightForWidth(widInputImage->sizePolicy().hasHeightForWidth());
+        widInputImage->setSizePolicy(sizePolicy1);
+        widInputImage->setMinimumSize(QSize(400, 300));
+        widInputImage->setMaximumSize(QSize(16777215, 16777215));
+        horizontalLayout_4 = new QHBoxLayout(widInputImage);
+        horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        verticalLayout_9 = new QVBoxLayout();
+        verticalLayout_9->setSpacing(6);
+        verticalLayout_9->setObjectName(QStringLiteral("verticalLayout_9"));
+
+        horizontalLayout_4->addLayout(verticalLayout_9);
+
+
+        gridLayout->addWidget(widInputImage, 2, 0, 1, 1);
+
+        labelPreprocessed = new QLabel(gridWidget);
+        labelPreprocessed->setObjectName(QStringLiteral("labelPreprocessed"));
+        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(labelPreprocessed->sizePolicy().hasHeightForWidth());
+        labelPreprocessed->setSizePolicy(sizePolicy2);
         labelPreprocessed->setMinimumSize(QSize(400, 0));
         labelPreprocessed->setMaximumSize(QSize(16777215, 30));
         QFont font;
@@ -152,8 +179,8 @@ public:
 
         labelInput = new QLabel(gridWidget);
         labelInput->setObjectName(QStringLiteral("labelInput"));
-        sizePolicy1.setHeightForWidth(labelInput->sizePolicy().hasHeightForWidth());
-        labelInput->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(labelInput->sizePolicy().hasHeightForWidth());
+        labelInput->setSizePolicy(sizePolicy2);
         labelInput->setMinimumSize(QSize(400, 0));
         labelInput->setMaximumSize(QSize(16777215, 30));
         labelInput->setFont(font);
@@ -165,29 +192,16 @@ public:
 
         gridLayout->addWidget(labelInput, 1, 0, 1, 1);
 
-        widInputImage = new QFrame(gridWidget);
-        widInputImage->setObjectName(QStringLiteral("widInputImage"));
-        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(widInputImage->sizePolicy().hasHeightForWidth());
-        widInputImage->setSizePolicy(sizePolicy2);
-        widInputImage->setMinimumSize(QSize(400, 300));
-        widInputImage->setMaximumSize(QSize(16777215, 16777215));
-        widInputImage->setFrameShape(QFrame::StyledPanel);
-        widInputImage->setFrameShadow(QFrame::Plain);
+        verticalLayout_7 = new QVBoxLayout();
+        verticalLayout_7->setSpacing(6);
+        verticalLayout_7->setObjectName(QStringLiteral("verticalLayout_7"));
+        labPreprocessed = new QLabel(gridWidget);
+        labPreprocessed->setObjectName(QStringLiteral("labPreprocessed"));
 
-        gridLayout->addWidget(widInputImage, 2, 0, 1, 1);
+        verticalLayout_7->addWidget(labPreprocessed);
 
-        widPreprocessed = new QFrame(gridWidget);
-        widPreprocessed->setObjectName(QStringLiteral("widPreprocessed"));
-        sizePolicy2.setHeightForWidth(widPreprocessed->sizePolicy().hasHeightForWidth());
-        widPreprocessed->setSizePolicy(sizePolicy2);
-        widPreprocessed->setMinimumSize(QSize(400, 300));
-        widPreprocessed->setMaximumSize(QSize(16777215, 16777215));
-        widPreprocessed->setFrameShape(QFrame::StyledPanel);
 
-        gridLayout->addWidget(widPreprocessed, 2, 1, 1, 1);
+        gridLayout->addLayout(verticalLayout_7, 2, 1, 1, 1);
 
 
         verticalLayout->addWidget(gridWidget);
@@ -211,16 +225,26 @@ public:
 
         verticalLayout->addWidget(labelResult);
 
-        frame = new QFrame(verticalFrame);
-        frame->setObjectName(QStringLiteral("frame"));
-        sizePolicy.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
-        frame->setSizePolicy(sizePolicy);
-        frame->setMinimumSize(QSize(0, 400));
-        frame->setMaximumSize(QSize(16777215, 16777215));
-        frame->setFrameShape(QFrame::Box);
-        frame->setFrameShadow(QFrame::Plain);
+        frameResult = new QFrame(verticalFrame);
+        frameResult->setObjectName(QStringLiteral("frameResult"));
+        sizePolicy.setHeightForWidth(frameResult->sizePolicy().hasHeightForWidth());
+        frameResult->setSizePolicy(sizePolicy);
+        frameResult->setMinimumSize(QSize(0, 400));
+        frameResult->setMaximumSize(QSize(16777215, 16777215));
+        frameResult->setFrameShape(QFrame::Box);
+        frameResult->setFrameShadow(QFrame::Plain);
+        verticalLayout_8 = new QVBoxLayout(frameResult);
+        verticalLayout_8->setSpacing(6);
+        verticalLayout_8->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
+        verticalLayout_6 = new QVBoxLayout();
+        verticalLayout_6->setSpacing(6);
+        verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
 
-        verticalLayout->addWidget(frame);
+        verticalLayout_8->addLayout(verticalLayout_6);
+
+
+        verticalLayout->addWidget(frameResult);
 
 
         horizontalLayout->addWidget(verticalFrame);
@@ -355,6 +379,7 @@ public:
         action_Exit->setText(QApplication::translate("MainGui", "&Exit", 0));
         labelPreprocessed->setText(QApplication::translate("MainGui", "Preprocessed Image", 0));
         labelInput->setText(QApplication::translate("MainGui", "Input Image", 0));
+        labPreprocessed->setText(QApplication::translate("MainGui", "Preprocessed", 0));
         labelResult->setText(QApplication::translate("MainGui", "Detection Result", 0));
         label->setText(QApplication::translate("MainGui", "File", 0));
         label_3->setText(QString());

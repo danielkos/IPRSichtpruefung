@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>900</height>
+    <height>1000</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>1200</width>
-    <height>900</height>
+    <height>1000</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -117,6 +117,33 @@
             <property name="verticalSpacing">
              <number>2</number>
             </property>
+            <item row="2" column="0">
+             <widget class="QWidget" name="widInputImage" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>400</width>
+                <height>300</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_9"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item row="1" column="1">
              <widget class="QLabel" name="labelPreprocessed">
               <property name="sizePolicy">
@@ -209,59 +236,16 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QFrame" name="widInputImage">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>400</width>
-                <height>300</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Plain</enum>
-              </property>
-              <zorder>tabWidget</zorder>
-             </widget>
-            </item>
             <item row="2" column="1">
-             <widget class="QFrame" name="widPreprocessed">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>400</width>
-                <height>300</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <widget class="QLabel" name="labPreprocessed">
+                <property name="text">
+                 <string>Preprocessed</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -300,7 +284,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QFrame" name="frame">
+          <widget class="QFrame" name="frameResult">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -325,6 +309,11 @@
            <property name="frameShadow">
             <enum>QFrame::Plain</enum>
            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_6"/>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -349,7 +338,7 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="tabInputImages" native="true">
+      <widget class="QWidget" name="tabInputImages">
        <attribute name="title">
         <string>Input Images</string>
        </attribute>
@@ -432,10 +421,8 @@
          </layout>
         </item>
        </layout>
-       <zorder>VLine</zorder>
-       <zorder>verticalLayoutWidget</zorder>
       </widget>
-      <widget class="QWidget" name="tabTestMethods" native="true">
+      <widget class="QWidget" name="tabTestMethods">
        <attribute name="title">
         <string>Test Methods</string>
        </attribute>

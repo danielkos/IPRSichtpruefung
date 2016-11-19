@@ -38,6 +38,8 @@ MainGui::~MainGui()
 	delete preprocView_;
 	delete resultView_;
 	delete orgImg_;
+	delete preprocImg_;
+	delete resultImg_;
 }
 
 void MainGui::setInputImage(cv::Mat* img)

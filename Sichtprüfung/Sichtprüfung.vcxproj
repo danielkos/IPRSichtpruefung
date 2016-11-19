@@ -188,6 +188,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGui.cpp" />
     <ClCompile Include="MethodGuiItem.cpp" />
+    <ClCompile Include="UpldFrame.cpp" />
     <ClCompile Include="VerificationMethod.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -250,6 +251,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <ClInclude Include="HoleVerification.h" />
+    <ClInclude Include="UpldFrame.h" />
     <ClInclude Include="VerificationMethod.h" />
     <CustomBuild Include="FrameView.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing FrameView.h...</Message>

@@ -64,10 +64,11 @@ public:
     QVBoxLayout *verticalLayout_4;
     QSpacerItem *verticalSpacer;
     QDialogButtonBox *buttonBoxMethods;
+    QSpacerItem *verticalSpacer_2;
     QWidget *tabInputImages;
     QVBoxLayout *verticalLayout_3;
     QVBoxLayout *verticalLayout_2;
-    QTableWidget *tableWidget;
+    QTableWidget *tableInput;
     QDialogButtonBox *buttonBoxInputs;
     QMenuBar *menuBar;
     QMenu *menuFile;
@@ -289,17 +290,24 @@ public:
 
         verticalLayout_5->addWidget(widMethods);
 
-        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalSpacer = new QSpacerItem(20, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
 
         verticalLayout_5->addItem(verticalSpacer);
 
         buttonBoxMethods = new QDialogButtonBox(tabTestMethods);
         buttonBoxMethods->setObjectName(QStringLiteral("buttonBoxMethods"));
-        buttonBoxMethods->setLayoutDirection(Qt::LeftToRight);
-        buttonBoxMethods->setStandardButtons(QDialogButtonBox::NoButton);
-        buttonBoxMethods->setCenterButtons(true);
+        QSizePolicy sizePolicy5(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy5.setHorizontalStretch(0);
+        sizePolicy5.setVerticalStretch(0);
+        sizePolicy5.setHeightForWidth(buttonBoxMethods->sizePolicy().hasHeightForWidth());
+        buttonBoxMethods->setSizePolicy(sizePolicy5);
+        buttonBoxMethods->setStandardButtons(QDialogButtonBox::Apply);
 
         verticalLayout_5->addWidget(buttonBoxMethods);
+
+        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_5->addItem(verticalSpacer_2);
 
         tabWidget->addTab(tabTestMethods, QString());
         tabInputImages = new QWidget();
@@ -312,9 +320,9 @@ public:
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
         verticalLayout_2->setContentsMargins(-1, -1, -1, 0);
-        tableWidget = new QTableWidget(tabInputImages);
-        if (tableWidget->columnCount() < 2)
-            tableWidget->setColumnCount(2);
+        tableInput = new QTableWidget(tabInputImages);
+        if (tableInput->columnCount() < 2)
+            tableInput->setColumnCount(2);
         QFont font2;
         font2.setBold(true);
         font2.setWeight(75);
@@ -322,37 +330,39 @@ public:
         QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
         __qtablewidgetitem->setTextAlignment(Qt::AlignLeading|Qt::AlignTop);
         __qtablewidgetitem->setFont(font2);
-        tableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        tableInput->setHorizontalHeaderItem(0, __qtablewidgetitem);
         QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
         __qtablewidgetitem1->setTextAlignment(Qt::AlignLeading|Qt::AlignBottom);
         __qtablewidgetitem1->setFont(font2);
-        tableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
-        tableWidget->setObjectName(QStringLiteral("tableWidget"));
-        tableWidget->setFrameShape(QFrame::StyledPanel);
-        tableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        tableWidget->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
-        tableWidget->setEditTriggers(QAbstractItemView::AnyKeyPressed|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked);
-        tableWidget->setProperty("showDropIndicator", QVariant(false));
-        tableWidget->setTextElideMode(Qt::ElideLeft);
-        tableWidget->setShowGrid(true);
-        tableWidget->setGridStyle(Qt::SolidLine);
-        tableWidget->setSortingEnabled(true);
-        tableWidget->setWordWrap(true);
-        tableWidget->setRowCount(0);
-        tableWidget->horizontalHeader()->setCascadingSectionResizes(true);
-        tableWidget->horizontalHeader()->setDefaultSectionSize(135);
-        tableWidget->horizontalHeader()->setMinimumSectionSize(135);
-        tableWidget->horizontalHeader()->setStretchLastSection(false);
-        tableWidget->verticalHeader()->setCascadingSectionResizes(true);
-        tableWidget->verticalHeader()->setDefaultSectionSize(25);
-        tableWidget->verticalHeader()->setMinimumSectionSize(25);
-        tableWidget->verticalHeader()->setProperty("showSortIndicator", QVariant(false));
-        tableWidget->verticalHeader()->setStretchLastSection(false);
+        tableInput->setHorizontalHeaderItem(1, __qtablewidgetitem1);
+        tableInput->setObjectName(QStringLiteral("tableInput"));
+        tableInput->setFrameShape(QFrame::StyledPanel);
+        tableInput->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        tableInput->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
+        tableInput->setEditTriggers(QAbstractItemView::AnyKeyPressed|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked);
+        tableInput->setProperty("showDropIndicator", QVariant(false));
+        tableInput->setTextElideMode(Qt::ElideLeft);
+        tableInput->setShowGrid(true);
+        tableInput->setGridStyle(Qt::SolidLine);
+        tableInput->setSortingEnabled(true);
+        tableInput->setWordWrap(true);
+        tableInput->setRowCount(0);
+        tableInput->horizontalHeader()->setCascadingSectionResizes(true);
+        tableInput->horizontalHeader()->setDefaultSectionSize(135);
+        tableInput->horizontalHeader()->setMinimumSectionSize(135);
+        tableInput->horizontalHeader()->setStretchLastSection(false);
+        tableInput->verticalHeader()->setCascadingSectionResizes(true);
+        tableInput->verticalHeader()->setDefaultSectionSize(25);
+        tableInput->verticalHeader()->setMinimumSectionSize(25);
+        tableInput->verticalHeader()->setProperty("showSortIndicator", QVariant(false));
+        tableInput->verticalHeader()->setStretchLastSection(false);
 
-        verticalLayout_2->addWidget(tableWidget);
+        verticalLayout_2->addWidget(tableInput);
 
         buttonBoxInputs = new QDialogButtonBox(tabInputImages);
         buttonBoxInputs->setObjectName(QStringLiteral("buttonBoxInputs"));
+        sizePolicy5.setHeightForWidth(buttonBoxInputs->sizePolicy().hasHeightForWidth());
+        buttonBoxInputs->setSizePolicy(sizePolicy5);
         buttonBoxInputs->setMinimumSize(QSize(0, 0));
         buttonBoxInputs->setLayoutDirection(Qt::LeftToRight);
         buttonBoxInputs->setOrientation(Qt::Horizontal);
@@ -388,7 +398,7 @@ public:
 
         retranslateUi(MainGui);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MainGui);
@@ -403,9 +413,9 @@ public:
         labelInput->setText(QApplication::translate("MainGui", "Input Image", 0));
         labelResult->setText(QApplication::translate("MainGui", "Detection Result", 0));
         tabWidget->setTabText(tabWidget->indexOf(tabTestMethods), QApplication::translate("MainGui", "Test Methods", 0));
-        QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
+        QTableWidgetItem *___qtablewidgetitem = tableInput->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("MainGui", "Filename", 0));
-        QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
+        QTableWidgetItem *___qtablewidgetitem1 = tableInput->horizontalHeaderItem(1);
         ___qtablewidgetitem1->setText(QApplication::translate("MainGui", "Path", 0));
         tabWidget->setTabText(tabWidget->indexOf(tabInputImages), QApplication::translate("MainGui", "Input Images", 0));
         menuFile->setTitle(QApplication::translate("MainGui", "File", 0));

@@ -19,13 +19,13 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QListView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QProgressBar>
+#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QTabWidget>
-#include <QtWidgets/QTableView>
+#include <QtWidgets/QTableWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -49,28 +49,26 @@ public:
     QVBoxLayout *verticalLayout_9;
     QLabel *labelPreprocessed;
     QLabel *labelInput;
+    QWidget *widPreprocessed;
     QVBoxLayout *verticalLayout_7;
-    QLabel *labPreprocessed;
+    QVBoxLayout *verticalLayout_10;
     QLabel *labelResult;
-    QFrame *frameResult;
+    QWidget *widResult;
     QVBoxLayout *verticalLayout_8;
     QVBoxLayout *verticalLayout_6;
     QTabWidget *tabWidget;
+    QWidget *tabTestMethods;
+    QVBoxLayout *verticalLayout_5;
+    QWidget *widMethods;
+    QVBoxLayout *verticalLayout_11;
+    QVBoxLayout *verticalLayout_4;
+    QSpacerItem *verticalSpacer;
+    QDialogButtonBox *buttonBoxMethods;
     QWidget *tabInputImages;
     QVBoxLayout *verticalLayout_3;
     QVBoxLayout *verticalLayout_2;
-    QFrame *horizontalFrame_2;
-    QHBoxLayout *horizontalLayout_2;
-    QLabel *label;
-    QLabel *label_3;
-    QLabel *label_2;
-    QTableView *tableView;
+    QTableWidget *tableWidget;
     QDialogButtonBox *buttonBoxInputs;
-    QWidget *tabTestMethods;
-    QVBoxLayout *verticalLayout_5;
-    QListView *listViewMethods;
-    QDialogButtonBox *buttonBoxMethods;
-    QVBoxLayout *verticalLayout_4;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuOptions;
@@ -95,6 +93,11 @@ public:
         action_Exit->setObjectName(QStringLiteral("action_Exit"));
         centralWidget = new QWidget(MainGui);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(centralWidget->sizePolicy().hasHeightForWidth());
+        centralWidget->setSizePolicy(sizePolicy1);
         gridLayout_2 = new QGridLayout(centralWidget);
         gridLayout_2->setSpacing(6);
         gridLayout_2->setContentsMargins(11, 11, 11, 11);
@@ -135,9 +138,6 @@ public:
         gridLayout->setContentsMargins(0, 6, 0, 6);
         widInputImage = new QWidget(gridWidget);
         widInputImage->setObjectName(QStringLiteral("widInputImage"));
-        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(widInputImage->sizePolicy().hasHeightForWidth());
         widInputImage->setSizePolicy(sizePolicy1);
         widInputImage->setMinimumSize(QSize(400, 300));
@@ -192,16 +192,21 @@ public:
 
         gridLayout->addWidget(labelInput, 1, 0, 1, 1);
 
-        verticalLayout_7 = new QVBoxLayout();
+        widPreprocessed = new QWidget(gridWidget);
+        widPreprocessed->setObjectName(QStringLiteral("widPreprocessed"));
+        verticalLayout_7 = new QVBoxLayout(widPreprocessed);
         verticalLayout_7->setSpacing(6);
+        verticalLayout_7->setContentsMargins(11, 11, 11, 11);
         verticalLayout_7->setObjectName(QStringLiteral("verticalLayout_7"));
-        labPreprocessed = new QLabel(gridWidget);
-        labPreprocessed->setObjectName(QStringLiteral("labPreprocessed"));
+        verticalLayout_7->setContentsMargins(9, 9, 9, 9);
+        verticalLayout_10 = new QVBoxLayout();
+        verticalLayout_10->setSpacing(6);
+        verticalLayout_10->setObjectName(QStringLiteral("verticalLayout_10"));
 
-        verticalLayout_7->addWidget(labPreprocessed);
+        verticalLayout_7->addLayout(verticalLayout_10);
 
 
-        gridLayout->addLayout(verticalLayout_7, 2, 1, 1, 1);
+        gridLayout->addWidget(widPreprocessed, 2, 1, 1, 1);
 
 
         verticalLayout->addWidget(gridWidget);
@@ -225,15 +230,13 @@ public:
 
         verticalLayout->addWidget(labelResult);
 
-        frameResult = new QFrame(verticalFrame);
-        frameResult->setObjectName(QStringLiteral("frameResult"));
-        sizePolicy.setHeightForWidth(frameResult->sizePolicy().hasHeightForWidth());
-        frameResult->setSizePolicy(sizePolicy);
-        frameResult->setMinimumSize(QSize(0, 400));
-        frameResult->setMaximumSize(QSize(16777215, 16777215));
-        frameResult->setFrameShape(QFrame::Box);
-        frameResult->setFrameShadow(QFrame::Plain);
-        verticalLayout_8 = new QVBoxLayout(frameResult);
+        widResult = new QWidget(verticalFrame);
+        widResult->setObjectName(QStringLiteral("widResult"));
+        sizePolicy.setHeightForWidth(widResult->sizePolicy().hasHeightForWidth());
+        widResult->setSizePolicy(sizePolicy);
+        widResult->setMinimumSize(QSize(0, 400));
+        widResult->setMaximumSize(QSize(16777215, 16777215));
+        verticalLayout_8 = new QVBoxLayout(widResult);
         verticalLayout_8->setSpacing(6);
         verticalLayout_8->setContentsMargins(11, 11, 11, 11);
         verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
@@ -244,7 +247,7 @@ public:
         verticalLayout_8->addLayout(verticalLayout_6);
 
 
-        verticalLayout->addWidget(frameResult);
+        verticalLayout->addWidget(widResult);
 
 
         horizontalLayout->addWidget(verticalFrame);
@@ -260,6 +263,45 @@ public:
         sizePolicy4.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
         tabWidget->setSizePolicy(sizePolicy4);
         tabWidget->setMinimumSize(QSize(300, 0));
+        tabWidget->setTabShape(QTabWidget::Rounded);
+        tabWidget->setElideMode(Qt::ElideLeft);
+        tabTestMethods = new QWidget();
+        tabTestMethods->setObjectName(QStringLiteral("tabTestMethods"));
+        verticalLayout_5 = new QVBoxLayout(tabTestMethods);
+        verticalLayout_5->setSpacing(6);
+        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
+        widMethods = new QWidget(tabTestMethods);
+        widMethods->setObjectName(QStringLiteral("widMethods"));
+        verticalLayout_11 = new QVBoxLayout(widMethods);
+        verticalLayout_11->setSpacing(0);
+        verticalLayout_11->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_11->setObjectName(QStringLiteral("verticalLayout_11"));
+        verticalLayout_11->setContentsMargins(6, 3, 6, 3);
+        verticalLayout_4 = new QVBoxLayout();
+        verticalLayout_4->setSpacing(0);
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
+        verticalLayout_4->setSizeConstraint(QLayout::SetDefaultConstraint);
+        verticalLayout_4->setContentsMargins(10, 3, 6, 3);
+
+        verticalLayout_11->addLayout(verticalLayout_4);
+
+
+        verticalLayout_5->addWidget(widMethods);
+
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_5->addItem(verticalSpacer);
+
+        buttonBoxMethods = new QDialogButtonBox(tabTestMethods);
+        buttonBoxMethods->setObjectName(QStringLiteral("buttonBoxMethods"));
+        buttonBoxMethods->setLayoutDirection(Qt::LeftToRight);
+        buttonBoxMethods->setStandardButtons(QDialogButtonBox::NoButton);
+        buttonBoxMethods->setCenterButtons(true);
+
+        verticalLayout_5->addWidget(buttonBoxMethods);
+
+        tabWidget->addTab(tabTestMethods, QString());
         tabInputImages = new QWidget();
         tabInputImages->setObjectName(QStringLiteral("tabInputImages"));
         verticalLayout_3 = new QVBoxLayout(tabInputImages);
@@ -270,38 +312,44 @@ public:
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
         verticalLayout_2->setContentsMargins(-1, -1, -1, 0);
-        horizontalFrame_2 = new QFrame(tabInputImages);
-        horizontalFrame_2->setObjectName(QStringLiteral("horizontalFrame_2"));
-        horizontalFrame_2->setMinimumSize(QSize(0, 0));
-        horizontalFrame_2->setFrameShape(QFrame::Box);
-        horizontalLayout_2 = new QHBoxLayout(horizontalFrame_2);
-        horizontalLayout_2->setSpacing(6);
-        horizontalLayout_2->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
-        label = new QLabel(horizontalFrame_2);
-        label->setObjectName(QStringLiteral("label"));
+        tableWidget = new QTableWidget(tabInputImages);
+        if (tableWidget->columnCount() < 2)
+            tableWidget->setColumnCount(2);
+        QFont font2;
+        font2.setBold(true);
+        font2.setWeight(75);
+        font2.setKerning(false);
+        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
+        __qtablewidgetitem->setTextAlignment(Qt::AlignLeading|Qt::AlignTop);
+        __qtablewidgetitem->setFont(font2);
+        tableWidget->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
+        __qtablewidgetitem1->setTextAlignment(Qt::AlignLeading|Qt::AlignBottom);
+        __qtablewidgetitem1->setFont(font2);
+        tableWidget->setHorizontalHeaderItem(1, __qtablewidgetitem1);
+        tableWidget->setObjectName(QStringLiteral("tableWidget"));
+        tableWidget->setFrameShape(QFrame::StyledPanel);
+        tableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        tableWidget->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
+        tableWidget->setEditTriggers(QAbstractItemView::AnyKeyPressed|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked);
+        tableWidget->setProperty("showDropIndicator", QVariant(false));
+        tableWidget->setTextElideMode(Qt::ElideLeft);
+        tableWidget->setShowGrid(true);
+        tableWidget->setGridStyle(Qt::SolidLine);
+        tableWidget->setSortingEnabled(true);
+        tableWidget->setWordWrap(true);
+        tableWidget->setRowCount(0);
+        tableWidget->horizontalHeader()->setCascadingSectionResizes(true);
+        tableWidget->horizontalHeader()->setDefaultSectionSize(135);
+        tableWidget->horizontalHeader()->setMinimumSectionSize(135);
+        tableWidget->horizontalHeader()->setStretchLastSection(false);
+        tableWidget->verticalHeader()->setCascadingSectionResizes(true);
+        tableWidget->verticalHeader()->setDefaultSectionSize(25);
+        tableWidget->verticalHeader()->setMinimumSectionSize(25);
+        tableWidget->verticalHeader()->setProperty("showSortIndicator", QVariant(false));
+        tableWidget->verticalHeader()->setStretchLastSection(false);
 
-        horizontalLayout_2->addWidget(label);
-
-        label_3 = new QLabel(horizontalFrame_2);
-        label_3->setObjectName(QStringLiteral("label_3"));
-        label_3->setMaximumSize(QSize(2, 16777215));
-        label_3->setFrameShape(QFrame::VLine);
-
-        horizontalLayout_2->addWidget(label_3);
-
-        label_2 = new QLabel(horizontalFrame_2);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        horizontalLayout_2->addWidget(label_2);
-
-
-        verticalLayout_2->addWidget(horizontalFrame_2);
-
-        tableView = new QTableView(tabInputImages);
-        tableView->setObjectName(QStringLiteral("tableView"));
-
-        verticalLayout_2->addWidget(tableView);
+        verticalLayout_2->addWidget(tableWidget);
 
         buttonBoxInputs = new QDialogButtonBox(tabInputImages);
         buttonBoxInputs->setObjectName(QStringLiteral("buttonBoxInputs"));
@@ -317,32 +365,6 @@ public:
         verticalLayout_3->addLayout(verticalLayout_2);
 
         tabWidget->addTab(tabInputImages, QString());
-        tabTestMethods = new QWidget();
-        tabTestMethods->setObjectName(QStringLiteral("tabTestMethods"));
-        verticalLayout_5 = new QVBoxLayout(tabTestMethods);
-        verticalLayout_5->setSpacing(6);
-        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        listViewMethods = new QListView(tabTestMethods);
-        listViewMethods->setObjectName(QStringLiteral("listViewMethods"));
-
-        verticalLayout_5->addWidget(listViewMethods);
-
-        buttonBoxMethods = new QDialogButtonBox(tabTestMethods);
-        buttonBoxMethods->setObjectName(QStringLiteral("buttonBoxMethods"));
-        buttonBoxMethods->setLayoutDirection(Qt::RightToLeft);
-        buttonBoxMethods->setStandardButtons(QDialogButtonBox::Apply|QDialogButtonBox::Cancel);
-        buttonBoxMethods->setCenterButtons(true);
-
-        verticalLayout_5->addWidget(buttonBoxMethods);
-
-        verticalLayout_4 = new QVBoxLayout();
-        verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-
-        verticalLayout_5->addLayout(verticalLayout_4);
-
-        tabWidget->addTab(tabTestMethods, QString());
 
         gridLayout_2->addWidget(tabWidget, 0, 0, 1, 1);
 
@@ -379,13 +401,13 @@ public:
         action_Exit->setText(QApplication::translate("MainGui", "&Exit", 0));
         labelPreprocessed->setText(QApplication::translate("MainGui", "Preprocessed Image", 0));
         labelInput->setText(QApplication::translate("MainGui", "Input Image", 0));
-        labPreprocessed->setText(QApplication::translate("MainGui", "Preprocessed", 0));
         labelResult->setText(QApplication::translate("MainGui", "Detection Result", 0));
-        label->setText(QApplication::translate("MainGui", "File", 0));
-        label_3->setText(QString());
-        label_2->setText(QApplication::translate("MainGui", "Path", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tabInputImages), QApplication::translate("MainGui", "Input Images", 0));
         tabWidget->setTabText(tabWidget->indexOf(tabTestMethods), QApplication::translate("MainGui", "Test Methods", 0));
+        QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
+        ___qtablewidgetitem->setText(QApplication::translate("MainGui", "Filename", 0));
+        QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
+        ___qtablewidgetitem1->setText(QApplication::translate("MainGui", "Path", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tabInputImages), QApplication::translate("MainGui", "Input Images", 0));
         menuFile->setTitle(QApplication::translate("MainGui", "File", 0));
         menuOptions->setTitle(QApplication::translate("MainGui", "Options", 0));
         menuHelp->setTitle(QApplication::translate("MainGui", "Help", 0));

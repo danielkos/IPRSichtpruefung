@@ -2,10 +2,16 @@
 #include "FrameView.h"
 #include "VerificationMethod.h"
 #include "MethodGuiItem.h"
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <utility>
+
 #include <QDialogButtonBox>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QTableWidgetItem>
+#include <QPushButton>
 
 MainGui::MainGui(QWidget *parent)
 	: QMainWindow(parent)
@@ -28,11 +34,15 @@ MainGui::MainGui(QWidget *parent)
 	preprocImg_ = new cv::Mat();
 	resultImg_ = new cv::Mat();
 
-	//Add a button to the dialog box
-	ui.buttonBoxMethods->addButton(QDialogButtonBox::Ok);
+	//Select the button
+	QPushButton* apply = ui.buttonBoxMethods->button(QDialogButtonBox::Apply);
+	QPushButton* open = ui.buttonBoxInputs->button(QDialogButtonBox::Open);
+	QPushButton* remove = ui.buttonBoxInputs->button(QDialogButtonBox::Discard);
+	remove->setText("Remove");
 
-	//Connect the signals from the button box to functions
-	QObject::connect(ui.buttonBoxMethods, &QDialogButtonBox::accepted, this, &MainGui::runSelectedMethods);
+	//Connect the signals from the button box to other functions
+	connect(apply, &QPushButton::clicked, this, &MainGui::runSelectedMethods);
+	connect(open, &QPushButton::clicked, this, &MainGui::addFile);
 }
 MainGui::~MainGui()
 {
@@ -84,4 +94,19 @@ void MainGui::runSelectedMethods()
 
 		}
 	}
+}
+
+void MainGui::addFileStream(QString stream)
+{
+}
+
+void MainGui::addFile()
+{
+	QFileDialog dialog(this);
+	QStringList filenames;
+	QString filter = "Images(*.png *.bmp *.jpg *.jpeg)";
+	QTableWidgetItem* item = new QTableWidgetItem("test");
+
+	filenames = dialog.getOpenFileNames(this, "Select an image", QString(), filter);
+	ui.tableInput->setItem(0, 1, item);
 }

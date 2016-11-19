@@ -65,6 +65,14 @@ public slots:
 	*  to preprocImg_
 	*/
 	void setInputImage(cv::Mat* img);
+
+	/**
+	* \brief Adds a file stream to the table widget
+	*/
+	void addFileStream(QString stream);
+private slots:
+
+	void addFile();
 };
 
 #endif // MAINGUI_H

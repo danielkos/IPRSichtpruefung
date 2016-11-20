@@ -94,6 +94,10 @@ private slots:
 	* \brief Resets all stored images
 	*/
 	void reset();
+
+	void logOutput(QString msg);
+
+	void statusOutput(QString msg);
 };
 
 #endif // MAINGUI_H

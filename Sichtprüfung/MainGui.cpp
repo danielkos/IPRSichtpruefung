@@ -15,6 +15,7 @@
 #include <QPushButton>
 #include <QTreeView>
 #include <QStandardItemModel>
+#include <QTime>
 
 MainGui::MainGui(QWidget *parent)
 	: QMainWindow(parent)
@@ -58,12 +59,13 @@ MainGui::MainGui(QWidget *parent)
 	labels.push_back("Path");
 	
 	//Create the model for input tab
-	QStandardItemModel* model = new QStandardItemModel(0, 2, ui.treeViewInput);
-	model->setHorizontalHeaderLabels(labels);
-	ui.treeViewInput->setModel(model);
+	QStandardItemModel* fileModel = new QStandardItemModel(0, 2, ui.treeViewInput);
+	fileModel->setHorizontalHeaderLabels(labels);
+	ui.treeViewInput->setModel(fileModel);
 	ui.treeViewInput->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 	connect(ui.treeViewInput, SIGNAL(clicked(QModelIndex)),	this, SLOT(setCurrentFile(QModelIndex)));
 
+	logOutput("Start up");
 }
 MainGui::~MainGui()
 {
@@ -88,11 +90,14 @@ void MainGui::setInputImage(cv::Mat* img)
 		inputView_->showImage(orgImg_);
 		preprocView_->showImage(preprocImg_);
 		resultView_->showImage(resultImg_);
+
+		logOutput("Setting image");
 	}
 }
 
 void MainGui::addVerificationMethod(std::string name, VerificationMethod* method)
 {
+	logOutput("Adding method: " + QString::fromStdString(name));
 	//Create an item and attach it to the widget
 	MethodGuiItem* item = new MethodGuiItem(name, ui.widMethods);
 	//Setup association
@@ -108,6 +113,7 @@ void MainGui::runSelectedMethods()
 	{
 		if (it->first->selected())
 		{
+			logOutput("Running method: " + QString::fromStdString(it->first->name()));
 			if (it->second->run(preprocImg_))
 			{
 				//If method was successful, combine results into one image
@@ -133,16 +139,20 @@ void MainGui::addFile()
 	
 	filenames = dialog.getOpenFileNames(this, "Select an image", QString(), filter);
 
+	QStandardItemModel* model = static_cast<QStandardItemModel*>(ui.treeViewInput->model());
+
 	for (size_t i = 0; i < filenames.size(); i++)
 	{
 		QFileInfo fileInfo(filenames.at(i));
 		//Cast from QAbstractItemModel to QStandardItemModel to have full functionality
-		QStandardItemModel* model = static_cast<QStandardItemModel*>(ui.treeViewInput->model());
+		
 		//Check if cast was successful
 		if (model)
 		{
 			QStandardItem* name = new QStandardItem(fileInfo.fileName());
 			QStandardItem* path = new QStandardItem(fileInfo.filePath());
+
+			logOutput("Adding file: " + fileInfo.fileName() + " with path: " + fileInfo.filePath());
 			
 			name->setEditable(false);
 			path->setEditable(false);
@@ -152,12 +162,18 @@ void MainGui::addFile()
 			
 			model->appendRow(name);
 			model->setItem(model->rowCount()-1, model->columnCount()-1, path);
+
 		}
 	}
+
+	QModelIndex index = model->index(model->rowCount() - 1, model->columnCount() - 1);
+	ui.treeViewInput->setCurrentIndex(index);
+	setCurrentFile(index);
 }
 
 void MainGui::removeFile()
 {
+	logOutput("Removing last file");
 	QModelIndexList selection = ui.treeViewInput->selectionModel()->selectedRows();
 
 	// Multiple rows can be selected
@@ -175,8 +191,10 @@ void MainGui::setCurrentFile(QModelIndex index)
 	//Cast from QAbstractItemModel to QStandardItemModel to have full functionality
 	QStandardItem* item = static_cast<QStandardItemModel*>(ui.treeViewInput->model())->item(index.row(), 1);
 	cv::Mat img;
-	
+
 	currentFile_ = item->data(Qt::DisplayRole).value<QString>();
+
+	logOutput("Using current file: " + currentFile_);
 
 	if (currentFile_.isEmpty())
 	{
@@ -187,6 +205,8 @@ void MainGui::setCurrentFile(QModelIndex index)
 		img = UpldFrame::fromFile(currentFile_.toStdString());
 	}
 
+	statusOutput("Finished!");
+
 	setInputImage(&img);
 }
 
@@ -195,4 +215,15 @@ void MainGui::reset()
 	orgImg_->release();
 	preprocImg_->release();
 	resultImg_->release();
+}
+
+void MainGui::logOutput(QString msg)
+{
+	QString str = "[" + QTime::currentTime().toString() + "]: " + msg;
+	ui.listWidgetLog->addItem(str);
+}
+
+void MainGui::statusOutput(QString msg)
+{
+	ui.labelProgress->setText(msg);
 }

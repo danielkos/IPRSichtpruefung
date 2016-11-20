@@ -5,6 +5,7 @@
 FrameView::FrameView(QWidget* parent)
 	:QLabel(parent)
 {
+	//Allow to scale the image automatically
 	setScaledContents(true);
 	setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 }
@@ -15,6 +16,7 @@ FrameView::~FrameView()
 
 void FrameView::convertToQtImage(const cv::Mat *img)
 {
+	//check for type
 	cv::Mat tmp;
 	switch (img->type()) {
 	case CV_8UC1:

@@ -5,17 +5,26 @@ namespace cv
 {
 	class Mat;
 }
-
+/**
+* \brief Interface for verification methods
+*/
 class VerificationMethod
 {
 public:
 	VerificationMethod();
 	virtual ~VerificationMethod();
-
-	virtual bool run(const cv::Mat* img) = 0;
 	
+	/**
+	* \brief Abstract method which applies the method
+	*/
+	virtual bool run(const cv::Mat* img) = 0;
+	/**
+	* \brief Returns the result image
+	*/
 	cv::Mat* getResult();
+
 protected:
+	//Result image
 	cv::Mat* resImg_;
 };
 

@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cvmatandqimage.cpp" />
     <ClCompile Include="FrameView.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_FrameView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -238,6 +239,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
+    <ClInclude Include="cvmatandqimage.h" />
     <ClInclude Include="HoleVerification.h" />
     <ClInclude Include="UpldFrame.h" />
     <ClInclude Include="VerificationMethod.h" />

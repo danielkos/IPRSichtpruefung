@@ -51,6 +51,12 @@
     <Filter Include="Source Dateien\IO">
       <UniqueIdentifier>{597b4e5d-b1ce-4e6f-89f7-a4a915009934}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Dateien\Utils">
+      <UniqueIdentifier>{f2be8df0-2ceb-499d-a900-eef51f0a2f0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Dateien\Utils">
+      <UniqueIdentifier>{2ebd6e87-9cb8-4b02-9717-b9982e696205}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -68,14 +74,8 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_FrameView.cpp">
       <Filter>Generierte Dateien\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_FrameView.cpp">
-      <Filter>Generierte Dateien\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_MainGui.cpp">
       <Filter>Generierte Dateien\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MainGui.cpp">
-      <Filter>Generierte Dateien\Release</Filter>
     </ClCompile>
     <ClCompile Include="VerificationMethod.cpp">
       <Filter>Source Dateien\Computation</Filter>
@@ -89,11 +89,11 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_MethodGuiItem.cpp">
       <Filter>Generierte Dateien\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MethodGuiItem.cpp">
-      <Filter>Generierte Dateien\Release</Filter>
-    </ClCompile>
     <ClCompile Include="UpldFrame.cpp">
       <Filter>Source Dateien\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="cvmatandqimage.cpp">
+      <Filter>Source Dateien\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +125,9 @@
     </ClInclude>
     <ClInclude Include="UpldFrame.h">
       <Filter>Header Dateien\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="cvmatandqimage.h">
+      <Filter>Header Dateien\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

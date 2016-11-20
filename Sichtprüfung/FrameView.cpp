@@ -1,4 +1,5 @@
 #include "FrameView.h"
+#include "cvmatandqimage.h"
 #include <opencv2/opencv.hpp>
 #include <QImage>
 
@@ -29,8 +30,7 @@ void FrameView::convertToQtImage(const cv::Mat *img)
 
 	// QImage needs the data to be stored continuously in memory
 	assert(tmp.isContinuous());
-
-	qImg_ = QImage((uchar*)tmp.data, tmp.cols, tmp.rows, tmp.step, QImage::Format_RGB888);
+	qImg_ = QtOcv::mat2Image(tmp, QtOcv::MCO_RGB, QImage::Format_RGB888);
 }
 
 void FrameView::displayImage()

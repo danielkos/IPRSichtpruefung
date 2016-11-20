@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Dateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;cxx;c;def</Extensions>
+    </Filter>
+    <Filter Include="Header Dateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Form Dateien">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Dateien">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generierte Dateien">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generierte Dateien\Debug">
+      <UniqueIdentifier>{16f3ee6d-9160-4707-a1a7-5d6709ef2c19}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generierte Dateien\Release">
+      <UniqueIdentifier>{8fb26d4d-7aa7-4a49-9953-ae4457f9ad9a}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Header Dateien\GUI">
+      <UniqueIdentifier>{acff3f2e-c78e-4119-abea-bcbd2c0e7a4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Dateien\GUI">
+      <UniqueIdentifier>{3a0dc3ab-4899-43ab-8d31-f70c8b024260}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Dateien\Computation">
+      <UniqueIdentifier>{76bc0b5c-6b53-445d-8d6b-462a6a28148c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Dateien\Computation">
+      <UniqueIdentifier>{1d04b6da-d469-4292-a0d3-98a582635e05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Dateien\IO">
+      <UniqueIdentifier>{e8ed718a-cbef-40a1-8033-5dc106665025}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Dateien\IO">
+      <UniqueIdentifier>{597b4e5d-b1ce-4e6f-89f7-a4a915009934}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Dateien</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_sichtprüfung.cpp">
+      <Filter>Generierte Dateien</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGui.cpp">
+      <Filter>Source Dateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameView.cpp">
+      <Filter>Source Dateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_FrameView.cpp">
+      <Filter>Generierte Dateien\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_FrameView.cpp">
+      <Filter>Generierte Dateien\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MainGui.cpp">
+      <Filter>Generierte Dateien\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MainGui.cpp">
+      <Filter>Generierte Dateien\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="VerificationMethod.cpp">
+      <Filter>Source Dateien\Computation</Filter>
+    </ClCompile>
+    <ClCompile Include="MethodGuiItem.cpp">
+      <Filter>Source Dateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="HoleVerification.cpp">
+      <Filter>Source Dateien\Computation</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MethodGuiItem.cpp">
+      <Filter>Generierte Dateien\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MethodGuiItem.cpp">
+      <Filter>Generierte Dateien\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="UpldFrame.cpp">
+      <Filter>Source Dateien\IO</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="MainGui.ui">
+      <Filter>Form Dateien</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sichtprüfung.qrc">
+      <Filter>Resource Dateien</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MainGui.h">
+      <Filter>Header Dateien\GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FrameView.h">
+      <Filter>Header Dateien\GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MethodGuiItem.h">
+      <Filter>Header Dateien\GUI</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_MainGui.h">
+      <Filter>Generierte Dateien</Filter>
+    </ClInclude>
+    <ClInclude Include="VerificationMethod.h">
+      <Filter>Header Dateien\Computation</Filter>
+    </ClInclude>
+    <ClInclude Include="HoleVerification.h">
+      <Filter>Header Dateien\Computation</Filter>
+    </ClInclude>
+    <ClInclude Include="UpldFrame.h">
+      <Filter>Header Dateien\IO</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

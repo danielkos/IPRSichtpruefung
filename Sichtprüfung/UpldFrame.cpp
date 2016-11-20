@@ -4,13 +4,21 @@ cv::Mat UpldFrame::fromFile(std::string filename)		//open an filename image
 {
 	cv::Mat img;
 	img = cv::imread(filename);
+
 	return img;
 }
 
 cv::Mat UpldFrame::fromCamera()
 {
-	cv::VideoCapture cap(0); // open the default camera
+	// open the default camera
+	cv::VideoCapture cap(0);
 	cv::Mat frame;
-	cap >> frame; // get a new frame from camera
+
+	if (cap.isOpened())
+	{
+		// get a new frame from camera
+		cap >> frame;
+	}
+	
 	return frame;
 }

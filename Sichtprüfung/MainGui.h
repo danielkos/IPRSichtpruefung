@@ -53,9 +53,6 @@ private:
 	//Association between method and gui item
 	ItemMethodMap methods_;
 
-	//Path to selected file
-	QString currentFile_;
-
 public slots:
 	/**
 	* \brief Runs alls selected methods
@@ -75,25 +72,7 @@ public slots:
 	void addFileStream(QString stream);
 private slots:
 
-	/**
-	* \brief Adds the file and its path to the input tab
-	*/
 	void addFile();
-
-	/**
-	* \brief Removes a file from input tab
-	*/
-	void removeFile();
-
-	/**
-	* \brief Sets the path of the current selected file
-	*/
-	void setCurrentFile(QModelIndex index);
-
-	/**
-	* \brief Resets all stored images
-	*/
-	void reset();
 };
 
 #endif // MAINGUI_H

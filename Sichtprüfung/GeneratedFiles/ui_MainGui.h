@@ -25,7 +25,7 @@
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QTabWidget>
-#include <QtWidgets/QTreeView>
+#include <QtWidgets/QTableWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -68,7 +68,7 @@ public:
     QWidget *tabInputImages;
     QVBoxLayout *verticalLayout_3;
     QVBoxLayout *verticalLayout_2;
-    QTreeView *treeViewInput;
+    QTableWidget *tableInput;
     QDialogButtonBox *buttonBoxInputs;
     QMenuBar *menuBar;
     QMenu *menuFile;
@@ -320,10 +320,44 @@ public:
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
         verticalLayout_2->setContentsMargins(-1, -1, -1, 0);
-        treeViewInput = new QTreeView(tabInputImages);
-        treeViewInput->setObjectName(QStringLiteral("treeViewInput"));
+        tableInput = new QTableWidget(tabInputImages);
+        if (tableInput->columnCount() < 2)
+            tableInput->setColumnCount(2);
+        QFont font2;
+        font2.setBold(true);
+        font2.setWeight(75);
+        font2.setKerning(false);
+        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
+        __qtablewidgetitem->setTextAlignment(Qt::AlignLeading|Qt::AlignTop);
+        __qtablewidgetitem->setFont(font2);
+        tableInput->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
+        __qtablewidgetitem1->setTextAlignment(Qt::AlignLeading|Qt::AlignBottom);
+        __qtablewidgetitem1->setFont(font2);
+        tableInput->setHorizontalHeaderItem(1, __qtablewidgetitem1);
+        tableInput->setObjectName(QStringLiteral("tableInput"));
+        tableInput->setFrameShape(QFrame::StyledPanel);
+        tableInput->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        tableInput->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
+        tableInput->setEditTriggers(QAbstractItemView::AnyKeyPressed|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked);
+        tableInput->setProperty("showDropIndicator", QVariant(false));
+        tableInput->setTextElideMode(Qt::ElideLeft);
+        tableInput->setShowGrid(true);
+        tableInput->setGridStyle(Qt::SolidLine);
+        tableInput->setSortingEnabled(true);
+        tableInput->setWordWrap(true);
+        tableInput->setRowCount(0);
+        tableInput->horizontalHeader()->setCascadingSectionResizes(true);
+        tableInput->horizontalHeader()->setDefaultSectionSize(135);
+        tableInput->horizontalHeader()->setMinimumSectionSize(135);
+        tableInput->horizontalHeader()->setStretchLastSection(false);
+        tableInput->verticalHeader()->setCascadingSectionResizes(true);
+        tableInput->verticalHeader()->setDefaultSectionSize(25);
+        tableInput->verticalHeader()->setMinimumSectionSize(25);
+        tableInput->verticalHeader()->setProperty("showSortIndicator", QVariant(false));
+        tableInput->verticalHeader()->setStretchLastSection(false);
 
-        verticalLayout_2->addWidget(treeViewInput);
+        verticalLayout_2->addWidget(tableInput);
 
         buttonBoxInputs = new QDialogButtonBox(tabInputImages);
         buttonBoxInputs->setObjectName(QStringLiteral("buttonBoxInputs"));
@@ -379,6 +413,10 @@ public:
         labelInput->setText(QApplication::translate("MainGui", "Input Image", 0));
         labelResult->setText(QApplication::translate("MainGui", "Detection Result", 0));
         tabWidget->setTabText(tabWidget->indexOf(tabTestMethods), QApplication::translate("MainGui", "Test Methods", 0));
+        QTableWidgetItem *___qtablewidgetitem = tableInput->horizontalHeaderItem(0);
+        ___qtablewidgetitem->setText(QApplication::translate("MainGui", "Filename", 0));
+        QTableWidgetItem *___qtablewidgetitem1 = tableInput->horizontalHeaderItem(1);
+        ___qtablewidgetitem1->setText(QApplication::translate("MainGui", "Path", 0));
         tabWidget->setTabText(tabWidget->indexOf(tabInputImages), QApplication::translate("MainGui", "Input Images", 0));
         menuFile->setTitle(QApplication::translate("MainGui", "File", 0));
         menuOptions->setTitle(QApplication::translate("MainGui", "Options", 0));

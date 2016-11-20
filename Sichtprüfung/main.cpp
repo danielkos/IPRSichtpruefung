@@ -10,7 +10,11 @@ int main(int argc, char *argv[])
 	//GUI generated from ui file
 	MainGui mainGui;
 	VerificationMethod* item = new HoleVerification();
+	cv::Mat src;
 	
+	src = cv::imread(argv[1], true);
+	
+	mainGui.setInputImage(&src);
 	mainGui.addVerificationMethod("1adfadf", item);
 	mainGui.addVerificationMethod("2adfadf", item);
 

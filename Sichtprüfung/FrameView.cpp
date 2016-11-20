@@ -35,10 +35,7 @@ void FrameView::convertToQtImage(const cv::Mat *img)
 
 void FrameView::displayImage()
 {
-	if (!qImg_.isNull())
-	{
-		setPixmap(QPixmap::fromImage(qImg_));
-	}	
+	setPixmap(QPixmap::fromImage(qImg_));
 	show();
 }
 

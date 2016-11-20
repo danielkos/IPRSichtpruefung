@@ -19,6 +19,11 @@ public:
 	* \brief Returns if the checkbox is checked
 	*/
 	bool selected();
+
+	std::string name();
+
+private:
+	std::string name_;
 };
 
 #endif //MethodGuiItem

@@ -95,8 +95,14 @@ private slots:
 	*/
 	void reset();
 
+	/**
+	* \brief Displayes msg onto log tab
+	*/
 	void logOutput(QString msg);
 
+	/**
+	* \brief Displays msg onto status label
+	*/
 	void statusOutput(QString msg);
 };
 

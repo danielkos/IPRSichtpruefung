@@ -20,6 +20,9 @@ public:
 	*/
 	bool selected();
 
+	/**
+	* \brief Returns the name of the item
+	*/
 	std::string name();
 
 private:

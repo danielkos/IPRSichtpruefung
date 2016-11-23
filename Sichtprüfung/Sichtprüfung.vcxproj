@@ -173,6 +173,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="HoleParameter.cpp" />
     <ClCompile Include="HoleVerification.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGui.cpp" />
@@ -240,6 +241,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <ClInclude Include="cvmatandqimage.h" />
+    <ClInclude Include="HoleParameter.h" />
     <ClInclude Include="HoleVerification.h" />
     <ClInclude Include="UpldFrame.h" />
     <ClInclude Include="VerificationMethod.h" />

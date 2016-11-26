@@ -176,7 +176,7 @@ void MainGui::addFile()
 			
 			model->appendRow(name);
 			model->setItem(model->rowCount()-1, model->columnCount()-1, path);
-
+	//Select last added file
 		}
 	}
 
@@ -206,21 +206,27 @@ void MainGui::setCurrentFile(QModelIndex index)
 	QStandardItem* item = static_cast<QStandardItemModel*>(ui.treeViewInput->model())->item(index.row(), 1);
 	cv::Mat img;
 
-
-	logOutput("Using current file: " + currentFile_);
-
-	if (currentFile_.isEmpty())
+	//Check if cast was successful
+	if (item)
 	{
-		img = UpldFrame::fromCamera();
-	}
-	else
-	{
-		img = UpldFrame::fromFile(currentFile_.toStdString());
-	}
+		//Get the file path
+		currentFile_ = item->data(Qt::DisplayRole).value<QString>();
 
-	statusOutput("Finished!");
+		logOutput("Using current file: " + currentFile_);
 
-	setInputImage(&img);
+		if (currentFile_.isEmpty())
+		{
+			img = UpldFrame::fromCamera();
+		}
+		else
+		{
+			img = UpldFrame::fromFile(currentFile_.toStdString());
+		}
+
+		statusOutput("Finished!");
+
+		setInputImage(&img);
+	}
 }
 
 void MainGui::reset()

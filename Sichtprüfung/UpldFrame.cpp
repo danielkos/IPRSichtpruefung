@@ -14,7 +14,7 @@ UpldFrame::~UpldFrame()
 
 void UpldFrame::setCamera(std::string cameraName)
 {
-	videoCapture_->open(cameraName);
+	videoCapture_->open(0);
 }
 
 void UpldFrame::terminateCameraStream()
@@ -33,6 +33,7 @@ cv::Mat UpldFrame::fromFile(std::string filename)		//open an filename image
 void UpldFrame::fromCamera()
 {
 	cv::Mat frame;
+	exit_ = false;
 
 	cv::putText(frame, "Camera not opened!", cv::Point(50, 50), cv::FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255));
 
@@ -43,7 +44,10 @@ void UpldFrame::fromCamera()
 			frame.release();
 			// get a new frame from camera
 			videoCapture_->read(frame);
-			Q_EMIT newCameraImage(&frame);
 		}
+
+		Q_EMIT newCameraImage(&frame);
 	}
+
+	videoCapture_->release();
 }

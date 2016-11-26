@@ -136,7 +136,7 @@ public:
         verticalLayout_4->setSpacing(0);
         verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
         verticalLayout_4->setSizeConstraint(QLayout::SetDefaultConstraint);
-        verticalLayout_4->setContentsMargins(10, 3, 6, 3);
+        verticalLayout_4->setContentsMargins(0, 0, 0, 0);
 
         verticalLayout_11->addLayout(verticalLayout_4);
 
@@ -391,7 +391,7 @@ public:
 
         retranslateUi(MainGui);
 
-        tabWidget->setCurrentIndex(2);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainGui);

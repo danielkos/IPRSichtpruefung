@@ -549,6 +549,7 @@
     <property name="title">
      <string>Options</string>
     </property>
+    <addaction name="actionTest_Object"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -568,6 +569,11 @@
   <action name="action_Exit">
    <property name="text">
     <string>&amp;Exit</string>
+   </property>
+  </action>
+  <action name="actionTest_Object">
+   <property name="text">
+    <string>Test Object</string>
    </property>
   </action>
  </widget>

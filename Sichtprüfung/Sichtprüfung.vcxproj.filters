@@ -101,6 +101,15 @@
     <ClCompile Include="Calibration.cpp">
       <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_OptionsGui.cpp">
+      <Filter>Generierte Dateien\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsGui.cpp">
+      <Filter>Source Dateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_OptionsGui.cpp">
+      <Filter>Generierte Dateien\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainGui.ui">
@@ -120,6 +129,12 @@
     </CustomBuild>
     <CustomBuild Include="Method.ui">
       <Filter>Form Dateien</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Options.ui">
+      <Filter>Form Dateien</Filter>
+    </CustomBuild>
+    <CustomBuild Include="OptionsGui.h">
+      <Filter>Header Dateien\GUI</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +163,9 @@
       <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_Method.h">
+      <Filter>Generierte Dateien</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_Options.h">
       <Filter>Generierte Dateien</Filter>
     </ClInclude>
   </ItemGroup>

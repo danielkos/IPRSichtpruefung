@@ -120,6 +120,7 @@ void MainGui::runSelectedMethods()
 				//If method was successful, combine results into one image
 				//In this state not suitable for parallelization
 				//Src and Dst have to have the same type
+				cv::addWeighted(*orgImg_, 0.5, *(it->second->result()), 0.5, 0.0, *resultImg_);
 				it->first->setMode(true);
 				//Get results from method, in this case imgs
 				preprocImg_ = it->second->processed();
@@ -176,10 +177,10 @@ void MainGui::addFile()
 			
 			model->appendRow(name);
 			model->setItem(model->rowCount()-1, model->columnCount()-1, path);
-	//Select last added file
+
 		}
 	}
-
+	//Select last added file
 	QModelIndex index = model->index(model->rowCount() - 1, model->columnCount() - 1);
 	ui.treeViewInput->setCurrentIndex(index);
 	setCurrentFile(index);

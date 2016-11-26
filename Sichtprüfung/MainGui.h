@@ -73,6 +73,7 @@ public slots:
 	* \brief Adds a file stream to the table widget
 	*/
 	void addFileStream(QString stream);
+
 private slots:
 
 	/**

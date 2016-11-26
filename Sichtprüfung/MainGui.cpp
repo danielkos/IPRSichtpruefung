@@ -61,8 +61,10 @@ MainGui::MainGui(QWidget *parent)
 	//Create the model for input tab
 	QStandardItemModel* fileModel = new QStandardItemModel(0, 2, ui.treeViewInput);
 	fileModel->setHorizontalHeaderLabels(labels);
+
 	ui.treeViewInput->setModel(fileModel);
 	ui.treeViewInput->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+
 	connect(ui.treeViewInput, SIGNAL(clicked(QModelIndex)),	this, SLOT(setCurrentFile(QModelIndex)));
 
 	logOutput("Start up");
@@ -83,13 +85,8 @@ void MainGui::setInputImage(cv::Mat* img)
 	{
 		//be carefull on stream this might be invalid
 		*orgImg_ = *img;
-		//compute the grayscale image
-		cv::cvtColor(*orgImg_, *preprocImg_, CV_BGR2GRAY);
-
 		//at startup all images are empty
 		inputView_->showImage(orgImg_);
-		preprocView_->showImage(preprocImg_);
-		resultView_->showImage(resultImg_);
 
 		logOutput("Setting image");
 	}
@@ -99,7 +96,7 @@ void MainGui::addVerificationMethod(std::string name, VerificationMethod* method
 {
 	logOutput("Adding method: " + QString::fromStdString(name));
 	//Create an item and attach it to the widget
-	MethodGuiItem* item = new MethodGuiItem(name, ui.widMethods);
+	MethodGuiItem* item = new MethodGuiItem(name, method->parameters(), ui.widMethods);
 	//Setup association
 	methods_.insert(ItemMethodPair(item, method));
 	//Add item to the layout
@@ -108,18 +105,34 @@ void MainGui::addVerificationMethod(std::string name, VerificationMethod* method
 
 void MainGui::runSelectedMethods()
 {
-	//look for all checked methods an execute them
+	//Look for all checked methods an execute them
 	for (ItemMethodMap::iterator it = methods_.begin(); it != methods_.end(); it++)
 	{
 		if (it->first->selected())
 		{
 			logOutput("Running method: " + QString::fromStdString(it->first->name()));
-			if (it->second->run(preprocImg_))
+			//Get current parametrs from method
+			it->second->setParameters(it->first->parameters());
+
+			if (it->second->run(orgImg_))
 			{
+				logOutput("Method: " + QString::fromStdString(it->first->name()) + " successful");
 				//If method was successful, combine results into one image
 				//In this state not suitable for parallelization
-				cv::addWeighted(*preprocImg_, 0.5, *(it->second->getResult()), 0.5, 0.0, *resultImg_);
+				//Src and Dst have to have the same type
+				it->first->setMode(true);
+				//Get results from method, in this case imgs
+				preprocImg_ = it->second->processed();
+				resultImg_ = it->second->result();
+				//Show imgs on gui
 				resultView_->showImage(resultImg_);
+				preprocView_->showImage(preprocImg_);
+			}
+			else
+			{
+				//If method fails change appearance 
+				it->first->setMode(false);
+				logOutput("Method: " + QString::fromStdString(it->first->name()) + " failed");
 			}
 
 		}
@@ -149,6 +162,7 @@ void MainGui::addFile()
 		//Check if cast was successful
 		if (model)
 		{
+			//Add filename and filepath to the model
 			QStandardItem* name = new QStandardItem(fileInfo.fileName());
 			QStandardItem* path = new QStandardItem(fileInfo.filePath());
 
@@ -192,7 +206,6 @@ void MainGui::setCurrentFile(QModelIndex index)
 	QStandardItem* item = static_cast<QStandardItemModel*>(ui.treeViewInput->model())->item(index.row(), 1);
 	cv::Mat img;
 
-	currentFile_ = item->data(Qt::DisplayRole).value<QString>();
 
 	logOutput("Using current file: " + currentFile_);
 

@@ -2,6 +2,7 @@
 #include <QtWidgets/QApplication>
 #include <opencv2\opencv.hpp>
 #include "HoleVerification.h"
+#include "Calibration.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,10 +10,9 @@ int main(int argc, char *argv[])
 	QApplication app(argc, argv);
 	//GUI generated from ui file
 	MainGui mainGui;
-	VerificationMethod* item = new HoleVerification();
+	VerificationMethod* item = new Calibration();
 	
-	mainGui.addVerificationMethod("1adfadf", item);
-	mainGui.addVerificationMethod("2adfadf", item);
+	mainGui.addVerificationMethod("Calibration", item);
 
 	mainGui.show();
 

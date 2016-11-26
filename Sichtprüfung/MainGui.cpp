@@ -75,6 +75,8 @@ MainGui::MainGui(QWidget *parent)
 
 	io_ = new UpldFrame();
 		
+	connect(io_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
+		
 	QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
 
 	for (size_t i = 0; i < cameras.size(); i++)

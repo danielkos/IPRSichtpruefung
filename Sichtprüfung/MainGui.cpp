@@ -74,6 +74,8 @@ MainGui::MainGui(QWidget *parent)
 	connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
 
 	io_ = new UpldFrame();
+
+	connect(io_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
 		
 	QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
 

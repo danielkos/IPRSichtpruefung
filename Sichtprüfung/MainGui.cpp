@@ -239,22 +239,22 @@ void MainGui::removeFile()
 void MainGui::setCurrentFile(QModelIndex index)
 {
 	//Cast from QAbstractItemModel to QStandardItemModel to have full functionality
-	QStandardItem* item = static_cast<QStandardItemModel*>(ui_.treeViewInput->model())->item(index.row(), 1);
+	QStandardItem* path = static_cast<QStandardItemModel*>(ui_.treeViewInput->model())->item(index.row(), 1);
+	QStandardItem* name = static_cast<QStandardItemModel*>(ui_.treeViewInput->model())->item(index.row(), 0);
 	cv::Mat img;
 
 	//Check if cast was successful
-	if (item)
+	if (path || name)
 	{
 		//Get the file path
-		currentFile_ = item->data(Qt::DisplayRole).value<QString>();
+		currentFile_ = path->data(Qt::DisplayRole).value<QString>();
 
 		logOutput("Using current file: " + currentFile_);
 
 		if (currentFile_.isEmpty())
 		{
 			io_->terminateCameraStream();
-			item = static_cast<QStandardItemModel*>(ui_.treeViewInput->model())->item(index.row(), 0);
-			io_->setCamera(item->data(Qt::DisplayRole).value<QString>().toStdString());
+			io_->setCamera(name->data(Qt::DisplayRole).value<QString>().toStdString());
 			std::thread ioThread(&UpldFrame::fromCamera, io_);
 			ioThread.detach();
 		}

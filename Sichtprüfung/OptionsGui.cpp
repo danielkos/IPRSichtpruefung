@@ -9,6 +9,10 @@ OptionsGui::OptionsGui(QWidget* parent)
 	size_.push_back(4.1);
 	size_.push_back(3.9);
 	size_.push_back(0.5);
+
+	referenceSize_.push_back(4.1);
+	referenceSize_.push_back(3.9);
+	
 	holeDiameter_ = 0.4;
 	angle_ = 5;
 
@@ -18,6 +22,9 @@ OptionsGui::OptionsGui(QWidget* parent)
 
 	ui_.doubleSpinBoxDiameter->setValue(holeDiameter_);
 	ui_.doubleSpinBoxAngle->setValue(angle_);
+
+	ui_.doubleSpinBoxRefWidth->setValue(referenceSize_[0]);
+	ui_.doubleSpinBoxRefHeight->setValue(referenceSize_[0]);
 
 	QPushButton* save = ui_.buttonBoxOptions->button(QDialogButtonBox::Save);
 	QPushButton* discard = ui_.buttonBoxOptions->button(QDialogButtonBox::Cancel);
@@ -50,6 +57,11 @@ void OptionsGui::saveValues()
 std::vector<double> OptionsGui::size()
 {
 	return size_;
+}
+
+std::vector<double> OptionsGui::referenceSize()
+{
+	return referenceSize_;
 }
 
 double OptionsGui::holeDiameter()

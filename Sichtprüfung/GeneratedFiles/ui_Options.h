@@ -38,20 +38,26 @@ public:
     QLabel *label;
     QLabel *label_3;
     QDoubleSpinBox *doubleSpinBoxHeight;
-    QGroupBox *groupBox;
+    QGroupBox *groupBoxProperties;
     QGridLayout *gridLayout_3;
     QLabel *label_4;
     QLabel *label_5;
     QDoubleSpinBox *doubleSpinBoxDiameter;
     QDoubleSpinBox *doubleSpinBoxAngle;
+    QGroupBox *groupBoxReference;
+    QGridLayout *gridLayout_4;
+    QLabel *label_6;
+    QLabel *label_7;
+    QDoubleSpinBox *doubleSpinBoxRefWidth;
+    QDoubleSpinBox *doubleSpinBoxRefHeight;
     QDialogButtonBox *buttonBoxOptions;
 
     void setupUi(QMainWindow *Options)
     {
         if (Options->objectName().isEmpty())
             Options->setObjectName(QStringLiteral("Options"));
-        Options->resize(232, 200);
-        Options->setMinimumSize(QSize(230, 200));
+        Options->resize(301, 275);
+        Options->setMinimumSize(QSize(300, 275));
         centralwidget = new QWidget(Options);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         verticalLayout_2 = new QVBoxLayout(centralwidget);
@@ -64,7 +70,7 @@ public:
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         doubleSpinBoxLength = new QDoubleSpinBox(groupBoxSize);
         doubleSpinBoxLength->setObjectName(QStringLiteral("doubleSpinBoxLength"));
-        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(doubleSpinBoxLength->sizePolicy().hasHeightForWidth());
@@ -76,11 +82,8 @@ public:
 
         doubleSpinBoxWidth = new QDoubleSpinBox(groupBoxSize);
         doubleSpinBoxWidth->setObjectName(QStringLiteral("doubleSpinBoxWidth"));
-        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(doubleSpinBoxWidth->sizePolicy().hasHeightForWidth());
-        doubleSpinBoxWidth->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(doubleSpinBoxWidth->sizePolicy().hasHeightForWidth());
+        doubleSpinBoxWidth->setSizePolicy(sizePolicy);
         doubleSpinBoxWidth->setMaximum(200);
         doubleSpinBoxWidth->setSingleStep(0.01);
 
@@ -103,8 +106,8 @@ public:
 
         doubleSpinBoxHeight = new QDoubleSpinBox(groupBoxSize);
         doubleSpinBoxHeight->setObjectName(QStringLiteral("doubleSpinBoxHeight"));
-        sizePolicy1.setHeightForWidth(doubleSpinBoxHeight->sizePolicy().hasHeightForWidth());
-        doubleSpinBoxHeight->setSizePolicy(sizePolicy1);
+        sizePolicy.setHeightForWidth(doubleSpinBoxHeight->sizePolicy().hasHeightForWidth());
+        doubleSpinBoxHeight->setSizePolicy(sizePolicy);
         doubleSpinBoxHeight->setMaximum(200);
         doubleSpinBoxHeight->setSingleStep(0.01);
 
@@ -113,32 +116,60 @@ public:
 
         verticalLayout_2->addWidget(groupBoxSize);
 
-        groupBox = new QGroupBox(centralwidget);
-        groupBox->setObjectName(QStringLiteral("groupBox"));
-        gridLayout_3 = new QGridLayout(groupBox);
+        groupBoxProperties = new QGroupBox(centralwidget);
+        groupBoxProperties->setObjectName(QStringLiteral("groupBoxProperties"));
+        gridLayout_3 = new QGridLayout(groupBoxProperties);
         gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
-        label_4 = new QLabel(groupBox);
+        label_4 = new QLabel(groupBoxProperties);
         label_4->setObjectName(QStringLiteral("label_4"));
 
         gridLayout_3->addWidget(label_4, 0, 0, 1, 1);
 
-        label_5 = new QLabel(groupBox);
+        label_5 = new QLabel(groupBoxProperties);
         label_5->setObjectName(QStringLiteral("label_5"));
 
         gridLayout_3->addWidget(label_5, 0, 1, 1, 1);
 
-        doubleSpinBoxDiameter = new QDoubleSpinBox(groupBox);
+        doubleSpinBoxDiameter = new QDoubleSpinBox(groupBoxProperties);
         doubleSpinBoxDiameter->setObjectName(QStringLiteral("doubleSpinBoxDiameter"));
 
         gridLayout_3->addWidget(doubleSpinBoxDiameter, 1, 0, 1, 1);
 
-        doubleSpinBoxAngle = new QDoubleSpinBox(groupBox);
+        doubleSpinBoxAngle = new QDoubleSpinBox(groupBoxProperties);
         doubleSpinBoxAngle->setObjectName(QStringLiteral("doubleSpinBoxAngle"));
 
         gridLayout_3->addWidget(doubleSpinBoxAngle, 1, 1, 1, 1);
 
 
-        verticalLayout_2->addWidget(groupBox);
+        verticalLayout_2->addWidget(groupBoxProperties);
+
+        groupBoxReference = new QGroupBox(centralwidget);
+        groupBoxReference->setObjectName(QStringLiteral("groupBoxReference"));
+        gridLayout_4 = new QGridLayout(groupBoxReference);
+        gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
+        label_6 = new QLabel(groupBoxReference);
+        label_6->setObjectName(QStringLiteral("label_6"));
+
+        gridLayout_4->addWidget(label_6, 0, 0, 1, 1);
+
+        label_7 = new QLabel(groupBoxReference);
+        label_7->setObjectName(QStringLiteral("label_7"));
+
+        gridLayout_4->addWidget(label_7, 0, 1, 1, 1);
+
+        doubleSpinBoxRefWidth = new QDoubleSpinBox(groupBoxReference);
+        doubleSpinBoxRefWidth->setObjectName(QStringLiteral("doubleSpinBoxRefWidth"));
+
+        gridLayout_4->addWidget(doubleSpinBoxRefWidth, 1, 0, 1, 1);
+
+        doubleSpinBoxRefHeight = new QDoubleSpinBox(groupBoxReference);
+        doubleSpinBoxRefHeight->setObjectName(QStringLiteral("doubleSpinBoxRefHeight"));
+        doubleSpinBoxRefHeight->setFrame(true);
+
+        gridLayout_4->addWidget(doubleSpinBoxRefHeight, 1, 1, 1, 1);
+
+
+        verticalLayout_2->addWidget(groupBoxReference);
 
         buttonBoxOptions = new QDialogButtonBox(centralwidget);
         buttonBoxOptions->setObjectName(QStringLiteral("buttonBoxOptions"));
@@ -162,9 +193,12 @@ public:
         label_2->setText(QApplication::translate("Options", "Width (cm):", 0));
         label->setText(QApplication::translate("Options", " Length (cm):", 0));
         label_3->setText(QApplication::translate("Options", "Height (cm):", 0));
-        groupBox->setTitle(QApplication::translate("Options", "Properties", 0));
+        groupBoxProperties->setTitle(QApplication::translate("Options", "Properties", 0));
         label_4->setText(QApplication::translate("Options", "Hole Diameter (cm):", 0));
         label_5->setText(QApplication::translate("Options", "Angle (\302\260):", 0));
+        groupBoxReference->setTitle(QApplication::translate("Options", "Reference Object", 0));
+        label_6->setText(QApplication::translate("Options", "Width:", 0));
+        label_7->setText(QApplication::translate("Options", "Length:", 0));
     } // retranslateUi
 
 };

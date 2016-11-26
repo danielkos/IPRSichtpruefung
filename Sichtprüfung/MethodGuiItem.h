@@ -18,7 +18,7 @@ class MethodGuiItem : public QWidget
 	Q_OBJECT
 public:
 	MethodGuiItem(std::string name, std::vector<Parameter>& parameters, QWidget* parent = 0);
-	~MethodGuiItem();
+	virtual ~MethodGuiItem();
 
 	/**
 	* \brief Returns if the checkbox is checked

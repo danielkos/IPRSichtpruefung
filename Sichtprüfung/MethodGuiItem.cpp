@@ -7,7 +7,7 @@ MethodGuiItem::MethodGuiItem(std::string name, std::vector<Parameter>& parameter
 	: QWidget(parent), name_(name), parameters_(parameters)
 {
 	ui_.setupUi(this);
-	ui_.checkBoxMethod->setText(QString::fromStdString(name));
+	ui_.groupBoxMethod->setTitle(QString::fromStdString(name));
 	
 	//Add paramters to dropdown
 	for (size_t i = 0; i < parameters_.size(); i++)
@@ -23,7 +23,7 @@ MethodGuiItem::MethodGuiItem(std::string name, std::vector<Parameter>& parameter
 	QObject::connect(ui_.comboBoxParams, SIGNAL(currentIndexChanged(int)), this, SLOT(paramIndexChanged(int)));
 	QObject::connect(ui_.lineEditNumInput, SIGNAL(textEdited(QString)), this, SLOT(paramInputChanged(QString)));
 	QObject::connect(ui_.radioButtonBoolInput, SIGNAL(toggled(bool)), this, SLOT(paramInputChanged(bool)));
-	QObject::connect(ui_.checkBoxMethod, &QCheckBox::toggled, this, &MethodGuiItem::changeToNormal);
+	QObject::connect(ui_.groupBoxMethod, &QGroupBox::toggled, this, &MethodGuiItem::changeToNormal);
 }
 
 MethodGuiItem::~MethodGuiItem()
@@ -50,7 +50,7 @@ void MethodGuiItem::paramInputChanged(bool input)
 
 bool MethodGuiItem::selected()
 {
-	return ui_.checkBoxMethod->isChecked();
+	return ui_.groupBoxMethod->isChecked();
 }
 
 std::string MethodGuiItem::name()
@@ -67,13 +67,11 @@ void MethodGuiItem::setMode(bool successful)
 {
 	if (successful)
 	{
-		ui_.frameMethod->setFrameShape(QFrame::Shape::Box);
-		ui_.frameMethod->setStyleSheet("#frameMethod{ border: 2px solid green; }");
+		ui_.groupBoxMethod->setStyleSheet("#groupBoxMethod{ border: 3px solid green;  }");
 	}
 	else
 	{
-		ui_.frameMethod->setFrameShape(QFrame::Shape::Box);
-		ui_.frameMethod->setStyleSheet("#frameMethod{ border: 5px solid red; }");
+		ui_.groupBoxMethod->setStyleSheet("#groupBoxMethod{ border: 3px solid red; }");
 	}
 }
 
@@ -107,7 +105,6 @@ void MethodGuiItem::changeToNormal(bool toggled)
 {
 	if (!toggled)
 	{
-		ui_.frameMethod->setFrameShape(QFrame::Shape::NoFrame);
-		ui_.frameMethod->setStyleSheet("");
+		ui_.groupBoxMethod->setStyleSheet("");
 	}
 }

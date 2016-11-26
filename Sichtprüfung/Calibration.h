@@ -30,6 +30,8 @@ private:
 	int morphIterations_;
 	//Size of contour to ignore
 	int ignoreContourSize_;
+	//Size of a contour in pixel
+	int contourSize_;
 };
 
 #endif

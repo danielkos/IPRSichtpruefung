@@ -1,10 +1,13 @@
 #ifndef VERIFICATIONMETHOD_H
 #define VERIFICATIONMETHOD_H
 
+#include "Parameter.h"
+
 namespace cv
 {
 	class Mat;
 }
+
 /**
 * \brief Interface for verification methods
 */
@@ -15,17 +18,36 @@ public:
 	virtual ~VerificationMethod();
 	
 	/**
-	* \brief Abstract method which applies the method
+	* \brief Pure abstract function which applies the method
 	*/
 	virtual bool run(const cv::Mat* img) = 0;
+
+	/**
+	* \brief Pure abstract function which set the parameters
+	*/
+	virtual void setParameters(std::vector<Parameter> parameters) = 0;
+
+	/**
+	* \brief Pure abstract method which returns the parameters
+	*/
+	virtual std::vector<Parameter> parameters() = 0;
+
 	/**
 	* \brief Returns the result image
 	*/
-	cv::Mat* getResult();
+	cv::Mat* result();
+
+	/**
+	* \brief Returns the processed image
+	*/
+	cv::Mat* processed();
 
 protected:
 	//Result image
 	cv::Mat* resImg_;
+	cv::Mat* processedImg_;
+	//Method parameters
+	int parametersSize_;
 };
 
 #endif // VERIFICATIONMETHOD_H

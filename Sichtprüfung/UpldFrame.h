@@ -1,12 +1,35 @@
 #ifndef UPLDFRAME_H
 #define UPLDFRAME_H 
 
-#include <opencv2/opencv.hpp>
+#include <functional>
+#include <Qobject>
+#include <opencv2\opencv.hpp>
 
-class UpldFrame
+namespace cv
 {
+	class Mat;
+	class VideoCapture;
+}
+
+class UpldFrame : public QObject
+{
+	Q_OBJECT
+	
 public:
+	UpldFrame();
+	virtual ~UpldFrame();
+
 	static cv::Mat fromFile(std::string file_name);
-	static cv::Mat fromCamera();
+	void fromCamera();
+	void terminateCameraStream();
+	void setCamera(std::string cameraName);
+Q_SIGNALS:
+	void newCameraImage(cv::Mat* img);
+
+private:
+	cv::VideoCapture* videoCapture_;
+	bool exit_;
+	std::string cameraName_;
 };
+Q_DECLARE_METATYPE(cv::Mat*);
 #endif

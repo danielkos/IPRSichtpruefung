@@ -36,6 +36,7 @@ class Ui_MainGui
 public:
     QAction *action_About;
     QAction *action_Exit;
+    QAction *actionTest_Object;
     QWidget *centralWidget;
     QGridLayout *gridLayout_2;
     QTabWidget *tabWidget;
@@ -96,6 +97,8 @@ public:
         action_About->setObjectName(QStringLiteral("action_About"));
         action_Exit = new QAction(MainGui);
         action_Exit->setObjectName(QStringLiteral("action_Exit"));
+        actionTest_Object = new QAction(MainGui);
+        actionTest_Object->setObjectName(QStringLiteral("actionTest_Object"));
         centralWidget = new QWidget(MainGui);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -387,6 +390,7 @@ public:
         menuBar->addAction(menuOptions->menuAction());
         menuBar->addAction(menuHelp->menuAction());
         menuFile->addAction(action_Exit);
+        menuOptions->addAction(actionTest_Object);
         menuHelp->addAction(action_About);
 
         retranslateUi(MainGui);
@@ -402,6 +406,7 @@ public:
         MainGui->setWindowTitle(QApplication::translate("MainGui", "Sichtpr\303\274fung", 0));
         action_About->setText(QApplication::translate("MainGui", "&About", 0));
         action_Exit->setText(QApplication::translate("MainGui", "&Exit", 0));
+        actionTest_Object->setText(QApplication::translate("MainGui", "Test Object", 0));
         tabWidget->setTabText(tabWidget->indexOf(tabTestMethods), QApplication::translate("MainGui", "Test Methods", 0));
         tabWidget->setTabText(tabWidget->indexOf(tabInputImages), QApplication::translate("MainGui", "Input Images", 0));
         tabWidget->setTabText(tabWidget->indexOf(tabLog), QApplication::translate("MainGui", "Log", 0));

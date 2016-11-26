@@ -247,7 +247,14 @@ void MainGui::setCurrentFile(QModelIndex index)
 	if (path || name)
 	{
 		//Get the file path
-		currentFile_ = path->data(Qt::DisplayRole).value<QString>();
+		if (path)
+		{
+			currentFile_ = path->data(Qt::DisplayRole).value<QString>();
+		}
+		else
+		{
+			currentFile_.clear();
+		}
 
 		logOutput("Using current file: " + currentFile_);
 

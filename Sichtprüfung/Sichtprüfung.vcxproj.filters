@@ -98,6 +98,9 @@
     <ClCompile Include="HoleParameter.cpp">
       <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
+    <ClCompile Include="Calibration.cpp">
+      <Filter>Source Dateien\Computation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainGui.ui">
@@ -114,6 +117,9 @@
     </CustomBuild>
     <CustomBuild Include="MethodGuiItem.h">
       <Filter>Header Dateien\GUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Method.ui">
+      <Filter>Form Dateien</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +140,15 @@
     </ClInclude>
     <ClInclude Include="HoleParameter.h">
       <Filter>Header Dateien\Computation</Filter>
+    </ClInclude>
+    <ClInclude Include="Calibration.h">
+      <Filter>Header Dateien\Computation</Filter>
+    </ClInclude>
+    <ClInclude Include="Parameter.h">
+      <Filter>Header Dateien\Computation</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_Method.h">
+      <Filter>Generierte Dateien</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

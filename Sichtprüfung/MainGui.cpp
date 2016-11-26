@@ -8,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <utility>
+#include <thread>
 
 #include <QDialogButtonBox>
 #include <QFileDialog>
@@ -17,6 +18,7 @@
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QTime>
+#include <QCameraInfo>
 
 MainGui::MainGui(QWidget *parent)
 	: QMainWindow(parent)
@@ -66,11 +68,22 @@ MainGui::MainGui(QWidget *parent)
 	ui_.treeViewInput->setModel(fileModel);
 	ui_.treeViewInput->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 
-	connect(ui_.treeViewInput, SIGNAL(clicked(QModelIndex)),	this, SLOT(setCurrentFile(QModelIndex)));
+	connect(ui_.treeViewInput, SIGNAL(clicked(QModelIndex)), this, SLOT(setCurrentFile(QModelIndex)));
 
 	connect(ui_.action_Exit, &QAction::triggered, this, &QMainWindow::close);
 	connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
 
+	io_ = new UpldFrame();
+		
+	QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
+
+	for (size_t i = 0; i < cameras.size(); i++)
+	{
+		if (!cameras[i].isNull())
+		{
+			addFileStream(cameras[i].deviceName());
+		}
+	}
 
 	logOutput("Start up");
 }
@@ -82,6 +95,7 @@ MainGui::~MainGui()
 	delete orgImg_;
 	delete preprocImg_;
 	delete resultImg_;
+	delete io_;
 }
 
 void MainGui::setInputImage(cv::Mat* img)
@@ -147,6 +161,20 @@ void MainGui::runSelectedMethods()
 
 void MainGui::addFileStream(QString stream)
 {
+	QStandardItemModel* model = static_cast<QStandardItemModel*>(ui_.treeViewInput->model());
+	if (model)
+	{
+		//Add filename and filepath to the model
+		QStandardItem* name = new QStandardItem(stream);
+
+		logOutput("Adding Camera: " + stream);
+
+		name->setEditable(false);
+
+		name->setData(stream, Qt::DisplayRole);
+
+		model->appendRow(name);
+	}
 }
 
 void MainGui::addFile()
@@ -222,7 +250,11 @@ void MainGui::setCurrentFile(QModelIndex index)
 
 		if (currentFile_.isEmpty())
 		{
-			img = UpldFrame::fromCamera();
+			io_->terminateCameraStream();
+			item = static_cast<QStandardItemModel*>(ui_.treeViewInput->model())->item(index.row(), 0);
+			io_->setCamera(item->data(Qt::DisplayRole).value<QString>().toStdString());
+			std::thread ioThread(&UpldFrame::fromCamera, io_);
+			ioThread.detach();
 		}
 		else
 		{

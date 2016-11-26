@@ -8,6 +8,7 @@ class FrameView;
 class VerificationMethod;
 class MethodGuiItem;
 class OptionsGui;
+class UpldFrame;
 
 namespace cv
 {
@@ -58,6 +59,8 @@ private:
 	QString currentFile_;
 
 	OptionsGui* options_;
+
+	UpldFrame* io_;
 
 public slots:
 	/**

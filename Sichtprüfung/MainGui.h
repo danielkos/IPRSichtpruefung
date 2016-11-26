@@ -7,6 +7,7 @@
 class FrameView;
 class VerificationMethod;
 class MethodGuiItem;
+class OptionsGui;
 
 namespace cv
 {
@@ -31,7 +32,7 @@ public:
 	void addVerificationMethod(std::string name, VerificationMethod* method);
 
 private:
-	Ui::MainGui ui;
+	Ui::MainGui ui_;
 
 	//Original image
 	cv::Mat* orgImg_;
@@ -55,6 +56,8 @@ private:
 
 	//Path to selected file
 	QString currentFile_;
+
+	OptionsGui* options_;
 
 public slots:
 	/**
@@ -105,6 +108,8 @@ private slots:
 	* \brief Displays msg onto status label
 	*/
 	void statusOutput(QString msg);
+
+	void openOptions();
 };
 
 #endif // MAINGUI_H

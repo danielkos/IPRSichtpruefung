@@ -3,6 +3,7 @@
 #include "VerificationMethod.h"
 #include "MethodGuiItem.h"
 #include "UpldFrame.h"
+#include "OptionsGui.h"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -21,17 +22,17 @@ MainGui::MainGui(QWidget *parent)
 	: QMainWindow(parent)
 {
 	//setup ui
-	ui.setupUi(this);
+	ui_.setupUi(this);
 
 	//set a parent for a view
-	inputView_ = new FrameView(ui.widInputImage);
-	preprocView_ = new FrameView(ui.widPreprocessed);
-	resultView_ = new FrameView(ui.widResult);
+	inputView_ = new FrameView(ui_.widInputImage);
+	preprocView_ = new FrameView(ui_.widPreprocessed);
+	resultView_ = new FrameView(ui_.widResult);
 
 	//add views to the layout of the parent widget
-	ui.widInputImage->layout()->addWidget(inputView_);
-	ui.widPreprocessed->layout()->addWidget(preprocView_);
-	ui.widResult->layout()->addWidget(resultView_);
+	ui_.widInputImage->layout()->addWidget(inputView_);
+	ui_.widPreprocessed->layout()->addWidget(preprocView_);
+	ui_.widResult->layout()->addWidget(resultView_);
 
 	//initialize images; needed for copy
 	orgImg_ = new cv::Mat();
@@ -42,9 +43,9 @@ MainGui::MainGui(QWidget *parent)
 	currentFile_.clear();
 
 	//Select the button
-	QPushButton* apply = ui.buttonBoxMethods->button(QDialogButtonBox::Apply);
-	QPushButton* open = ui.buttonBoxInputs->button(QDialogButtonBox::Open);
-	QPushButton* remove = ui.buttonBoxInputs->button(QDialogButtonBox::Discard);
+	QPushButton* apply = ui_.buttonBoxMethods->button(QDialogButtonBox::Apply);
+	QPushButton* open = ui_.buttonBoxInputs->button(QDialogButtonBox::Open);
+	QPushButton* remove = ui_.buttonBoxInputs->button(QDialogButtonBox::Discard);
 	open->setText("Add");
 	remove->setText("Remove");
 
@@ -59,13 +60,17 @@ MainGui::MainGui(QWidget *parent)
 	labels.push_back("Path");
 	
 	//Create the model for input tab
-	QStandardItemModel* fileModel = new QStandardItemModel(0, 2, ui.treeViewInput);
+	QStandardItemModel* fileModel = new QStandardItemModel(0, 2, ui_.treeViewInput);
 	fileModel->setHorizontalHeaderLabels(labels);
 
-	ui.treeViewInput->setModel(fileModel);
-	ui.treeViewInput->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+	ui_.treeViewInput->setModel(fileModel);
+	ui_.treeViewInput->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 
-	connect(ui.treeViewInput, SIGNAL(clicked(QModelIndex)),	this, SLOT(setCurrentFile(QModelIndex)));
+	connect(ui_.treeViewInput, SIGNAL(clicked(QModelIndex)),	this, SLOT(setCurrentFile(QModelIndex)));
+
+	connect(ui_.action_Exit, &QAction::triggered, this, &QMainWindow::close);
+	connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
+
 
 	logOutput("Start up");
 }
@@ -96,11 +101,11 @@ void MainGui::addVerificationMethod(std::string name, VerificationMethod* method
 {
 	logOutput("Adding method: " + QString::fromStdString(name));
 	//Create an item and attach it to the widget
-	MethodGuiItem* item = new MethodGuiItem(name, method->parameters(), ui.widMethods);
+	MethodGuiItem* item = new MethodGuiItem(name, method->parameters(), ui_.widMethods);
 	//Setup association
 	methods_.insert(ItemMethodPair(item, method));
 	//Add item to the layout
-	ui.widMethods->layout()->addWidget(item);
+	ui_.widMethods->layout()->addWidget(item);
 }
 
 void MainGui::runSelectedMethods()
@@ -153,7 +158,7 @@ void MainGui::addFile()
 	
 	filenames = dialog.getOpenFileNames(this, "Select an image", QString(), filter);
 
-	QStandardItemModel* model = static_cast<QStandardItemModel*>(ui.treeViewInput->model());
+	QStandardItemModel* model = static_cast<QStandardItemModel*>(ui_.treeViewInput->model());
 
 	for (size_t i = 0; i < filenames.size(); i++)
 	{
@@ -182,20 +187,20 @@ void MainGui::addFile()
 	}
 	//Select last added file
 	QModelIndex index = model->index(model->rowCount() - 1, model->columnCount() - 1);
-	ui.treeViewInput->setCurrentIndex(index);
+	ui_.treeViewInput->setCurrentIndex(index);
 	setCurrentFile(index);
 }
 
 void MainGui::removeFile()
 {
 	logOutput("Removing last file");
-	QModelIndexList selection = ui.treeViewInput->selectionModel()->selectedRows();
+	QModelIndexList selection = ui_.treeViewInput->selectionModel()->selectedRows();
 
 	// Multiple rows can be selected
 	for (int i = 0; i < selection.count(); i++)
 	{
 		QModelIndex index = selection.at(i);
-		ui.treeViewInput->model()->removeRow(index.row());
+		ui_.treeViewInput->model()->removeRow(index.row());
 	}
 
 	reset();
@@ -204,7 +209,7 @@ void MainGui::removeFile()
 void MainGui::setCurrentFile(QModelIndex index)
 {
 	//Cast from QAbstractItemModel to QStandardItemModel to have full functionality
-	QStandardItem* item = static_cast<QStandardItemModel*>(ui.treeViewInput->model())->item(index.row(), 1);
+	QStandardItem* item = static_cast<QStandardItemModel*>(ui_.treeViewInput->model())->item(index.row(), 1);
 	cv::Mat img;
 
 	//Check if cast was successful
@@ -240,10 +245,15 @@ void MainGui::reset()
 void MainGui::logOutput(QString msg)
 {
 	QString str = "[" + QTime::currentTime().toString() + "]: " + msg;
-	ui.listWidgetLog->addItem(str);
+	ui_.listWidgetLog->addItem(str);
 }
 
 void MainGui::statusOutput(QString msg)
 {
-	ui.labelProgress->setText(msg);
+	ui_.labelProgress->setText(msg);
+}
+
+void MainGui::openOptions()
+{
+	options_ = new OptionsGui(this);
 }

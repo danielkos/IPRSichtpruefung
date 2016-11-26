@@ -1,3 +1,4 @@
 <RCC>
     <qresource prefix="/Sichtprüfung"/>
+    <qresource prefix="/QT += multimedia"/>
 </RCC>

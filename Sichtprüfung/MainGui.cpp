@@ -251,6 +251,8 @@ void MainGui::setCurrentFile(QModelIndex index)
 	//Check if cast was successful
 	if (path || name)
 	{
+		//stop camera 
+		io_->terminateCameraStream();
 		//Get the file path
 		if (path)
 		{
@@ -269,7 +271,6 @@ void MainGui::setCurrentFile(QModelIndex index)
 
 		if (currentFile_.isEmpty())
 		{
-			io_->terminateCameraStream();
 			io_->setCamera(name->data(Qt::DisplayRole).value<QString>().toStdString());
 			std::thread ioThread(&UpldFrame::fromCamera, io_);
 			ioThread.detach();

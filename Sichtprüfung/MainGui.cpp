@@ -108,8 +108,6 @@ void MainGui::setInputImage(cv::Mat* img)
 		*orgImg_ = *img;
 		//at startup all images are empty
 		inputView_->showImage(orgImg_);
-
-		logOutput("Setting image");
 	}
 }
 
@@ -131,13 +129,15 @@ void MainGui::runSelectedMethods()
 	{
 		if (it->first->selected())
 		{
-			logOutput("Running method: " + QString::fromStdString(it->first->name()));
+			QString methodName = QString::fromStdString(it->first->name());
+
+			logOutput("Running method: " + methodName);
 			//Get current parametrs from method
 			it->second->setParameters(it->first->parameters());
 
 			if (it->second->run(orgImg_))
 			{
-				logOutput("Method: " + QString::fromStdString(it->first->name()) + " successful");
+				logOutput("Method: " + methodName + " successful");
 				//If method was successful, combine results into one image
 				//In this state not suitable for parallelization
 				//Src and Dst have to have the same type
@@ -154,7 +154,7 @@ void MainGui::runSelectedMethods()
 			{
 				//If method fails change appearance 
 				it->first->setMode(false);
-				logOutput("Method: " + QString::fromStdString(it->first->name()) + " failed");
+				logOutput("Method: " + methodName + " failed");
 			}
 
 		}
@@ -261,7 +261,11 @@ void MainGui::setCurrentFile(QModelIndex index)
 			currentFile_.clear();
 		}
 
-		logOutput("Using current file: " + currentFile_);
+		if (currentFile_.isEmpty() == false) 
+		{
+			// Camera image has no file
+			logOutput("Using current file: " + currentFile_);
+		}
 
 		if (currentFile_.isEmpty())
 		{
@@ -290,13 +294,19 @@ void MainGui::reset()
 
 void MainGui::logOutput(QString msg)
 {
-	QString str = "[" + QTime::currentTime().toString() + "]: " + msg;
-	ui_.listWidgetLog->addItem(str);
+	if (msg.isEmpty() == false && msg != NULL)
+	{
+		QString str = "[" + QTime::currentTime().toString() + "]: " + msg;
+		ui_.listWidgetLog->addItem(str);
+	}
 }
 
 void MainGui::statusOutput(QString msg)
 {
-	ui_.labelProgress->setText(msg);
+	if (msg.isEmpty() == false && msg != NULL)
+	{
+		ui_.labelProgress->setText(msg);
+	}
 }
 
 void MainGui::openOptions()

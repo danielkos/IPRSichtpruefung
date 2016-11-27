@@ -1,6 +1,10 @@
 #include "UpldFrame.h"
 #include <opencv2\core\core.hpp>
 
+#include <chrono>
+#include <thread>
+
+
 UpldFrame::UpldFrame()
 {
 	videoCapture_ = new cv::VideoCapture();
@@ -14,6 +18,7 @@ UpldFrame::~UpldFrame()
 
 void UpldFrame::setCamera(std::string cameraName)
 {
+	// Use 0 to use default camera of OS
 	videoCapture_->open(0);
 }
 
@@ -47,6 +52,9 @@ void UpldFrame::fromCamera()
 		}
 
 		Q_EMIT newCameraImage(&frame);
+		
+		// Delay between two camera frames, to have some time for calculations on an image
+		std::this_thread::sleep_for(std::chrono::milliseconds(CAMERA_RECORD_DELAY));
 	}
 
 	videoCapture_->release();

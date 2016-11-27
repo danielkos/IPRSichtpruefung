@@ -27,6 +27,10 @@ Q_SIGNALS:
 	void newCameraImage(cv::Mat* img);
 
 private:
+
+	// Time delay (in milliseconds) between the recording of two camera frames.
+	const long CAMERA_RECORD_DELAY = 20;
+
 	cv::VideoCapture* videoCapture_;
 	bool exit_;
 	std::string cameraName_;

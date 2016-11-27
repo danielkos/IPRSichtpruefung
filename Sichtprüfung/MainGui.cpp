@@ -19,6 +19,7 @@
 #include <QStandardItemModel>
 #include <QTime>
 #include <QCameraInfo>
+#include <QFontMetrics>
 
 MainGui::MainGui(QWidget *parent)
 	: QMainWindow(parent)
@@ -67,6 +68,7 @@ MainGui::MainGui(QWidget *parent)
 
 	ui_.treeViewInput->setModel(fileModel);
 	ui_.treeViewInput->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+	ui_.treeViewInput->setAutoScroll(false);
 
 	connect(ui_.treeViewInput, SIGNAL(clicked(QModelIndex)), this, SLOT(setCurrentFile(QModelIndex)));
 
@@ -201,7 +203,7 @@ void MainGui::addFile()
 			//Add filename and filepath to the model
 			QStandardItem* name = new QStandardItem(fileInfo.fileName());
 			QStandardItem* path = new QStandardItem(fileInfo.filePath());
-
+			
 			logOutput("Adding file: " + fileInfo.fileName() + " with path: " + fileInfo.filePath());
 			
 			name->setEditable(false);
@@ -213,6 +215,15 @@ void MainGui::addFile()
 			model->appendRow(name);
 			model->setItem(model->rowCount()-1, model->columnCount()-1, path);
 
+			//resize the header to path length
+			QFont font;
+			QFontMetrics metrics(font.family());
+			QRect rect = metrics.boundingRect(fileInfo.filePath());
+
+			if (ui_.treeViewInput->header()->length() < rect.width())
+			{
+				ui_.treeViewInput->header()->resizeSection(1, rect.width());
+			}
 		}
 	}
 	//Select last added file
@@ -295,7 +306,7 @@ void MainGui::reset()
 
 void MainGui::logOutput(QString msg)
 {
-	if (msg.isEmpty() == false && msg != NULL)
+	if (msg.isEmpty() == false)
 	{
 		QString str = "[" + QTime::currentTime().toString() + "]: " + msg;
 		ui_.listWidgetLog->addItem(str);
@@ -304,7 +315,7 @@ void MainGui::logOutput(QString msg)
 
 void MainGui::statusOutput(QString msg)
 {
-	if (msg.isEmpty() == false && msg != NULL)
+	if (msg.isEmpty() == false)
 	{
 		ui_.labelProgress->setText(msg);
 	}

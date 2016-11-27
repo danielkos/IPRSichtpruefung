@@ -193,6 +193,7 @@ public:
         treeViewInput = new QTreeView(tabInputImages);
         treeViewInput->setObjectName(QStringLiteral("treeViewInput"));
         treeViewInput->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        treeViewInput->header()->setDefaultSectionSize(100);
         treeViewInput->header()->setMinimumSectionSize(100);
         treeViewInput->header()->setStretchLastSection(false);
 

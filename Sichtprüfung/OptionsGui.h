@@ -16,21 +16,19 @@ public:
 
 	void saveValues();
 
-	std::vector<QVariant> objMetrics();
+	QVariantList objMetrics();
 	QSize referenceSize();
 
-	QVariant holeDiameter();
+	QVariant holeRadius();
 	QVariant angle();
 
 private:
 	Ui::Options ui_;
 
-	std::vector<QVariant> objMetrics_;
+	QVariantList objMetrics_;
 	QSize referenceSize_;
-	QVariant holeDiameter_;
+	QVariant holeRadius_;
 	QVariant angle_;
-	QVariant referenceWidth_;
-	QVariant referenceHeigth_;
 
 	void setValues();
 

@@ -3,6 +3,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_MainGui.h"
+#include "ResultGenerator.h"
 
 class FrameView;
 class VerificationMethod;
@@ -58,9 +59,14 @@ private:
 	//Path to selected file
 	QString currentFile_;
 
+	//Options dialog
 	OptionsGui* options_;
 
+	//IO
 	UpldFrame* io_;
+
+	//Result presenter
+	ResultGenerator resGenerator;
 
 public slots:
 	/**
@@ -112,7 +118,15 @@ private slots:
 	*/
 	void statusOutput(QString msg);
 
+	/**
+	* \brief Open the optios gui
+	*/
 	void openOptions();
+
+	/**
+	* \brief Create map with all settings provided by the option gui
+	*/
+	ResultGenerator::SettingsMap generateSettings();
 };
 
 #endif // MAINGUI_H

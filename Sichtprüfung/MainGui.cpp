@@ -17,6 +17,7 @@
 #include <QPushButton>
 #include <QTreeView>
 #include <QStandardItemModel>
+#include <QStringListModel>
 #include <QTime>
 #include <QCameraInfo>
 #include <QFontMetrics>
@@ -74,6 +75,9 @@ MainGui::MainGui(QWidget *parent)
 
 	connect(ui_.action_Exit, &QAction::triggered, this, &QMainWindow::close);
 	connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
+
+	QStringListModel* resModel = new QStringListModel(ui_.listViewResults);
+	ui_.listViewResults->setModel(resModel);
 
 	//Create an option window without showing it
 	options_ = new OptionsGui();
@@ -156,14 +160,19 @@ void MainGui::runSelectedMethods()
 				//If method was successful, combine results into one image
 				//In this state not suitable for parallelization
 				//Src and Dst have to have the same type
-				cv::addWeighted(*orgImg_, 0.5, *(it->second->result()), 0.5, 0.0, *resultImg_);
+				cv::addWeighted(*orgImg_, 0.5, *(it->second->resultImg()), 0.5, 0.0, *resultImg_);
 				it->first->setMode(true);
 				//Get results from method, in this case imgs
 				preprocImg_ = it->second->processed();
-				resultImg_ = it->second->result();
+				resultImg_ = it->second->resultImg();
 				//Show imgs on gui
 				resultView_->showImage(resultImg_);
 				preprocView_->showImage(preprocImg_);
+
+				resGenerator.setSettings(generateSettings());
+				QStringList res = resGenerator.results(methodName, it->second->results());
+
+				static_cast<QStringListModel*>(ui_.listViewResults->model())->setStringList(res);
 			}
 			else
 			{
@@ -337,4 +346,27 @@ void MainGui::statusOutput(QString msg)
 void MainGui::openOptions()
 {
 	options_->show();
+}
+
+ResultGenerator::SettingsMap MainGui::generateSettings()
+{
+	ResultGenerator::SettingsMap map;
+	Parameter param;
+	
+	param.setUp("Real circle radius", options_->holeRadius(), QMetaType::Double);
+	map.insert(ResultGenerator::SettingsPair(ResultGenerator::Settings::SET_CIRCLE_RADIUS, param));
+
+	param.setUp("Real angle", options_->angle(), QMetaType::Double);
+	map.insert(ResultGenerator::SettingsPair(ResultGenerator::Settings::SET_OBJ_ANGLE, param));
+
+	QVariantList metrics = options_->objMetrics();
+	QSize size(metrics.at(0).toDouble(), metrics.at(1).toDouble());
+	param.setUp("Real object size", size, QVariant::Size);
+	map.insert(ResultGenerator::SettingsPair(ResultGenerator::Settings::SET_OBJ_METRICS, param));
+
+	size = options_->referenceSize();
+	param.setUp("Real reference size", size, QVariant::Size);
+	map.insert(ResultGenerator::SettingsPair(ResultGenerator::Settings::SET_REF_SIZE, param));
+
+	return map;
 }

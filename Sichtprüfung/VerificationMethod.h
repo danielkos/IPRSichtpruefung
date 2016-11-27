@@ -2,6 +2,7 @@
 #define VERIFICATIONMETHOD_H
 
 #include "Parameter.h"
+#include "ResultGenerator.h"
 
 namespace cv
 {
@@ -33,14 +34,21 @@ public:
 	virtual std::vector<Parameter> parameters() = 0;
 
 	/**
+	* \brief Returns the results to be processed by the ResultGenerator
+	*/
+	virtual ResultGenerator::ResultMap results() = 0;
+
+	/**
 	* \brief Returns the result image
 	*/
-	cv::Mat* result();
+	cv::Mat* resultImg();
 
 	/**
 	* \brief Returns the processed image
 	*/
 	cv::Mat* processed();
+
+	
 
 protected:
 	//Result image

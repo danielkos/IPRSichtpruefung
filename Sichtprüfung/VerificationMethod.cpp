@@ -14,7 +14,7 @@ VerificationMethod::~VerificationMethod()
 	delete processedImg_;
 }
 
-cv::Mat* VerificationMethod::result()
+cv::Mat* VerificationMethod::resultImg()
 {
 	return resImg_;
 }

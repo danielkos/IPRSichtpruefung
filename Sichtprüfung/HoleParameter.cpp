@@ -72,7 +72,7 @@ bool HoleParameter::run(const cv::Mat* img)
 				//draws circle on image
 				cv::circle(*resImg_, cv::Point(c[0], c[1]), c[2], cv::Scalar(0, 0, 255), 1, cv::LINE_AA);
 				//draw middle of the circle on the image
-				cv:: circle(*resImg_, cv::Point(c[0], c[1]), 2, cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
+				cv::circle(*resImg_, cv::Point(c[0], c[1]), 2, cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
 			}
 		}
 		else

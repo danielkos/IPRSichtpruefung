@@ -75,19 +75,29 @@ MainGui::MainGui(QWidget *parent)
 	connect(ui_.action_Exit, &QAction::triggered, this, &QMainWindow::close);
 	connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
 
+	//Create IO 
 	io_ = new UpldFrame();
 		
 	connect(io_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
 	
+	//Get default camera
+	QCameraInfo camera = QCameraInfo::defaultCamera();
+
+	if (!camera.isNull())
+	{
+		addFileStream(camera.deviceName());
+	}
+	/*
 	QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
 
+	
 	for (size_t i = 0; i < cameras.size(); i++)
 	{
 		if (!cameras[i].isNull())
 		{
 			addFileStream(cameras[i].deviceName());
 		}
-	}
+	}*/
 
 	logOutput("Start up");
 }

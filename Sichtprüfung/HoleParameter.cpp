@@ -60,7 +60,7 @@ bool HoleParameter::run(const cv::Mat* img)
 		//funktion which detects circles
 		HoughCircles(temp, circles, cv::HOUGH_GRADIENT, 1,
 			temp.rows / 8, // change this value to detect circles with different distances to each other
-			100, 30, minRadius_, maxRadius_ // change the last two parameters
+			110, 50, minRadius_, maxRadius_ // change the last two parameters
 										  // (minradius & maxradius) to detect larger circles (in pixels)
 		);
 
@@ -70,7 +70,7 @@ bool HoleParameter::run(const cv::Mat* img)
 			{
 				cv::Vec3i c = circles[i];
 				//draws circle on image
-				cv::circle(*resImg_, cv::Point(c[0], c[1]), c[2], cv::Scalar(0, 0, 255), 1, cv::LINE_AA);
+				cv::circle(*resImg_, cv::Point(c[0], c[1]), c[2], cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
 				//draw middle of the circle on the image
 				cv::circle(*resImg_, cv::Point(c[0], c[1]), 2, cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
 			}

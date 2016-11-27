@@ -21,10 +21,10 @@ int main(int argc, char *argv[])
 	int y = (screenHeight - windowSize.height()) / 2;
 
 	VerificationMethod* calib = new Calibration();
-	VerificationMethod* holeparam = new HoleParameter();
+	//VerificationMethod* holeparam = new HoleParameter();
 	
 	mainGui.addVerificationMethod("Calibration", calib);
-	mainGui.addVerificationMethod("Hole detection", holeparam);
+	//mainGui.addVerificationMethod("Hole detection", holeparam);
 	
 	mainGui.move(x, y);
 	mainGui.show();

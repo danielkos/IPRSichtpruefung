@@ -116,6 +116,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_UpldFrame.cpp">
       <Filter>Generierte Dateien\Release</Filter>
     </ClCompile>
+    <ClCompile Include="ResultGenerator.cpp">
+      <Filter>Source Dateien\Computation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainGui.ui">
@@ -173,6 +176,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_Options.h">
       <Filter>Generierte Dateien</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultGenerator.h">
+      <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

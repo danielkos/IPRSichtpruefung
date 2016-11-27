@@ -117,11 +117,11 @@ void MainGui::addVerificationMethod(std::string name, VerificationMethod* method
 {
 	logOutput("Adding method: " + QString::fromStdString(name));
 	//Create an item and attach it to the widget
-	MethodGuiItem* item = new MethodGuiItem(name, method->parameters(), ui_.widMethods);
+	MethodGuiItem* item = new MethodGuiItem(name, method->parameters(), ui_.groupBoxMethods);
 	//Setup association
 	methods_.insert(ItemMethodPair(item, method));
 	//Add item to the layout
-	ui_.widMethods->layout()->addWidget(item);
+	ui_.groupBoxMethods->layout()->addWidget(item);
 }
 
 void MainGui::runSelectedMethods()
@@ -231,6 +231,11 @@ void MainGui::removeFile()
 	{
 		QModelIndex index = selection.at(i);
 		ui_.treeViewInput->model()->removeRow(index.row());
+	}
+
+	if (io_)
+	{
+		io_->terminateCameraStream();
 	}
 
 	reset();

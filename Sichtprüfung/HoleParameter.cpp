@@ -5,8 +5,8 @@
 
 HoleParameter::HoleParameter()
 {
-	minRadius = 30;
-	maxRadius = 90;
+	minRadius_ = 30;
+	maxRadius_ = 90;
 }
 
 HoleParameter::~HoleParameter()
@@ -19,8 +19,8 @@ void HoleParameter::setParameters(std::vector<Parameter>parameters)
 	//The order is determined by parameters()
 	if (parameters.size() == parametersSize_)
 	{
-		minRadius = parameters[0].value_.toInt();
-		maxRadius = parameters[1].value_.toInt();
+		minRadius_ = parameters[0].value_.toInt();
+		maxRadius_ = parameters[1].value_.toInt();
 	}
 }
 
@@ -30,10 +30,10 @@ std::vector<Parameter> HoleParameter::parameters()
 	std::vector<Parameter>parameters;
 	Parameter param;
 	//Setup parameter, name will be displayed on gui
-	param.setUp("Minimal radius", QVariant(minRadius), QMetaType::Int);
+	param.setUp("Minimal radius", QVariant(minRadius_), QMetaType::Double);
 	parameters.push_back(param);
 
-	param.setUp("Maximal radius", QVariant(maxRadius), QMetaType::Int);
+	param.setUp("Maximal radius", QVariant(maxRadius_), QMetaType::Double);
 	parameters.push_back(param);
 
 	parametersSize_ = parameters.size();
@@ -60,7 +60,7 @@ bool HoleParameter::run(const cv::Mat* img)
 		//funktion which detects circles
 		HoughCircles(temp, circles, cv::HOUGH_GRADIENT, 1,
 			temp.rows / 8, // change this value to detect circles with different distances to each other
-			100, 30, minRadius, maxRadius // change the last two parameters
+			100, 30, minRadius_, maxRadius_ // change the last two parameters
 										  // (minradius & maxradius) to detect larger circles (in pixels)
 		);
 
@@ -70,9 +70,9 @@ bool HoleParameter::run(const cv::Mat* img)
 			{
 				cv::Vec3i c = circles[i];
 				//draws circle on image
-				circle(*resImg_, cv::Point(c[0], c[1]), c[2], cv::Scalar(0, 0, 255), 1, cv::LINE_AA);
+				cv::circle(*resImg_, cv::Point(c[0], c[1]), c[2], cv::Scalar(0, 0, 255), 1, cv::LINE_AA);
 				//draw middle of the circle on the image
-				circle(*resImg_, cv::Point(c[0], c[1]), 2, cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
+				cv:: circle(*resImg_, cv::Point(c[0], c[1]), 2, cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
 			}
 		}
 		else

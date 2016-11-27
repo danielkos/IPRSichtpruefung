@@ -19,9 +19,9 @@ public:
 	std::vector<Parameter>parameters();
 
 private:
-	//minimal and maksimal radius of detected circles
-	int minRadius;
-	int maxRadius;
+	//minimal and maximal radius of detected circles
+	int minRadius_;
+	int maxRadius_;
 
 };
 #endif

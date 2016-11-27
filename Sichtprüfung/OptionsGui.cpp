@@ -6,47 +6,53 @@ OptionsGui::OptionsGui(QWidget* parent)
 {
 	ui_.setupUi(this);
 
-	size_.push_back(4.1);
-	size_.push_back(3.9);
-	size_.push_back(0.5);
+	objMetrics_.push_back(4.1);
+	objMetrics_.push_back(3.9);
+	objMetrics_.push_back(0.5);
 
-	referenceSize_.push_back(4.1);
-	referenceSize_.push_back(3.9);
+	referenceSize_.setWidth(4.1);
+	referenceSize_.setHeight(3.9);
 	
 	holeDiameter_ = 0.4;
 	angle_ = 5;
 
-	ui_.doubleSpinBoxWidth->setValue(size_[0]);
-	ui_.doubleSpinBoxLength->setValue(size_[1]);
-	ui_.doubleSpinBoxHeight->setValue(size_[2]);
-
-	ui_.doubleSpinBoxDiameter->setValue(holeDiameter_);
-	ui_.doubleSpinBoxAngle->setValue(angle_);
-
-	ui_.doubleSpinBoxRefWidth->setValue(referenceSize_[0]);
-	ui_.doubleSpinBoxRefHeight->setValue(referenceSize_[0]);
-
 	QPushButton* save = ui_.buttonBoxOptions->button(QDialogButtonBox::Save);
-	QPushButton* discard = ui_.buttonBoxOptions->button(QDialogButtonBox::Cancel);
+	QPushButton* cancel = ui_.buttonBoxOptions->button(QDialogButtonBox::Cancel);
 
 	//Connect the signals from the button box to other functions
 	connect(save, &QPushButton::clicked, this, &OptionsGui::saveValues);
-	connect(discard, &QPushButton::clicked, this, &QWidget::close);
+	connect(cancel, &QPushButton::clicked, this, &OptionsGui::closeClicked);
 
-	setAttribute(Qt::WA_DeleteOnClose);
-
-	show();
+	setValues();
 }
 
 OptionsGui::~OptionsGui()
 {
 }
 
+void OptionsGui::setValues()
+{
+	ui_.doubleSpinBoxWidth->setValue(objMetrics_[0].toDouble());
+	ui_.doubleSpinBoxLength->setValue(objMetrics_[1].toDouble());
+	ui_.doubleSpinBoxHeight->setValue(objMetrics_[2].toDouble());
+
+	ui_.doubleSpinBoxDiameter->setValue(holeDiameter_.toDouble());
+	ui_.doubleSpinBoxAngle->setValue(angle_.toDouble());
+
+	ui_.doubleSpinBoxRefWidth->setValue(referenceSize_.width());
+	ui_.doubleSpinBoxRefHeight->setValue(referenceSize_.height());
+}
+
+void OptionsGui::closeClicked()
+{
+	setValues();
+	close();
+}
 void OptionsGui::saveValues()
 {
-	size_[0] = ui_.doubleSpinBoxWidth->value();
-	size_[1] = ui_.doubleSpinBoxLength->value();
-	size_[2] = ui_.doubleSpinBoxHeight->value();
+	objMetrics_[0] = ui_.doubleSpinBoxWidth->value();
+	objMetrics_[1] = ui_.doubleSpinBoxLength->value();
+	objMetrics_[2] = ui_.doubleSpinBoxHeight->value();
 
 	holeDiameter_ = ui_.doubleSpinBoxDiameter->value();
 	angle_ = ui_.doubleSpinBoxAngle->value();
@@ -54,22 +60,22 @@ void OptionsGui::saveValues()
 	close();
 }
 
-std::vector<double> OptionsGui::size()
+std::vector<QVariant> OptionsGui::objMetrics()
 {
-	return size_;
+	return objMetrics_;
 }
 
-std::vector<double> OptionsGui::referenceSize()
+QSize OptionsGui::referenceSize()
 {
 	return referenceSize_;
 }
 
-double OptionsGui::holeDiameter()
+QVariant OptionsGui::holeDiameter()
 {
 	return holeDiameter_;
 }
 
-double OptionsGui::angle()
+QVariant OptionsGui::angle()
 {
 	return angle_;
 }

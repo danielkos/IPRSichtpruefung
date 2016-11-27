@@ -75,6 +75,9 @@ MainGui::MainGui(QWidget *parent)
 	connect(ui_.action_Exit, &QAction::triggered, this, &QMainWindow::close);
 	connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
 
+	//Create an option window without showing it
+	options_ = new OptionsGui();
+
 	//Create IO 
 	io_ = new UpldFrame();
 		
@@ -333,5 +336,5 @@ void MainGui::statusOutput(QString msg)
 
 void MainGui::openOptions()
 {
-	options_ = new OptionsGui(this);
+	options_->show();
 }

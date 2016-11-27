@@ -3,6 +3,7 @@
 
 #include "VerificationMethod.h"
 #include "Parameter.h"
+#include <opencv2\opencv.hpp>
 
 namespace cv
 {
@@ -21,6 +22,7 @@ public:
 	void setParameters(std::vector<Parameter> parameters);
 	//Implementation of interface VerificationMethod
 	std::vector<Parameter> parameters();
+	ResultGenerator::ResultMap results();
 
 private:
 	//Parameters for canny edge detection
@@ -32,6 +34,8 @@ private:
 	int ignoreContourSize_;
 	//Size of a contour in pixel
 	int contourSize_;
+
+	cv::RotatedRect boundingBox_;
 };
 
 #endif

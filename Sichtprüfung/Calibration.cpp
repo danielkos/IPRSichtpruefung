@@ -1,5 +1,6 @@
 #include "Calibration.h"
 #include <QVariant>
+#include <QSize>
 #include <opencv2\opencv.hpp>
 #include <opencv2\imgproc.hpp>
 
@@ -56,6 +57,19 @@ std::vector<Parameter> Calibration::parameters()
 	return parameters;
 }
 
+ResultGenerator::ResultMap Calibration::results()
+{
+	ResultGenerator::ResultMap results;
+	Parameter param;
+	QSize size(boundingBox_.size.width, boundingBox_.size.height);
+
+	param.setUp("Pixel ration", size, QMetaType::QSize);
+
+	//Set a paramter definied for the generator
+	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_CALIBRATION, param));
+
+	return results;
+}
 bool Calibration::run(const cv::Mat* img)
 {
 	bool res = true;
@@ -90,11 +104,12 @@ bool Calibration::run(const cv::Mat* img)
 				
 				cv::drawContours(*resImg_, contours, i, cv::Scalar(0, 215, 255), 3);
 				
-				cv::RotatedRect box = cv::minAreaRect(contours[i]);
+				boundingBox_ = cv::minAreaRect(contours[i]);
 				cv::Point2f vertices[4];
 				cv::Point2f midVertices[4];
 				
-				box.points(vertices);
+				boundingBox_.points(vertices);
+				boundingBox_.size.width;
 
 				//draw rect lines
 				for (size_t i = 0; i < 4; i++)

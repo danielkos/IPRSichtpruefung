@@ -41,6 +41,17 @@ std::vector<Parameter> HoleParameter::parameters()
 	return parameters;
 }
 
+ResultGenerator::ResultMap HoleParameter::results()
+{
+	ResultGenerator::ResultMap results;
+	Parameter param;
+
+	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_CIRCLE_RADIUS, param));
+	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_CIRCLE_MIDDLE, param));
+
+	return results;
+}
+
 bool HoleParameter::run(const cv::Mat* img)
 {
 	bool res = true;

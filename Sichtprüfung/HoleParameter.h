@@ -17,6 +17,9 @@ public:
 	void setParameters(std::vector<Parameter> parameters);
 	//Implementation of interface VerificationMethod
 	std::vector<Parameter>parameters();
+	//Implementation of interface VerificationMethod
+	ResultGenerator::ResultMap results();
+
 
 private:
 	//minimal and maximal radius of detected circles

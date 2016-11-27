@@ -1,11 +1,27 @@
 #ifndef HOLEPARAMETER_H
 #define HOLEPARAMETER_H
-#include <opencv2/imgproc/imgproc.hpp> 
-#include "opencv2/opencv.hpp"
 
-class HoleParameter
+#include "VerificationMethod.h"
+#include "Parameter.h"
+
+class HoleParameter : public VerificationMethod
 {
 public:
-	std::vector<cv::Vec3f> CheckParameter(cv::Mat img);
+
+	HoleParameter();
+	~HoleParameter();
+
+	//Implementation of interface VerificationMethod
+	bool run(const cv::Mat*img);
+	//Implementation of interface VerificationMethod
+	void setParameters(std::vector<Parameter> parameters);
+	//Implementation of interface VerificationMethod
+	std::vector<Parameter>parameters();
+
+private:
+	//minimal and maksimal radius of detected circles
+	int minRadius;
+	int maxRadius;
+
 };
 #endif

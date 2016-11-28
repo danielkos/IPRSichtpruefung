@@ -141,6 +141,7 @@ void MainGui::addVerificationMethod(std::string name, VerificationMethod* method
 void MainGui::runSelectedMethods()
 {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
+	statusOutput("Run selected methods...");
 
 	//Look for all checked methods an execute them
 	for (ItemMethodMap::iterator it = methods_.begin(); it != methods_.end(); it++)
@@ -189,6 +190,7 @@ void MainGui::runSelectedMethods()
 	}
 
 	QApplication::restoreOverrideCursor();
+	statusOutput("Selected methods completed");
 }
 
 void MainGui::addFileStream(QString stream)
@@ -319,7 +321,7 @@ void MainGui::setCurrentFile(QModelIndex index)
 			img = UpldFrame::fromFile(currentFile_.toStdString());
 		}
 
-		statusOutput("Finished!");
+		statusOutput("Image loaded");
 
 		setInputImage(&img);
 	}

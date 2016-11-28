@@ -29,7 +29,7 @@ QString ResultGenerator::calibRes(ResultGenerator::ResultMap::iterator it)
 
 	pixelRatio_ = (widthRatio.toDouble() + heightRatio.toDouble()) / 2;
 
-	return QString("Ration between 1 cm and 1 Pixel is: " + pixelRatio_.toString());
+	return QString("Ratio between 1 cm and 1 Pixel is: " + pixelRatio_.toString());
 }
 
 QString ResultGenerator::circleRes(ResultGenerator::ResultMap::iterator it)

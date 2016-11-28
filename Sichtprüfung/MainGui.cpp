@@ -140,6 +140,8 @@ void MainGui::addVerificationMethod(std::string name, VerificationMethod* method
 
 void MainGui::runSelectedMethods()
 {
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+
 	//Look for all checked methods an execute them
 	for (ItemMethodMap::iterator it = methods_.begin(); it != methods_.end(); it++)
 	{
@@ -185,6 +187,8 @@ void MainGui::runSelectedMethods()
 
 		}
 	}
+
+	QApplication::restoreOverrideCursor();
 }
 
 void MainGui::addFileStream(QString stream)

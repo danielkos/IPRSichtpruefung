@@ -76,9 +76,6 @@ MainGui::MainGui(QWidget *parent)
 	connect(ui_.action_Exit, &QAction::triggered, this, &QMainWindow::close);
 	connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
 
-	QStringListModel* resModel = new QStringListModel(ui_.listViewResults);
-	ui_.listViewResults->setModel(resModel);
-
 	//Create an option window without showing it
 	options_ = new OptionsGui();
 
@@ -171,8 +168,13 @@ void MainGui::runSelectedMethods()
 
 				resGenerator.setSettings(generateSettings());
 				QStringList res = resGenerator.results(methodName, it->second->results());
+				
+				for (QStringList::iterator it = res.begin(); it != res.end(); it++)
+				{
+					ui_.listWidgetResults->addItem(*it);
+				}
 
-				static_cast<QStringListModel*>(ui_.listViewResults->model())->setStringList(res);
+				//static_cast<QStringListModel*>(ui_.listViewResults->model())->setStringList(res);
 			}
 			else
 			{

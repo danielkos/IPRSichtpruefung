@@ -20,7 +20,6 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QListView>
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
@@ -48,7 +47,7 @@ public:
     QVBoxLayout *verticalLayout_14;
     QGroupBox *groupBoxResults;
     QVBoxLayout *verticalLayout_11;
-    QListView *listViewResults;
+    QListWidget *listWidgetResults;
     QSpacerItem *verticalSpacer;
     QDialogButtonBox *buttonBoxMethods;
     QSpacerItem *verticalSpacer_2;
@@ -145,12 +144,10 @@ public:
         verticalLayout_11->setSpacing(6);
         verticalLayout_11->setContentsMargins(11, 11, 11, 11);
         verticalLayout_11->setObjectName(QStringLiteral("verticalLayout_11"));
-        listViewResults = new QListView(groupBoxResults);
-        listViewResults->setObjectName(QStringLiteral("listViewResults"));
-        listViewResults->setMinimumSize(QSize(0, 200));
-        listViewResults->setMaximumSize(QSize(16777215, 400));
+        listWidgetResults = new QListWidget(groupBoxResults);
+        listWidgetResults->setObjectName(QStringLiteral("listWidgetResults"));
 
-        verticalLayout_11->addWidget(listViewResults);
+        verticalLayout_11->addWidget(listWidgetResults);
 
 
         verticalLayout_5->addWidget(groupBoxResults);

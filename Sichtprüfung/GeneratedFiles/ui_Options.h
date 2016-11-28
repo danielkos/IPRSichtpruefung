@@ -194,7 +194,7 @@ public:
         label->setText(QApplication::translate("Options", " Length (cm):", 0));
         label_3->setText(QApplication::translate("Options", "Height (cm):", 0));
         groupBoxProperties->setTitle(QApplication::translate("Options", "Properties", 0));
-        label_4->setText(QApplication::translate("Options", "Hole Diameter (cm):", 0));
+        label_4->setText(QApplication::translate("Options", "Hole Radius (cm):", 0));
         label_5->setText(QApplication::translate("Options", "Angle (\302\260):", 0));
         groupBoxReference->setTitle(QApplication::translate("Options", "Reference Object", 0));
         label_6->setText(QApplication::translate("Options", "Width:", 0));

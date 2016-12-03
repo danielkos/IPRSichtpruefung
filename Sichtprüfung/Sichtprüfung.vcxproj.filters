@@ -119,6 +119,9 @@
     <ClCompile Include="ResultGenerator.cpp">
       <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
+    <ClCompile Include="AngleVeryfication.cpp">
+      <Filter>Source Dateien\Computation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainGui.ui">
@@ -178,6 +181,9 @@
       <Filter>Generierte Dateien</Filter>
     </ClInclude>
     <ClInclude Include="ResultGenerator.h">
+      <Filter>Header Dateien\Computation</Filter>
+    </ClInclude>
+    <ClInclude Include="AngleVeryfication.h">
       <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
   </ItemGroup>

@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AngleVeryfication.cpp" />
     <ClCompile Include="Calibration.cpp" />
     <ClCompile Include="cvmatandqimage.cpp" />
     <ClCompile Include="FrameView.cpp" />
@@ -259,6 +260,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
+    <ClInclude Include="AngleVeryfication.h" />
     <ClInclude Include="Calibration.h" />
     <ClInclude Include="cvmatandqimage.h" />
     <ClInclude Include="GeneratedFiles\ui_Options.h" />

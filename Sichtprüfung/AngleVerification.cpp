@@ -1,4 +1,5 @@
 #include "AngleVerification.h"
+
 #include <QVariant>
 #include <opencv2\opencv.hpp>
 #include <opencv2\imgproc.hpp>
@@ -28,7 +29,7 @@ std::vector<Parameter> AngleVerification::parameters()
 	std::vector<Parameter>parameters;
 	Parameter param;
 	//Setup parameter, name will be displayed on gui
-	param.setUp("Resolution Width", QVariant(ResolutionWidth_), QMetaType::Double);
+	param.setUp("Resolution Width", QVariant(ResolutionWidth_), QMetaType::Int);
 	parameters.push_back(param);
 
 	parametersSize_ = parameters.size();
@@ -41,6 +42,12 @@ ResultGenerator::ResultMap AngleVerification::results()
 	ResultGenerator::ResultMap results;
 	Parameter param;
 
+	param.setUp("Angle left side", angleLeft_, QMetaType::Double);
+	param.setUp("Angle right side", angleRight_, QMetaType::Double);
+
+	//Set a paramter definied for the generator
+	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_OBJ_ANGLE_LEFT, param));
+	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_OBJ_ANGLE_RIGHT, param));
 
 	return results;
 }
@@ -49,31 +56,32 @@ bool AngleVerification::run(const cv::Mat* img)
 {
 	bool res = true;
 
-	//Check if img is empty
+	// Check if img is empty
 	if (!img->empty())
 	{
 		cv::Mat mask;
-		//change image to gray scale
+		// change image to gray scale
 		cv::cvtColor(*img, *processedImg_, cv::COLOR_BGR2GRAY);
-		//blure image
+		// blure image
 		cv::medianBlur(*img, *resImg_, 5);
-		//vektor of all detected corners
+		// vector of all detected corners
 		std::vector<cv::Point> corners;
-		//vektor of all detected corners on the left side
+		// vector of all detected corners on the left side
 		std::vector<cv::Point> cornersleft;
-		//vektor of all detected corners on the right side
+		// vector of all detected corners on the right side
 		std::vector<cv::Point> cornersright;
-		//detecting 10 best corners,quality level 0.05,min distance 5 pixels,empty mask, block size 3, using harris detection with parameter 0.04
+		// detecting 10 best corners, quality level 0.05, min distance 5 pixels, empty mask, block size 3,
+		// using harris detection with parameter 0.04
 		cv::goodFeaturesToTrack(*processedImg_, corners, 10, 0.05, 5, mask, 3, false, 0.04);
 
 		if (!corners.empty())
-		{	//divide verticles for left and right side of the image and draw on result image
+		{	// divide verticles for left and right side of the image
 			for (size_t i = 0; i < corners.size(); i++)
 			{
+				// Higlight found corner points in the result image by using green dots
 				cv::Vec2i c = corners[i];
 				cv::circle(*resImg_, cv::Point(c[0], c[1]), 2, cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
-
-				if (c[0] < ResolutionWidth_ / 2)
+				if (c[0] < processedImg_->cols / 2)
 				{
 					cornersleft.push_back(c);
 				}
@@ -87,13 +95,15 @@ bool AngleVerification::run(const cv::Mat* img)
 		{
 			res = false;
 		}
+
 		int maxX = 0;
 		int maxY = 0;
 		int max2Y = 0;
 		int ix;
 		int i2y;
 		cv::Vec2i c1, c2;
-		//for left side it detect corner with biggest x parameter and a corner with second biggest y parameter 
+
+		// for left side it detect corner with biggest x parameter and a corner with second biggest y parameter 
 		for (int i = 0; i < cornersleft.size(); i++)
 		{
 			c1 = cornersleft[i];
@@ -117,13 +127,21 @@ bool AngleVerification::run(const cv::Mat* img)
 				}
 			}
 		}
+
 		c1 = cornersleft[ix];
 		c2 = cornersleft[i2y];
-		//calculate angle between two corners from left side, with biggest x and second biggest y 
-		float angle = int(atan((c2[1] - c1[1]) / (c1[0] - c2[0])) * 180 / 3.14);
 
+		// Highlight the lines that are used for the angle calculation by drawing blue lines
+		cv::Point2f v1 (c1[0], c1[1]);
+		cv::Point2f v2 (c2[0], c2[1]);
+		cv::line(*resImg_, v1, v2, cv::Scalar(255, 0, 0), 6);
+		// TODO: Draw other line
+		
+		// calculate angle between two corners from left side, with biggest x and second biggest y 
+		angleLeft_ = atan((c2[1] - c1[1]) / (c1[0] - c2[0])) * 180.0 / M_PI;
 
-
+		//TODO: Calculate angle also for other side of object => angle calculation in new helper method?
+		angleRight_ = 0.0;
 	}
 	else
 	{

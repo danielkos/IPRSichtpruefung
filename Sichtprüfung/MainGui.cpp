@@ -171,6 +171,7 @@ void MainGui::runSelectedMethods()
 
 				resGenerator.setSettings(generateSettings());
 				QStringList res = resGenerator.results(methodName, it->second->results());
+				ui_.listWidgetResults->clear();		// Make sure old results are not displayed anymore
 				
 				for (QStringList::iterator it = res.begin(); it != res.end(); it++)
 				{

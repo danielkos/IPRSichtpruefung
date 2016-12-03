@@ -5,7 +5,8 @@
 ResultGenerator::ResultGenerator()
 {
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_CIRCLE_RADIUS, ResultGenerator::Settings::SET_CIRCLE_RADIUS));
-	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_ANGLE, ResultGenerator::Settings::SET_OBJ_ANGLE));
+	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_ANGLE_LEFT, ResultGenerator::Settings::SET_OBJ_ANGLE));
+	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_ANGLE_RIGHT, ResultGenerator::Settings::SET_OBJ_ANGLE));
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_SIZE, ResultGenerator::Settings::SET_OBJ_METRICS));
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_CALIBRATION, ResultGenerator::Settings::SET_REF_SIZE));
 }
@@ -39,7 +40,8 @@ QString ResultGenerator::circleRes(ResultGenerator::ResultMap::iterator it)
 	QVariant dev = radius.toDouble() - est.toDouble();
 	QVariant percent = (dev.toDouble() / radius.toDouble()) * 100;
 
-	return QString("Real radius:" + radius.toString() + " Estimated radius: " + est.toString() + " Deviation: " + dev.toString() + "(" + percent.toString() + ")");
+	return QString("Real radius: " + radius.toString() + "cm, Estimated radius: " + est.toString() + 
+					"cm, Deviation: " + dev.toString() + "cm (" + percent.toString() + "%)");
 }
 
 QString ResultGenerator::angleRes(ResultGenerator::ResultMap::iterator it)
@@ -49,7 +51,8 @@ QString ResultGenerator::angleRes(ResultGenerator::ResultMap::iterator it)
 	QVariant dev = angle.toDouble() - est.toDouble();
 	QVariant percent = (dev.toDouble() / angle.toDouble()) * 100;
 
-	return QString("Real angle:" + angle.toString() + " Estimated angle: " + est.toString() + " Deviation: " + dev.toString() + "(" + percent.toString() + ")");
+	return QString("Real angle: " + angle.toString() + "deg, Estimated angle: " + est.toString() + 
+					"deg, Deviation: " + dev.toString() + "deg (" + percent.toString() + "%)");
 }
 
 QString ResultGenerator::objSizeRes(ResultGenerator::ResultMap::iterator it)
@@ -60,7 +63,8 @@ QString ResultGenerator::objSizeRes(ResultGenerator::ResultMap::iterator it)
 	est.setWidth(est.width() * pixelRatio_.toDouble());
 	est.setHeight(est.height() * pixelRatio_.toDouble());
 
-	return QString("Real Size:" + QString(size.width()) + "x" + QString(size.height()) + " Estimated size: " + QString(est.width()) + "x" + QString(est.height()));
+	return QString("Real Size:" + QString(size.width()) + "x" + QString(size.height()) + ", Estimated size: " +
+					QString(est.width()) + "x" + QString(est.height()));
 }
 
 QStringList ResultGenerator::results(QString methodName, ResultGenerator::ResultMap methodResults)
@@ -80,7 +84,10 @@ QStringList ResultGenerator::results(QString methodName, ResultGenerator::Result
 		case ResultGenerator::RES_OBJ_SIZE:
 			ret = objSizeRes(it);
 			break;
-		case ResultGenerator::RES_OBJ_ANGLE:
+		case ResultGenerator::RES_OBJ_ANGLE_LEFT:
+			ret = angleRes(it);
+			break;
+		case ResultGenerator::RES_OBJ_ANGLE_RIGHT:
 			ret = angleRes(it);
 			break;
 		case ResultGenerator::RES_CIRCLE_MIDDLE:

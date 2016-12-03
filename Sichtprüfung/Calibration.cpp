@@ -63,7 +63,7 @@ ResultGenerator::ResultMap Calibration::results()
 	Parameter param;
 	QSize size(boundingBox_.size.width, boundingBox_.size.height);
 
-	param.setUp("Pixel ration", size, QMetaType::QSize);
+	param.setUp("Pixel ratio", size, QMetaType::QSize);
 
 	//Set a paramter definied for the generator
 	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_CALIBRATION, param));

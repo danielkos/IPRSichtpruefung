@@ -13,8 +13,8 @@ OptionsGui::OptionsGui(QWidget* parent)
 	referenceSize_.setWidth(4.1);
 	referenceSize_.setHeight(3.9);
 	
-	holeRadius_ = 0.4;
-	angle_ = 5;
+	holeRadius_ = 0.275;
+	angle_ = 45;
 
 	QPushButton* save = ui_.buttonBoxOptions->button(QDialogButtonBox::Save);
 	QPushButton* cancel = ui_.buttonBoxOptions->button(QDialogButtonBox::Cancel);

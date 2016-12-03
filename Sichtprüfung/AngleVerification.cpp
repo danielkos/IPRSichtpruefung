@@ -4,6 +4,8 @@
 #include <opencv2\opencv.hpp>
 #include <opencv2\imgproc.hpp>
 
+#include "CLogger.h"
+
 AngleVerification::AngleVerification()
 {
 	ResolutionWidth_ = 960;
@@ -59,7 +61,36 @@ bool AngleVerification::run(const cv::Mat* img)
 	// Check if img is empty
 	if (!img->empty())
 	{
-		cv::Mat mask;
+		cv::Mat tmp;
+		std::vector<std::vector<cv::Point> > contours;
+
+		cv::cvtColor(*img, *processedImg_, cv::COLOR_BGR2GRAY);
+		cv::medianBlur(*img, *resImg_, 5);
+		cv::Canny(*processedImg_, *processedImg_, 50, 600);	// TODO: Parameter durchreichen, falls genutzt später
+		processedImg_->copyTo(tmp);
+		cv::findContours(tmp, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+
+		angleLeft_ = 0.0;
+		angleRight_ = 0.0;
+
+		// Draw contour
+		//cv::drawContours(*resImg_, contours, -1, cv::Scalar(0, 255, 0), 2);  //draw contours on the image
+		
+		LOGGER->Log("Number contours: %d", contours.size());
+
+		for (int i = 1; i < contours.size(); i++)
+		{
+			LOGGER->Log("Size contour %d: %d", i, contours[i].size());
+
+			for (int j = 0; j < contours[i].size(); j++) 
+			{
+				LOGGER->Log("Contour element: %d %d", contours[i].at(j), contours[i].at(j));
+				cv::circle(*resImg_, contours[i].at(j), 2, cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
+			}
+		}
+
+		
+		/*cv::Mat mask;
 		// change image to gray scale
 		cv::cvtColor(*img, *processedImg_, cv::COLOR_BGR2GRAY);
 		// blure image
@@ -138,10 +169,10 @@ bool AngleVerification::run(const cv::Mat* img)
 		// TODO: Draw other line
 		
 		// calculate angle between two corners from left side, with biggest x and second biggest y 
-		angleLeft_ = atan((c2[1] - c1[1]) / (c1[0] - c2[0])) * 180.0 / M_PI;
+		angleLeft_ = int(atan((c2[1] - c1[1]) / (c1[0] - c2[0])) * 180.0 / 3.14);
 
 		//TODO: Calculate angle also for other side of object => angle calculation in new helper method?
-		angleRight_ = 0.0;
+		angleRight_ = 0.0;*/
 	}
 	else
 	{

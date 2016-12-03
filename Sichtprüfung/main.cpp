@@ -1,8 +1,12 @@
-#include "MainGui.h"
+//#include <cstdio>
+
 #include <QtWidgets/QApplication>
 #include <QDesktopWidget>
 #include <QSize>
+
 #include <opencv2\opencv.hpp>
+
+#include "MainGui.h"
 #include "HoleVerification.h"
 #include "Calibration.h"
 #include "HoleParameter.h"
@@ -10,6 +14,10 @@
 
 int main(int argc, char *argv[])
 {
+	// Delete log file to make sure a new empty one is created
+	// during execution
+	std::remove("log.txt");
+
 	//main application
 	QApplication app(argc, argv);
 	//GUI generated from ui file
@@ -31,7 +39,6 @@ int main(int argc, char *argv[])
 	
 	mainGui.move(x, y);
 	mainGui.show();
-
 
 	return app.exec();
 }

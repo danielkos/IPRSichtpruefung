@@ -119,7 +119,7 @@
     <ClCompile Include="ResultGenerator.cpp">
       <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
-    <ClCompile Include="AngleVeryfication.cpp">
+    <ClCompile Include="AngleVerification.cpp">
       <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
   </ItemGroup>
@@ -183,7 +183,7 @@
     <ClInclude Include="ResultGenerator.h">
       <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
-    <ClInclude Include="AngleVeryfication.h">
+    <ClInclude Include="AngleVerification.h">
       <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
   </ItemGroup>

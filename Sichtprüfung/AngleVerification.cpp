@@ -1,18 +1,18 @@
-#include "AngleVeryfication.h"
+#include "AngleVerification.h"
 #include <QVariant>
 #include <opencv2\opencv.hpp>
 #include <opencv2\imgproc.hpp>
 
-AngleVeryfication::AngleVeryfication()
+AngleVerification::AngleVerification()
 {
 	ResolutionWidth_ = 960;
 }
 
-AngleVeryfication::~AngleVeryfication()
+AngleVerification::~AngleVerification()
 {
 }
 
-void AngleVeryfication::setParameters(std::vector<Parameter>parameters)
+void AngleVerification::setParameters(std::vector<Parameter>parameters)
 {
 	//Check if the size of the returned paramers is right
 	//The order is determined by parameters()
@@ -23,7 +23,7 @@ void AngleVeryfication::setParameters(std::vector<Parameter>parameters)
 }
 
 
-std::vector<Parameter> AngleVeryfication::parameters()
+std::vector<Parameter> AngleVerification::parameters()
 {
 	std::vector<Parameter>parameters;
 	Parameter param;
@@ -36,7 +36,7 @@ std::vector<Parameter> AngleVeryfication::parameters()
 	return parameters;
 }
 
-ResultGenerator::ResultMap AngleVeryfication::results()
+ResultGenerator::ResultMap AngleVerification::results()
 {
 	ResultGenerator::ResultMap results;
 	Parameter param;
@@ -45,7 +45,7 @@ ResultGenerator::ResultMap AngleVeryfication::results()
 	return results;
 }
 
-bool AngleVeryfication::run(const cv::Mat* img)
+bool AngleVerification::run(const cv::Mat* img)
 {
 	bool res = true;
 

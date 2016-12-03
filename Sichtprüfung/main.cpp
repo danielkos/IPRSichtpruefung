@@ -6,7 +6,7 @@
 #include "HoleVerification.h"
 #include "Calibration.h"
 #include "HoleParameter.h"
-#include "AngleVeryfication.h"
+#include "AngleVerification.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,12 +22,12 @@ int main(int argc, char *argv[])
 	int y = (screenHeight - windowSize.height()) / 2;
 
 	VerificationMethod* calib = new Calibration();
-	VerificationMethod* holeparam = new HoleParameter();
-	VerificationMethod* AngleVer = new AngleVeryfication();
+	VerificationMethod* holeParam = new HoleParameter();
+	VerificationMethod* AngleVer = new AngleVerification();
 
 	mainGui.addVerificationMethod("Calibration", calib);
-	mainGui.addVerificationMethod("Hole detection", holeparam);
-	mainGui.addVerificationMethod("AngleVeryfication", AngleVer);
+	mainGui.addVerificationMethod("Hole detection", holeParam);
+	mainGui.addVerificationMethod("AngleVerification", AngleVer);
 	
 	mainGui.move(x, y);
 	mainGui.show();

@@ -1,16 +1,16 @@
-#ifndef ANGLEVERYFICATION_H
-#define ANGLEVERYFICATION_H
+#ifndef ANGLEVERIFICATION_H
+#define ANGLEVERIFICATION_H
 
 #include "VerificationMethod.h"
 #include "Parameter.h"
 #include <opencv2\opencv.hpp>
 
-class AngleVeryfication : public VerificationMethod
+class AngleVerification : public VerificationMethod
 {
 public:
 
-	AngleVeryfication();
-	~AngleVeryfication();
+	AngleVerification();
+	~AngleVerification();
 
 	//Implementation of interface VerificationMethod
 	bool run(const cv::Mat*img);

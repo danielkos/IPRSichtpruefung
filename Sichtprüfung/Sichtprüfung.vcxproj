@@ -152,6 +152,7 @@
     <ClCompile Include="AngleVerification.cpp" />
     <ClCompile Include="Calibration.cpp" />
     <ClCompile Include="cvmatandqimage.cpp" />
+    <ClCompile Include="CLogger.cpp" />
     <ClCompile Include="FrameView.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_FrameView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -199,6 +200,7 @@
     <ClCompile Include="OptionsGui.cpp" />
     <ClCompile Include="ResultGenerator.cpp" />
     <ClCompile Include="UpldFrame.cpp" />
+    <ClCompile Include="Utilities.h" />
     <ClCompile Include="VerificationMethod.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -263,6 +265,7 @@
     <ClInclude Include="AngleVerification.h" />
     <ClInclude Include="Calibration.h" />
     <ClInclude Include="cvmatandqimage.h" />
+    <ClInclude Include="CLogger.h" />
     <ClInclude Include="GeneratedFiles\ui_Options.h" />
     <ClInclude Include="HoleParameter.h" />
     <ClInclude Include="GeneratedFiles\ui_Method.h" />

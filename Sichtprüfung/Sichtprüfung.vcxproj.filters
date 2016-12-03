@@ -122,6 +122,12 @@
     <ClCompile Include="AngleVerification.cpp">
       <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
+    <ClCompile Include="CLogger.cpp">
+      <Filter>Source Dateien\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities.h">
+      <Filter>Header Dateien\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainGui.ui">
@@ -185,6 +191,9 @@
     </ClInclude>
     <ClInclude Include="AngleVerification.h">
       <Filter>Header Dateien\Computation</Filter>
+    </ClInclude>
+    <ClInclude Include="CLogger.h">
+      <Filter>Header Dateien\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

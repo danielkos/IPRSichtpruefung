@@ -40,8 +40,10 @@ QString ResultGenerator::circleRes(ResultGenerator::ResultMap::iterator it)
 	QVariant dev = radius.toDouble() - est.toDouble();
 	QVariant percent = (dev.toDouble() / radius.toDouble()) * 100;
 
+	QString percentString = QString::number(percent.toDouble(), 'f', 2);	// Round percent number
+
 	return QString("Real radius: " + radius.toString() + "cm, Estimated radius: " + est.toString() + 
-					"cm, Deviation: " + dev.toString() + "cm (" + percent.toString() + "%)");
+					"cm, Deviation: " + dev.toString() + "cm (" + percentString + "%)");
 }
 
 QString ResultGenerator::circleCenterRes(ResultGenerator::ResultMap::iterator it)
@@ -52,12 +54,16 @@ QString ResultGenerator::circleCenterRes(ResultGenerator::ResultMap::iterator it
 QString ResultGenerator::angleRes(ResultGenerator::ResultMap::iterator it)
 {
 	QVariant angle = settings_.at(mapping_.at(it->first)).value_;
-	QVariant est = it->second.value_.toDouble() * pixelRatio_.toDouble();;
+	QVariant est = it->second.value_.toDouble();
 	QVariant dev = angle.toDouble() - est.toDouble();
 	QVariant percent = (dev.toDouble() / angle.toDouble()) * 100;
 
-	return QString("Real angle: " + angle.toString() + "deg, Estimated angle: " + est.toString() + 
-					"deg, Deviation: " + dev.toString() + "deg (" + percent.toString() + "%)");
+	QString degree = "";			// UTF-8 (HEX) encoding needed to print degree symbol in QString
+	degree.append(QChar(0xB0));		// on Windows
+	QString percentString = QString::number(percent.toDouble(), 'f', 2);	// Round percent number
+
+	return QString("Real angle: " + angle.toString() + degree + ", Estimated angle: " + est.toString() +
+					degree + ", Deviation: " + dev.toString() + degree + " (" + percentString + "%)");
 }
 
 QString ResultGenerator::objSizeRes(ResultGenerator::ResultMap::iterator it)

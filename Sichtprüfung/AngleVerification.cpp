@@ -50,7 +50,7 @@ ResultGenerator::ResultMap AngleVerification::results()
 
 	param.setUp("Angle right side", angleRight_, QMetaType::Double);
 	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_OBJ_ANGLE_RIGHT, param));
-	
+
 	return results;
 }
 
@@ -70,7 +70,7 @@ bool AngleVerification::run(const cv::Mat* img)
 		processedImg_->copyTo(tmp);
 		cv::findContours(tmp, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
-		angleLeft_ = 0.0;
+		angleLeft_ = 5.0;
 		angleRight_ = 10.0;
 
 		// Draw contour

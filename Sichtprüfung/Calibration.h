@@ -35,6 +35,8 @@ private:
 	//Size of a contour in pixel
 	int contourSize_;
 
+	bool drawLines_;
+
 	cv::RotatedRect boundingBox_;
 };
 

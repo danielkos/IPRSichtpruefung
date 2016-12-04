@@ -53,6 +53,7 @@ private:
 	//Computation for each result
 	QString calibRes(ResultGenerator::ResultMap::iterator it);
 	QString circleRes(ResultGenerator::ResultMap::iterator it);
+	QString circleCenterRes(ResultGenerator::ResultMap::iterator it);
 	QString angleRes(ResultGenerator::ResultMap::iterator it);
 	QString objSizeRes(ResultGenerator::ResultMap::iterator it);
 

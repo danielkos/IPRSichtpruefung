@@ -177,7 +177,7 @@ void MainGui::runSelectedMethods()
 				{
 					ui_.listWidgetResults->addItem(*it);
 				}
-
+				ui_.listWidgetResults->addItem("");
 				//static_cast<QStringListModel*>(ui_.listViewResults->model())->setStringList(res);
 			}
 			else
@@ -189,6 +189,8 @@ void MainGui::runSelectedMethods()
 
 		}
 	}
+
+	ui_.listWidgetResults->addItem("-------------------------------------------------------------------------");
 
 	QApplication::restoreOverrideCursor();
 	statusOutput("Selected methods completed");

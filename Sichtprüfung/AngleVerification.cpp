@@ -46,12 +46,11 @@ ResultGenerator::ResultMap AngleVerification::results()
 	Parameter param;
 
 	param.setUp("Angle left side", angleLeft_, QMetaType::Double);
-	param.setUp("Angle right side", angleRight_, QMetaType::Double);
-
-	//Set a paramter definied for the generator
 	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_OBJ_ANGLE_LEFT, param));
-	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_OBJ_ANGLE_RIGHT, param));
 
+	param.setUp("Angle right side", angleRight_, QMetaType::Double);
+	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_OBJ_ANGLE_RIGHT, param));
+	
 	return results;
 }
 
@@ -72,10 +71,13 @@ bool AngleVerification::run(const cv::Mat* img)
 		cv::findContours(tmp, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
 		angleLeft_ = 0.0;
-		angleRight_ = 0.0;
+		angleRight_ = 10.0;
 
 		// Draw contour
-		//cv::drawContours(*resImg_, contours, -1, cv::Scalar(0, 255, 0), 2);  //draw contours on the image
+		if (!contours.empty())
+		{
+			cv::drawContours(*resImg_, contours, -1, cv::Scalar(0, 255, 0), 2);
+		}
 		
 		LOGGER->Log("Number contours: %d", contours.size());
 

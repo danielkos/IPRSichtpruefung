@@ -44,6 +44,11 @@ QString ResultGenerator::circleRes(ResultGenerator::ResultMap::iterator it)
 					"cm, Deviation: " + dev.toString() + "cm (" + percent.toString() + "%)");
 }
 
+QString ResultGenerator::circleCenterRes(ResultGenerator::ResultMap::iterator it)
+{
+	return QString("Hole centered: " + it->second.value_.toString());
+}
+
 QString ResultGenerator::angleRes(ResultGenerator::ResultMap::iterator it)
 {
 	QVariant angle = settings_.at(mapping_.at(it->first)).value_;
@@ -91,7 +96,7 @@ QStringList ResultGenerator::results(QString methodName, ResultGenerator::Result
 			ret = angleRes(it);
 			break;
 		case ResultGenerator::RES_CIRCLE_MIDDLE:
-			ret = "Circle centered: " + it->second.value_.toBool();
+			ret = circleCenterRes(it);
 			break;
 		case ResultGenerator::RES_CIRCLE_RADIUS:
 			ret = circleRes(it);

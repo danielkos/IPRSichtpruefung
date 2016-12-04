@@ -40,12 +40,14 @@ void MethodGuiItem::paramInputChanged(const QString& input)
 {
 	int index = ui_.comboBoxParams->currentIndex();
 	parameters_[index].value_ = input;
+	changeParams(index);
 }
 
 void MethodGuiItem::paramInputChanged(bool input)
 {
 	int index = ui_.comboBoxParams->currentIndex();
 	parameters_[index].value_ = input;
+	changeParams(index);
 }
 
 bool MethodGuiItem::selected()
@@ -93,6 +95,7 @@ void MethodGuiItem::changeParams(int index)
 		ui_.lineEditNumInput->setVisible(false);
 		ui_.radioButtonBoolInput->setVisible(true);
 		ui_.radioButtonBoolInput->setChecked(parameters_[index].value_.toBool());
+		ui_.radioButtonBoolInput->setText(parameters_[index].value_.toBool() ? "Enabled" : "Disabled");
 		break;
 	default:
 		ui_.lineEditNumInput->setVisible(false);

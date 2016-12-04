@@ -29,15 +29,15 @@ public:
     QHBoxLayout *horizontalLayout_2;
     QGroupBox *groupBoxMethod;
     QHBoxLayout *horizontalLayout_4;
-    QRadioButton *radioButtonBoolInput;
     QComboBox *comboBoxParams;
+    QRadioButton *radioButtonBoolInput;
     QLineEdit *lineEditNumInput;
 
     void setupUi(QWidget *Method)
     {
         if (Method->objectName().isEmpty())
             Method->setObjectName(QStringLiteral("Method"));
-        Method->resize(318, 53);
+        Method->resize(318, 59);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -57,16 +57,16 @@ public:
         horizontalLayout_4->setSpacing(6);
         horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
         horizontalLayout_4->setContentsMargins(-1, 15, -1, 9);
-        radioButtonBoolInput = new QRadioButton(groupBoxMethod);
-        radioButtonBoolInput->setObjectName(QStringLiteral("radioButtonBoolInput"));
-
-        horizontalLayout_4->addWidget(radioButtonBoolInput);
-
         comboBoxParams = new QComboBox(groupBoxMethod);
         comboBoxParams->setObjectName(QStringLiteral("comboBoxParams"));
         comboBoxParams->setMinimumSize(QSize(140, 0));
 
         horizontalLayout_4->addWidget(comboBoxParams);
+
+        radioButtonBoolInput = new QRadioButton(groupBoxMethod);
+        radioButtonBoolInput->setObjectName(QStringLiteral("radioButtonBoolInput"));
+
+        horizontalLayout_4->addWidget(radioButtonBoolInput);
 
         lineEditNumInput = new QLineEdit(groupBoxMethod);
         lineEditNumInput->setObjectName(QStringLiteral("lineEditNumInput"));

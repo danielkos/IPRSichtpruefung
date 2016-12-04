@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>318</width>
-    <height>53</height>
+    <height>59</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -63,19 +63,19 @@
        <number>9</number>
       </property>
       <item>
-       <widget class="QRadioButton" name="radioButtonBoolInput">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QComboBox" name="comboBoxParams">
         <property name="minimumSize">
          <size>
           <width>140</width>
           <height>0</height>
          </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButtonBoolInput">
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>

@@ -83,9 +83,6 @@
     <ClCompile Include="MethodGuiItem.cpp">
       <Filter>Source Dateien\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="HoleVerification.cpp">
-      <Filter>Source Dateien\Computation</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_MethodGuiItem.cpp">
       <Filter>Generierte Dateien\Debug</Filter>
     </ClCompile>
@@ -94,9 +91,6 @@
     </ClCompile>
     <ClCompile Include="cvmatandqimage.cpp">
       <Filter>Source Dateien\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="HoleParameter.cpp">
-      <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
     <ClCompile Include="Calibration.cpp">
       <Filter>Source Dateien\Computation</Filter>
@@ -127,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="Utilities.h">
       <Filter>Header Dateien\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="HoleVerification.cpp">
+      <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -165,14 +162,8 @@
     <ClInclude Include="VerificationMethod.h">
       <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
-    <ClInclude Include="HoleVerification.h">
-      <Filter>Header Dateien\Computation</Filter>
-    </ClInclude>
     <ClInclude Include="cvmatandqimage.h">
       <Filter>Header Dateien\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="HoleParameter.h">
-      <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
     <ClInclude Include="Calibration.h">
       <Filter>Header Dateien\Computation</Filter>
@@ -194,6 +185,9 @@
     </ClInclude>
     <ClInclude Include="CLogger.h">
       <Filter>Header Dateien\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="HoleVerification.h">
+      <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

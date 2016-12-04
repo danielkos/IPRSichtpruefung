@@ -30,6 +30,7 @@ std::vector<Parameter> AngleVerification::parameters()
 {
 	std::vector<Parameter>parameters;
 	Parameter param;
+
 	//Setup parameter, name will be displayed on gui
 	param.setUp("Resolution Width", QVariant(ResolutionWidth_), QMetaType::Int);
 	parameters.push_back(param);
@@ -78,14 +79,18 @@ bool AngleVerification::run(const cv::Mat* img)
 		
 		LOGGER->Log("Number contours: %d", contours.size());
 
-		for (int i = 1; i < contours.size(); i++)
+		for (int i = 0; i < contours.size(); i++)
 		{
 			LOGGER->Log("Size contour %d: %d", i, contours[i].size());
 
-			for (int j = 0; j < contours[i].size(); j++) 
+			for (int j = 0; j < contours[i].size(); j+=3) 
 			{
 				LOGGER->Log("Contour element: %d %d", contours[i].at(j), contours[i].at(j));
-				cv::circle(*resImg_, contours[i].at(j), 2, cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
+				//cv::circle(*resImg_, contours[i].at(j), 2, cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
+
+				char buffer[64] = { 0 };
+				sprintf(buffer, "%d", j);
+				cv::putText(*resImg_, buffer, contours[i].at(j), cv::FONT_HERSHEY_SIMPLEX, .6, cv::Scalar(0), 1);
 			}
 		}
 

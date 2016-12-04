@@ -192,7 +192,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="HoleParameter.cpp" />
     <ClCompile Include="HoleVerification.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGui.cpp" />
@@ -267,9 +266,8 @@
     <ClInclude Include="cvmatandqimage.h" />
     <ClInclude Include="CLogger.h" />
     <ClInclude Include="GeneratedFiles\ui_Options.h" />
-    <ClInclude Include="HoleParameter.h" />
-    <ClInclude Include="GeneratedFiles\ui_Method.h" />
     <ClInclude Include="HoleVerification.h" />
+    <ClInclude Include="GeneratedFiles\ui_Method.h" />
     <CustomBuild Include="OptionsGui.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing OptionsGui.h...</Message>

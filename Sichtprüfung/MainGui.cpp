@@ -32,7 +32,7 @@ MainGui::MainGui(QWidget *parent)
 	inputView_ = new FrameView(ui_.widInputImage);
 	preprocView_ = new FrameView(ui_.widPreprocessed);
 	resultView_ = new FrameView(ui_.widResult);
-
+	
 	//add views to the layout of the parent widget
 	ui_.widInputImage->layout()->addWidget(inputView_);
 	ui_.widPreprocessed->layout()->addWidget(preprocView_);
@@ -142,8 +142,14 @@ void MainGui::runSelectedMethods()
 {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	statusOutput("Run selected methods...");
+	
+	// Make sure images of previous run don't exist anymore, because later
+	// the individual images are weighted. If not images of old runs
+	// are visible in this current run if images have alpha values
+	preprocImg_ = new cv::Mat();
+	resultImg_ = new cv::Mat();
 
-	//Look for all checked methods an execute them
+	// Look for all checked methods an execute them
 	for (ItemMethodMap::iterator it = methods_.begin(); it != methods_.end(); it++)
 	{
 		if (it->first->selected())
@@ -166,8 +172,8 @@ void MainGui::runSelectedMethods()
 				preprocImg_ = it->second->processed();
 				resultImg_ = it->second->resultImg();
 				//Show imgs on gui
-				resultView_->showImage(resultImg_);
 				preprocView_->showImage(preprocImg_);
+				resultView_->showImage(resultImg_);
 
 				resGenerator.setSettings(generateSettings());
 				QStringList res = resGenerator.results(methodName, it->second->results());

@@ -4,7 +4,7 @@
 #include <QImage>
 
 FrameView::FrameView(QWidget* parent)
-	:QLabel(parent)
+	: QLabel(parent)
 {
 	//Allow to scale the image automatically
 	setScaledContents(true);

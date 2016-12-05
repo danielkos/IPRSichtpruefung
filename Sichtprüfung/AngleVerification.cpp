@@ -8,7 +8,9 @@
 
 AngleVerification::AngleVerification()
 {
-	ResolutionWidth_ = 960;
+	cannyLowerThresh_ = 50;
+	cannyUpperThresh_ = 200;
+	angleTolerance_ = 8.0;
 }
 
 AngleVerification::~AngleVerification()
@@ -21,7 +23,9 @@ void AngleVerification::setParameters(std::vector<Parameter>parameters)
 	//The order is determined by parameters()
 	if (parameters.size() == parametersSize_)
 	{
-		ResolutionWidth_ = parameters[0].value_.toInt();
+		cannyLowerThresh_ = parameters[0].value_.toDouble();
+		cannyUpperThresh_ = parameters[1].value_.toDouble();
+		angleTolerance_ = parameters[2].value_.toDouble();
 	}
 }
 
@@ -32,7 +36,13 @@ std::vector<Parameter> AngleVerification::parameters()
 	Parameter param;
 
 	//Setup parameter, name will be displayed on gui
-	param.setUp("Resolution Width", QVariant(ResolutionWidth_), QMetaType::Int);
+	param.setUp("Canny Lower Threshold", QVariant(cannyLowerThresh_), QMetaType::Double);
+	parameters.push_back(param);
+
+	param.setUp("Canny Upper Threshold", QVariant(cannyUpperThresh_), QMetaType::Double);
+	parameters.push_back(param);
+
+	param.setUp("Angle Equal Tolerance", QVariant(angleTolerance_), QMetaType::Double);
 	parameters.push_back(param);
 
 	parametersSize_ = parameters.size();
@@ -61,125 +71,87 @@ bool AngleVerification::run(const cv::Mat* img)
 	// Check if img is empty
 	if (!img->empty())
 	{
-		cv::Mat tmp;
-		std::vector<std::vector<cv::Point> > contours;
-
+		// Generating a white contour of the object on a black background
 		cv::cvtColor(*img, *processedImg_, cv::COLOR_BGR2GRAY);
 		cv::medianBlur(*img, *resImg_, 5);
-		cv::Canny(*processedImg_, *processedImg_, 50, 600);	// TODO: Parameter durchreichen, falls genutzt später
-		processedImg_->copyTo(tmp);
-		cv::findContours(tmp, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+		inRange(*processedImg_, 50, 200, *processedImg_);
+		cv::Canny(*processedImg_, *processedImg_, cannyLowerThresh_, cannyUpperThresh_);
+		cv::morphologyEx(*processedImg_, *processedImg_, cv::MORPH_CLOSE, cv::noArray(), cv::Point(-1, -1), 2);
+		cv::dilate(*processedImg_, *processedImg_, cv::getStructuringElement(cv::MORPH_DILATE, cv::Size(3, 3)));
+		
 
-		angleLeft_ = 5.0;
-		angleRight_ = 10.0;
-
-		// Draw contour
-		if (!contours.empty())
+		// Hough-Transformation to find the dominant orientation of the object => only consider
+		// lines with big length
+		std::vector<cv::Vec4i> lines;
+		cv::HoughLinesP(*processedImg_, lines, 1, CV_PI / 180, 20, 100, 0);
+		
+		double rotationAngle = 0.0;		// Angle between the dominant orientation of the object
+										// and the horizontal x axis
+		if (lines.size() > 0) 
 		{
-			cv::drawContours(*resImg_, contours, -1, cv::Scalar(0, 255, 0), 2);
+			// It is assumed that only a few, very long lines are found, so just use the first one
+			// (because object has a dominant size in one direction) 
+			cv::Vec4i l = lines[0];
+
+			rotationAngle = getAngleBtwLineAndXAxis(l);
+
+			// Draw the line that was used for the orientation correction with a blue color
+			cv::line(*resImg_, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(255, 0, 0), 2, CV_AA);
 		}
 		
-		LOGGER->Log("Number contours: %d", contours.size());
 
-		for (int i = 0; i < contours.size(); i++)
-		{
-			LOGGER->Log("Size contour %d: %d", i, contours[i].size());
-
-			for (int j = 0; j < contours[i].size(); j+=3) 
-			{
-				LOGGER->Log("Contour element: %d %d", contours[i].at(j), contours[i].at(j));
-				//cv::circle(*resImg_, contours[i].at(j), 2, cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
-
-				char buffer[64] = { 0 };
-				sprintf(buffer, "%d", j);
-				cv::putText(*resImg_, buffer, contours[i].at(j), cv::FONT_HERSHEY_SIMPLEX, .6, cv::Scalar(0), 1);
-			}
-		}
-
+		// Rotate images by the calculated angle. Object should be horizontal in all images now
+		cv::Mat rotation = cv::getRotationMatrix2D(cv::Point(processedImg_->cols / 2, processedImg_->rows / 2), rotationAngle, 1);
+		cv::warpAffine(*processedImg_, *processedImg_, rotation, cv::Size(processedImg_->cols, processedImg_->rows));
+		cv::warpAffine(*resImg_, *resImg_, rotation, cv::Size(resImg_->cols, resImg_->rows));
 		
-		/*cv::Mat mask;
-		// change image to gray scale
-		cv::cvtColor(*img, *processedImg_, cv::COLOR_BGR2GRAY);
-		// blure image
-		cv::medianBlur(*img, *resImg_, 5);
-		// vector of all detected corners
-		std::vector<cv::Point> corners;
-		// vector of all detected corners on the left side
-		std::vector<cv::Point> cornersleft;
-		// vector of all detected corners on the right side
-		std::vector<cv::Point> cornersright;
-		// detecting 10 best corners, quality level 0.05, min distance 5 pixels, empty mask, block size 3,
-		// using harris detection with parameter 0.04
-		cv::goodFeaturesToTrack(*processedImg_, corners, 10, 0.05, 5, mask, 3, false, 0.04);
 
-		if (!corners.empty())
-		{	// divide verticles for left and right side of the image
-			for (size_t i = 0; i < corners.size(); i++)
+		// Use Hough-Transformation again to approximate the contour of the object with straight lines.
+		// Use small minimum line length parameter now to approximate the contour of the object as good
+		// as possible
+		cv::HoughLinesP(*processedImg_, lines, 1, CV_PI / 180, 20, 20, 0);
+			
+		// Calculate the angle between the detected Hough-Lines and the horizontal x axis.
+		// Because the object should be parallel to the x-axis in the image, only the Hough-Lines that
+		// make up the "Schwalbenschwanznut" of the object should have an angular orientation now. All other lines
+		// are parallel to the x or y axis (by considering a small tolerance angleTolerance_).
+		std::vector<HoughLine> linesOfLeftNut;
+		std::vector<HoughLine> linesOfRightNut;
+
+		for (size_t i = 0; i < lines.size(); i++)
+		{
+			cv::Vec4i l = lines[i];
+			double angle = getAngleBtwLineAndXAxis(l);
+			
+			if ( /* line not parallel to x axis */
+				!(abs(angle) >= -angleTolerance_ && abs(angle) <= angleTolerance_)
+				/* line not parallel to y axis */
+				&& !(abs(angle) >= 90.0 - angleTolerance_ && abs(angle) <= 90.0 + angleTolerance_))
 			{
-				// Higlight found corner points in the result image by using green dots
-				cv::Vec2i c = corners[i];
-				cv::circle(*resImg_, cv::Point(c[0], c[1]), 2, cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
-				if (c[0] < processedImg_->cols / 2)
+				// Line has an angular orientation. Check if it belongs to the left or 
+				// right "Schwalbenschwanznut" of the object
+				HoughLine houghLine;
+				houghLine.setUp(l, angle);
+
+				if (angle < 0.0)
 				{
-					cornersleft.push_back(c);
+					linesOfRightNut.push_back(houghLine);
 				}
 				else
 				{
-					cornersright.push_back(c);
+					linesOfLeftNut.push_back(houghLine);
 				}
+
+				// Draw the Hough-Lines that have been detected for the "Schwalbenschwanznut"
+				cv::line(*resImg_, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(0, 0, 255), 2, CV_AA);
 			}
 		}
-		else
-		{
-			res = false;
-		}
-
-		int maxX = 0;
-		int maxY = 0;
-		int max2Y = 0;
-		int ix;
-		int i2y;
-		cv::Vec2i c1, c2;
-
-		// for left side it detect corner with biggest x parameter and a corner with second biggest y parameter 
-		for (int i = 0; i < cornersleft.size(); i++)
-		{
-			c1 = cornersleft[i];
-			int x1 = c1[0];
-			int y1 = c1[1];
-			if (x1 > maxX)
-			{
-				maxX = x1;
-				ix = i;
-			}
-
-			if (y1 > maxY)
-			{
-				maxY = y1;
-			}
-			else
-			{
-				if (y1 > max2Y)
-				{
-					max2Y = y1; i2y = i;
-				}
-			}
-		}
-
-		c1 = cornersleft[ix];
-		c2 = cornersleft[i2y];
-
-		// Highlight the lines that are used for the angle calculation by drawing blue lines
-		cv::Point2f v1 (c1[0], c1[1]);
-		cv::Point2f v2 (c2[0], c2[1]);
-		cv::line(*resImg_, v1, v2, cv::Scalar(255, 0, 0), 6);
-		// TODO: Draw other line
 		
-		// calculate angle between two corners from left side, with biggest x and second biggest y 
-		angleLeft_ = int(atan((c2[1] - c1[1]) / (c1[0] - c2[0])) * 180.0 / 3.14);
 
-		//TODO: Calculate angle also for other side of object => angle calculation in new helper method?
-		angleRight_ = 0.0;*/
+		// Usually more than one Hough-Line is detected for the "Schwalbenschwanznut", so calculate the
+		// median of the angles of each line to get a good overall result
+		angleLeft_ = abs(calculateMedianAngle(&linesOfLeftNut));
+		angleRight_ = abs(calculateMedianAngle(&linesOfRightNut));
 	}
 	else
 	{
@@ -189,3 +161,26 @@ bool AngleVerification::run(const cv::Mat* img)
 	return res;
 }
 
+
+double AngleVerification::getAngleBtwLineAndXAxis(cv::Vec4i line)
+{
+	return std::atan2f(double(line[3] - line[1]), double(line[2] - line[0])) * 180.0 / CV_PI;
+}
+
+
+double AngleVerification::calculateMedianAngle(std::vector<HoughLine> *lines)
+{
+	double medianAngle = 0.0;
+
+	if (lines != 0 && lines->size() > 0)
+	{
+		for (size_t i = 0; i < lines->size(); i++)
+		{
+			medianAngle += lines->at(i).angle_;
+		}
+
+		medianAngle /= lines->size();
+	}
+
+	return medianAngle;
+}

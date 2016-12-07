@@ -35,10 +35,16 @@ int main(int argc, char *argv[])
 
 	mainGui.addVerificationMethod("Calibration", calib);
 	mainGui.addVerificationMethod("Hole detection", holeVer);
-	mainGui.addVerificationMethod("AngleVerification", angleVer);
+	mainGui.addVerificationMethod("Angle Verification", angleVer);
 	
 	mainGui.move(x, y);
 	mainGui.show();
 
-	return app.exec();
+	int res = app.exec();
+
+	delete calib;
+	delete holeVer;
+	delete angleVer;
+	
+	return res;
 }

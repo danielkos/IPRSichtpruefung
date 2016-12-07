@@ -36,11 +36,11 @@ public:
 private:
 	Ui::MainGui ui_;
 
-	//Original image
+	//Original image initialized in constructor
 	cv::Mat* orgImg_;
-	//Preprocessed image
+	//Preprocessed image, only pointers
 	cv::Mat* preprocImg_;
-	//Result image
+	//Result image, only pointers
 	cv::Mat* resultImg_;
 
 	//View to display original image

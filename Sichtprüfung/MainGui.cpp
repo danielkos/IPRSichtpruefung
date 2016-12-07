@@ -38,10 +38,12 @@ MainGui::MainGui(QWidget *parent)
 	ui_.widPreprocessed->layout()->addWidget(preprocView_);
 	ui_.widResult->layout()->addWidget(resultView_);
 
-	//initialize images; needed for copy
+	//initialize space for original img, needed for copy
+	//preprocImg_ and resultImg_ store only the pointer 
+	//and are managed by the corresponding processes
 	orgImg_ = new cv::Mat();
-	preprocImg_ = new cv::Mat();
-	resultImg_ = new cv::Mat();
+	preprocImg_ = NULL;
+	resultImg_ = NULL;
 
 	//Clear the current file path
 	currentFile_.clear();
@@ -111,8 +113,6 @@ MainGui::~MainGui()
 	delete preprocView_;
 	delete resultView_;
 	delete orgImg_;
-	delete preprocImg_;
-	delete resultImg_;
 	delete io_;
 }
 
@@ -121,7 +121,7 @@ void MainGui::setInputImage(cv::Mat* img)
 	if (!img->empty())
 	{
 		//be carefull on stream this might be invalid
-		*orgImg_ = *img;
+		img->copyTo(*orgImg_);
 		//at startup all images are empty
 		inputView_->showImage(orgImg_);
 	}
@@ -149,6 +149,8 @@ void MainGui::runSelectedMethods()
 	preprocImg_ = new cv::Mat();
 	resultImg_ = new cv::Mat();
 
+	cv::Mat oldResult;
+	
 	// Look for all checked methods an execute them
 	for (ItemMethodMap::iterator it = methods_.begin(); it != methods_.end(); it++)
 	{
@@ -177,14 +179,12 @@ void MainGui::runSelectedMethods()
 
 				resGenerator.setSettings(generateSettings());
 				QStringList res = resGenerator.results(methodName, it->second->results());
-				//ui_.listWidgetResults->clear();		// Make sure old results are not displayed anymore
 				
 				for (QStringList::iterator it = res.begin(); it != res.end(); it++)
 				{
 					ui_.listWidgetResults->addItem(*it);
 				}
 				ui_.listWidgetResults->addItem("");
-				//static_cast<QStringListModel*>(ui_.listViewResults->model())->setStringList(res);
 			}
 			else
 			{
@@ -339,8 +339,16 @@ void MainGui::setCurrentFile(QModelIndex index)
 void MainGui::reset()
 {
 	orgImg_->release();
-	preprocImg_->release();
-	resultImg_->release();
+
+	if (preprocImg_)
+	{
+		preprocImg_->release();
+	}
+	
+	if (resultImg_)
+	{
+		resultImg_->release();
+	}
 }
 
 void MainGui::logOutput(QString msg)

@@ -9,6 +9,7 @@ ResultGenerator::ResultGenerator()
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_ANGLE_RIGHT, ResultGenerator::Settings::SET_OBJ_ANGLE));
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_SIZE, ResultGenerator::Settings::SET_OBJ_METRICS));
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_CALIBRATION, ResultGenerator::Settings::SET_REF_SIZE));
+	pixelRatio_ = 1;
 }
 
 ResultGenerator::~ResultGenerator()

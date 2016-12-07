@@ -101,11 +101,12 @@ bool HoleVerification::run(const cv::Mat* img)
 		std::vector<std::vector<cv::Point> > contours;
 		int objectCenterX = 0;
 		int objectCenterY = 0;
+		cv::Rect boundRect;
 
-		inRange(gray, clampLow_, clampHigh_, contourTemp);
-		blur(contourTemp, contourTemp, cv::Size(3, 3));
-		erode(contourTemp, contourTemp, cv::Mat());
-		findContours(contourTemp, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+		cv::inRange(gray, clampLow_, clampHigh_, contourTemp);
+		cv::blur(contourTemp, contourTemp, cv::Size(3, 3));
+		cv::erode(contourTemp, contourTemp, cv::Mat());
+		cv::findContours(contourTemp, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
 		if (!contours.empty())
 		{
@@ -115,9 +116,9 @@ bool HoleVerification::run(const cv::Mat* img)
 			// Searching the contour with the maximum area
 			for (int i = 0; i< contours.size(); i++)
 			{
-				if (abs(cv::contourArea(cv::Mat(contours[i]))) > max)
+				if (abs(cv::contourArea(contours[i])) > max)
 				{
-					max = abs(cv::contourArea(cv::Mat(contours[i])));
+					max = abs(cv::contourArea(contours[i]));
 					i_cont = i;
 				}
 			}
@@ -128,7 +129,7 @@ bool HoleVerification::run(const cv::Mat* img)
 			{
 				std::vector<cv::Point> contours_poly;
 				approxPolyDP(cv::Mat(contours[i_cont]), contours_poly, 3, true);
-				cv::Rect boundRect = cv::boundingRect(cv::Mat(contours_poly));
+				boundRect = cv::boundingRect(contours_poly);
 
 				objectCenterX = boundRect.x + boundRect.width / 2;
 				objectCenterY = boundRect.y + boundRect.height / 2;
@@ -140,13 +141,13 @@ bool HoleVerification::run(const cv::Mat* img)
 				// Drawing the center of the contour and printing the center coordinates
 				std::stringstream out;
 				out << objectCenterX << "x" << objectCenterY;
-				putText(*resImg_, out.str(), cv::Point(objectCenterX + 30, objectCenterY + 30), 
+				/*putText(*resImg_, out.str(), cv::Point(objectCenterX + 30, objectCenterY + 30), 
 						CV_FONT_HERSHEY_COMPLEX, 1, colorContour, 2, 8);
-				cv::circle(*resImg_, cv::Point(objectCenterX, objectCenterY), 2, colorContour, 3, cv::LINE_AA);
+				cv::circle(*resImg_, cv::Point(objectCenterX, objectCenterY), 2, colorContour, 3, cv::LINE_AA);*/
 			}
 		}
 
-
+		gray = gray(boundRect);
 		// Detect circles in the given image using Hough Transformation
 		HoughCircles(gray, circles_, cv::HOUGH_GRADIENT, 1,
 			gray.rows / 4, // change this value to detect circles with different distances to each other
@@ -161,9 +162,9 @@ bool HoleVerification::run(const cv::Mat* img)
 				cv::Vec3i c = circles_[i];
 				cv::Scalar colorCircle (0, 0, 255);
 				// Draw detected circle on the image
-				cv::circle(*resImg_, cv::Point(c[0], c[1]), c[2], colorCircle, 2, cv::LINE_AA);
+				cv::circle(*resImg_, cv::Point(c[0] + boundRect.x, c[1] + boundRect.y), c[2], colorCircle, 2, cv::LINE_AA);
 				// Draw center of the detected circle on the image
-				cv::circle(*resImg_, cv::Point(c[0], c[1]), 2, colorCircle, 3, cv::LINE_AA);
+				cv::circle(*resImg_, cv::Point(c[0] + boundRect.x, c[1] + boundRect.y), 2, colorCircle, 3, cv::LINE_AA);
 				
 				// Compare detected object center with center of detected circles:
 				// Difference between the object center and the circle center should be <= centerTolerance_,

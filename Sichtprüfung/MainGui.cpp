@@ -142,12 +142,6 @@ void MainGui::runSelectedMethods()
 {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	statusOutput("Run selected methods...");
-	
-	// Make sure images of previous run don't exist anymore, because later
-	// the individual images are weighted. If not images of old runs
-	// are visible in this current run if images have alpha values
-	preprocImg_ = new cv::Mat();
-	resultImg_ = new cv::Mat();
 
 	cv::Mat oldResult;
 	
@@ -165,14 +159,27 @@ void MainGui::runSelectedMethods()
 			if (it->second->run(orgImg_))
 			{
 				logOutput("Method: " + methodName + " successful");
-				//If method was successful, combine results into one image
-				//In this state not suitable for parallelization
-				//Src and Dst have to have the same type
-				cv::addWeighted(*orgImg_, 0.5, *(it->second->resultImg()), 0.5, 0.0, *resultImg_);
-				it->first->setMode(true);
+
+				if (resultImg_)
+				{
+					resultImg_->copyTo(oldResult);
+				}
+				else
+				{
+					orgImg_->copyTo(oldResult);
+				}
+				
 				//Get results from method, in this case imgs
 				preprocImg_ = it->second->processed();
 				resultImg_ = it->second->resultImg();
+				
+				//If method was successful, combine results into one image
+				//In this state not suitable for parallelization
+				//Src and Dst have to have the same type
+				cv::addWeighted(oldResult, 0.5, *resultImg_, 0.5, 0.0, *resultImg_);
+				
+				it->first->setMode(true);
+
 				//Show imgs on gui
 				preprocView_->showImage(preprocImg_);
 				resultView_->showImage(resultImg_);

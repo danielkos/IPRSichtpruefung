@@ -12,6 +12,8 @@ HoleVerification::HoleVerification()
 	clampLow_ = 60;
 	clampHigh_ = 200;
 	centerTolerance_ = 5.0;
+	upperCannyThresh_ = 100;
+	centerThresh_ = 50;
 }
 
 HoleVerification::~HoleVerification()
@@ -29,6 +31,8 @@ void HoleVerification::setParameters(std::vector<Parameter>parameters)
 		clampLow_ = parameters[2].value_.toInt();
 		clampHigh_ = parameters[3].value_.toInt();
 		centerTolerance_ = parameters[4].value_.toDouble();
+		upperCannyThresh_ = parameters[5].value_.toDouble();;
+		centerThresh_ = parameters[6].value_.toDouble();;
 	}
 }
 
@@ -52,6 +56,12 @@ std::vector<Parameter> HoleVerification::parameters()
 	parameters.push_back(param);
 
 	param.setUp("Center tolerance", QVariant(centerTolerance_), QMetaType::Double);
+	parameters.push_back(param);
+
+	param.setUp("Upper Threshold", QVariant(upperCannyThresh_), QMetaType::Double);
+	parameters.push_back(param);
+
+	param.setUp("Center Threshold", QVariant(centerThresh_), QMetaType::Double);
 	parameters.push_back(param);
 
 	parametersSize_ = parameters.size();
@@ -94,8 +104,8 @@ bool HoleVerification::run(const cv::Mat* img)
 
 		cv::medianBlur(*img, *resImg_, 5);	// blure image
 		cv::cvtColor(*resImg_, *processedImg_, cv::COLOR_BGR2GRAY);		// change image to gray scale
-		processedImg_->copyTo(gray);		// Following operations alter the image and the Hough
-											// Transformation should work on the gray image, so copy it
+		processedImg_->copyTo(gray); // Following operations alter the image and the Hough
+									 // Transformation should work on the gray image, so copy it
 		
 		// Find contour of object and calculate its center point
 		std::vector<std::vector<cv::Point> > contours;
@@ -103,10 +113,12 @@ bool HoleVerification::run(const cv::Mat* img)
 		int objectCenterY = 0;
 		cv::Rect boundRect;
 
-		cv::inRange(gray, clampLow_, clampHigh_, contourTemp);
-		cv::blur(contourTemp, contourTemp, cv::Size(3, 3));
-		cv::erode(contourTemp, contourTemp, cv::Mat());
-		cv::findContours(contourTemp, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+		cv::inRange(gray, clampLow_, clampHigh_, *processedImg_);
+		cv::blur(*processedImg_, *processedImg_, cv::Size(3, 3));
+		cv::erode(*processedImg_, *processedImg_, cv::Mat());
+		 
+		processedImg_->copyTo(contourTemp); 
+		cv::findContours(contourTemp, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
 		if (!contours.empty())
 		{
@@ -151,7 +163,7 @@ bool HoleVerification::run(const cv::Mat* img)
 		// Detect circles in the given image using Hough Transformation
 		HoughCircles(gray, circles_, cv::HOUGH_GRADIENT, 1,
 			gray.rows / 4, // change this value to detect circles with different distances to each other
-			110, 50, minRadius_, maxRadius_ // change the last two parameters
+			upperCannyThresh_, centerThresh_, minRadius_, maxRadius_ // change the last two parameters
 										  // (minradius & maxradius) to detect larger circles (in pixels)
 		);
 

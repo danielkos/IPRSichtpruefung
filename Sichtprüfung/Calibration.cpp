@@ -75,6 +75,12 @@ ResultGenerator::ResultMap Calibration::results()
 
 	return results;
 }
+
+cv::RotatedRect* Calibration::boundingBox()
+{
+	return &boundingBox_;
+}
+
 bool Calibration::run(const cv::Mat* img)
 {
 	bool res = true;

@@ -22,9 +22,13 @@ public:
 	void setParameters(std::vector<Parameter> parameters);
 	//Implementation of interface VerificationMethod
 	std::vector<Parameter> parameters();
+	//Implementation of interface VerificationMethod
 	ResultGenerator::ResultMap results();
 
-private:
+protected:
+
+	cv::RotatedRect* boundingBox();
+
 	//Parameters for canny edge detection
 	double cannyLowerThresh_;
 	double cannyUpperThresh_;
@@ -34,9 +38,11 @@ private:
 	int ignoreContourSize_;
 	//Size of a contour in pixel
 	int contourSize_;
-
+	//Draw line of bounding rect
 	bool drawLines_;
 
+private:
+	//Bounding rect of the object
 	cv::RotatedRect boundingBox_;
 };
 

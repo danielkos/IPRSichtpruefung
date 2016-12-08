@@ -11,6 +11,7 @@
 #include "Calibration.h"
 #include "HoleVerification.h"
 #include "AngleVerification.h"
+#include "ShapeVerification.h"
 
 int main(int argc, char *argv[])
 {
@@ -32,10 +33,12 @@ int main(int argc, char *argv[])
 	VerificationMethod* calib = new Calibration();
 	VerificationMethod* holeVer = new HoleVerification();
 	VerificationMethod* angleVer = new AngleVerification();
+	VerificationMethod* shapeVer = new ShapeVerification();
 
 	mainGui.addVerificationMethod("Calibration", calib);
 	mainGui.addVerificationMethod("Hole detection", holeVer);
-	mainGui.addVerificationMethod("Angle Verification", angleVer);
+	mainGui.addVerificationMethod("Angle detection", angleVer);
+	mainGui.addVerificationMethod("Shape Verification", shapeVer);
 	
 	mainGui.move(x, y);
 	mainGui.show();

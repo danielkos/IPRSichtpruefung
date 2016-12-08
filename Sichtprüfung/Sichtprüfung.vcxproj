@@ -198,6 +198,7 @@
     <ClCompile Include="MethodGuiItem.cpp" />
     <ClCompile Include="OptionsGui.cpp" />
     <ClCompile Include="ResultGenerator.cpp" />
+    <ClCompile Include="ShapeVerification.cpp" />
     <ClCompile Include="UpldFrame.cpp" />
     <ClCompile Include="Utilities.h" />
     <ClCompile Include="VerificationMethod.cpp" />
@@ -306,6 +307,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_UITOOLS_LIB -DQT_WIDGETS_LIB -DQT_MULTIMEDIA_LIB "-I$(OPENCV_DIR)\..\..\include" "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtUiTools" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtMultimedia"</Command>
     </CustomBuild>
     <ClInclude Include="ResultGenerator.h" />
+    <ClInclude Include="ShapeVerification.h" />
     <ClInclude Include="VerificationMethod.h" />
     <CustomBuild Include="FrameView.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing FrameView.h...</Message>

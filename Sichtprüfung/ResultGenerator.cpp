@@ -72,11 +72,14 @@ QString ResultGenerator::objSizeRes(ResultGenerator::ResultMap::iterator it)
 	QSize size = settings_.at(mapping_.at(it->first)).value_.toSize();
 	QSize est = it->second.value_.toSize();
 
-	est.setWidth(est.width() * pixelRatio_.toDouble());
-	est.setHeight(est.height() * pixelRatio_.toDouble());
+	double ratio = pixelRatio_.toDouble();
+	double estWidth = (double)(est.width() * ratio);
+	double estHeight = (double)(est.height() * ratio);
 
-	return QString("Real Size:" + QString(size.width()) + "x" + QString(size.height()) + ", Estimated size: " +
-					QString(est.width()) + "x" + QString(est.height()));
+	QString ret = "Real Size:" + QString::number(size.width()) + "x" + QString::number(size.height()) + ", Estimated size: " +
+		QString::number(estWidth) + "x" + QString::number(estHeight);
+
+	return ret;
 }
 
 QStringList ResultGenerator::results(QString methodName, ResultGenerator::ResultMap methodResults)

@@ -121,8 +121,13 @@ void MainGui::setInputImage(cv::Mat* img)
 	if (!img->empty())
 	{
 		//be carefull on stream this might be invalid
+		//cut img to a 1:1 shape
+		/*cv::Size size = img->size();
+		int scale = (size.height > size.width) ? size.width : size.height;
+		cv::Mat subImg = *img;
+		cv::Rect roi(subImg.cols/2 - scale/2, 0, scale, scale);
+		*orgImg_ = subImg(roi);*/
 		img->copyTo(*orgImg_);
-		//at startup all images are empty
 		inputView_->showImage(orgImg_);
 	}
 }
@@ -160,7 +165,7 @@ void MainGui::runSelectedMethods()
 			{
 				logOutput("Method: " + methodName + " successful");
 
-				if (resultImg_)
+				if (resultImg_ && oldResult.type() == orgImg_->type())
 				{
 					resultImg_->copyTo(oldResult);
 				}

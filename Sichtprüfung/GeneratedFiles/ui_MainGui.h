@@ -78,6 +78,7 @@ public:
     QVBoxLayout *verticalLayout_8;
     QVBoxLayout *verticalLayout_6;
     QLabel *labelProgress;
+    QSpacerItem *horizontalSpacer;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuOptions;
@@ -114,9 +115,12 @@ public:
         gridLayout_2->setContentsMargins(5, 3, 5, 5);
         tabWidget = new QTabWidget(centralWidget);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
-        sizePolicy.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
-        tabWidget->setSizePolicy(sizePolicy);
-        tabWidget->setMinimumSize(QSize(300, 0));
+        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy1);
+        tabWidget->setMinimumSize(QSize(400, 0));
         tabWidget->setTabShape(QTabWidget::Rounded);
         tabWidget->setElideMode(Qt::ElideLeft);
         tabTestMethods = new QWidget();
@@ -158,11 +162,11 @@ public:
 
         buttonBoxMethods = new QDialogButtonBox(tabTestMethods);
         buttonBoxMethods->setObjectName(QStringLiteral("buttonBoxMethods"));
-        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(buttonBoxMethods->sizePolicy().hasHeightForWidth());
-        buttonBoxMethods->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(buttonBoxMethods->sizePolicy().hasHeightForWidth());
+        buttonBoxMethods->setSizePolicy(sizePolicy2);
         buttonBoxMethods->setStandardButtons(QDialogButtonBox::Apply);
 
         verticalLayout_5->addWidget(buttonBoxMethods);
@@ -174,11 +178,11 @@ public:
         tabWidget->addTab(tabTestMethods, QString());
         tabInputImages = new QWidget();
         tabInputImages->setObjectName(QStringLiteral("tabInputImages"));
-        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(tabInputImages->sizePolicy().hasHeightForWidth());
-        tabInputImages->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(tabInputImages->sizePolicy().hasHeightForWidth());
+        tabInputImages->setSizePolicy(sizePolicy3);
         verticalLayout_3 = new QVBoxLayout(tabInputImages);
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setContentsMargins(11, 11, 11, 11);
@@ -198,8 +202,8 @@ public:
 
         buttonBoxInputs = new QDialogButtonBox(tabInputImages);
         buttonBoxInputs->setObjectName(QStringLiteral("buttonBoxInputs"));
-        sizePolicy1.setHeightForWidth(buttonBoxInputs->sizePolicy().hasHeightForWidth());
-        buttonBoxInputs->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(buttonBoxInputs->sizePolicy().hasHeightForWidth());
+        buttonBoxInputs->setSizePolicy(sizePolicy2);
         buttonBoxInputs->setMinimumSize(QSize(0, 0));
         buttonBoxInputs->setLayoutDirection(Qt::LeftToRight);
         buttonBoxInputs->setOrientation(Qt::Horizontal);
@@ -266,11 +270,11 @@ public:
         gridLayout->setContentsMargins(0, 6, 0, 6);
         labelPreprocessed = new QLabel(gridWidget);
         labelPreprocessed->setObjectName(QStringLiteral("labelPreprocessed"));
-        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(labelPreprocessed->sizePolicy().hasHeightForWidth());
-        labelPreprocessed->setSizePolicy(sizePolicy3);
+        QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(labelPreprocessed->sizePolicy().hasHeightForWidth());
+        labelPreprocessed->setSizePolicy(sizePolicy4);
         labelPreprocessed->setMinimumSize(QSize(400, 0));
         labelPreprocessed->setMaximumSize(QSize(16777215, 30));
         QFont font;
@@ -288,8 +292,8 @@ public:
 
         labelInput = new QLabel(gridWidget);
         labelInput->setObjectName(QStringLiteral("labelInput"));
-        sizePolicy3.setHeightForWidth(labelInput->sizePolicy().hasHeightForWidth());
-        labelInput->setSizePolicy(sizePolicy3);
+        sizePolicy4.setHeightForWidth(labelInput->sizePolicy().hasHeightForWidth());
+        labelInput->setSizePolicy(sizePolicy4);
         labelInput->setMinimumSize(QSize(400, 0));
         labelInput->setMaximumSize(QSize(16777215, 30));
         labelInput->setFont(font);
@@ -346,11 +350,11 @@ public:
 
         labelResult = new QLabel(verticalFrame);
         labelResult->setObjectName(QStringLiteral("labelResult"));
-        QSizePolicy sizePolicy4(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
-        sizePolicy4.setHeightForWidth(labelResult->sizePolicy().hasHeightForWidth());
-        labelResult->setSizePolicy(sizePolicy4);
+        QSizePolicy sizePolicy5(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy5.setHorizontalStretch(0);
+        sizePolicy5.setVerticalStretch(0);
+        sizePolicy5.setHeightForWidth(labelResult->sizePolicy().hasHeightForWidth());
+        labelResult->setSizePolicy(sizePolicy5);
         labelResult->setMaximumSize(QSize(16777215, 30));
         QFont font1;
         font1.setFamily(QStringLiteral("Arial"));
@@ -395,7 +399,11 @@ public:
         horizontalLayout->addWidget(verticalFrame);
 
 
-        gridLayout_2->addLayout(horizontalLayout, 0, 1, 1, 1);
+        gridLayout_2->addLayout(horizontalLayout, 0, 2, 1, 1);
+
+        horizontalSpacer = new QSpacerItem(1, 1, QSizePolicy::Preferred, QSizePolicy::Minimum);
+
+        gridLayout_2->addItem(horizontalSpacer, 0, 1, 1, 1);
 
         MainGui->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainGui);
@@ -429,7 +437,7 @@ public:
         MainGui->setWindowTitle(QApplication::translate("MainGui", "Sichtpr\303\274fung", 0));
         action_About->setText(QApplication::translate("MainGui", "&About", 0));
         action_Exit->setText(QApplication::translate("MainGui", "&Exit", 0));
-        actionTest_Object->setText(QApplication::translate("MainGui", "Reference Object", 0));
+        actionTest_Object->setText(QApplication::translate("MainGui", "Test Object", 0));
         groupBoxMethods->setTitle(QApplication::translate("MainGui", "Methods", 0));
         groupBoxResults->setTitle(QApplication::translate("MainGui", "Results", 0));
         tabWidget->setTabText(tabWidget->indexOf(tabTestMethods), QApplication::translate("MainGui", "Test Methods", 0));

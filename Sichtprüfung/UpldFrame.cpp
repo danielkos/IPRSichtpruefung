@@ -4,6 +4,8 @@
 #include <chrono>
 #include <thread>
 
+#include "CLogger.h"
+
 
 UpldFrame::UpldFrame()
 {
@@ -49,6 +51,9 @@ void UpldFrame::fromCamera()
 			frame.release();
 			// get a new frame from camera
 			videoCapture_->read(frame);
+
+			// TODO: Kamerauflösung und Einstellungen checken: es kommt immer ein Bild von 640x480 an
+			LOGGER->Log("Camera resolution: %d %d", frame.cols, frame.rows);
 		}
 
 		Q_EMIT newCameraImage(&frame);

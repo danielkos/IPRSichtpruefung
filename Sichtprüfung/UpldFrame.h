@@ -29,7 +29,7 @@ Q_SIGNALS:
 private:
 
 	// Time delay (in milliseconds) between the recording of two camera frames.
-	const long CAMERA_RECORD_DELAY = 20;
+	const long CAMERA_RECORD_DELAY = 90;
 
 	cv::VideoCapture* videoCapture_;
 	bool exit_;

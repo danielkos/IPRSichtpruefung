@@ -146,7 +146,7 @@ bool AngleVerification::run(const cv::Mat* img)
 				cv::line(*resImg_, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(0, 0, 255), 2, CV_AA);
 			}
 		}
-		
+
 
 		// Usually more than one Hough-Line is detected for the "Schwalbenschwanznut", so calculate the
 		// median of the angles of each line to get a good overall result

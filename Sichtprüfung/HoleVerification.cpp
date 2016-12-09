@@ -30,9 +30,9 @@ void HoleVerification::setParameters(std::vector<Parameter>parameters)
 		maxRadius_ = parameters[1].value_.toInt();
 		clampLow_ = parameters[2].value_.toInt();
 		clampHigh_ = parameters[3].value_.toInt();
+		upperCannyThresh_ = parameters[5].value_.toDouble();
+		centerThresh_ = parameters[6].value_.toDouble();
 		centerTolerance_ = parameters[4].value_.toDouble();
-		upperCannyThresh_ = parameters[5].value_.toDouble();;
-		centerThresh_ = parameters[6].value_.toDouble();;
 	}
 }
 
@@ -55,13 +55,13 @@ std::vector<Parameter> HoleVerification::parameters()
 	param.setUp("Clamp high", QVariant(clampHigh_), QMetaType::Int);
 	parameters.push_back(param);
 
-	param.setUp("Center tolerance", QVariant(centerTolerance_), QMetaType::Double);
+	param.setUp("Hough: Upper Threshold", QVariant(upperCannyThresh_), QMetaType::Double);
 	parameters.push_back(param);
 
-	param.setUp("Upper Threshold", QVariant(upperCannyThresh_), QMetaType::Double);
+	param.setUp("Hough: Center Threshold", QVariant(centerThresh_), QMetaType::Double);
 	parameters.push_back(param);
 
-	param.setUp("Center Threshold", QVariant(centerThresh_), QMetaType::Double);
+	param.setUp("Object Center tolerance", QVariant(centerTolerance_), QMetaType::Double);
 	parameters.push_back(param);
 
 	parametersSize_ = parameters.size();

@@ -24,11 +24,6 @@ int main(int argc, char *argv[])
 	//GUI generated from ui file
 	MainGui mainGui;
 	QDesktopWidget *desktop = QApplication::desktop();
-	QSize windowSize = mainGui.size();
-	int screenWidth = desktop->width();
-	int screenHeight = desktop->height();
-	int x = (screenWidth - windowSize.width()) / 2;
-	int y = (screenHeight - windowSize.height()) / 2;
 
 	VerificationMethod* calib = new Calibration();
 	VerificationMethod* holeVer = new HoleVerification();
@@ -40,8 +35,13 @@ int main(int argc, char *argv[])
 	mainGui.addVerificationMethod("Angle detection", angleVer);
 	mainGui.addVerificationMethod("Shape Verification", shapeVer);
 	
-	mainGui.move(x, y);
 	mainGui.show();
+
+	QSize windowSize = mainGui.size();
+	int difference = desktop->frameGeometry().height() - desktop->geometry().height();
+	int screenWidth = desktop->availableGeometry().width();
+	int x = (screenWidth - windowSize.width()) / 2;
+	mainGui.move(x, difference);
 
 	int res = app.exec();
 

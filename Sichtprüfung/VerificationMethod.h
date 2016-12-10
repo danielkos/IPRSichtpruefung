@@ -4,6 +4,8 @@
 #include "Parameter.h"
 #include "ResultGenerator.h"
 
+#include <opencv2\opencv.hpp>
+
 namespace cv
 {
 	class Mat;
@@ -22,6 +24,16 @@ public:
 	* \brief Pure abstract function which applies the method
 	*/
 	virtual bool run(const cv::Mat* img) = 0;
+
+	void initializeResultImage(const cv::Mat* img);
+
+	void drawPoint(cv::Point2f& point, const cv::Scalar& color);
+
+	void drawLine(cv::Point2f& start, cv::Point2f& end, const cv::Scalar& color);
+
+	void drawCircle(cv::Point2f& center, size_t radius, const cv::Scalar& color);
+	
+	void drawContour(cv::InputArrayOfArrays& contours, size_t index, const cv::Scalar& color);
 
 	/**
 	* \brief Pure abstract function which set the parameters
@@ -47,8 +59,6 @@ public:
 	* \brief Returns the processed image
 	*/
 	cv::Mat* processed();
-
-	
 
 protected:
 	//Result image

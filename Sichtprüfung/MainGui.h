@@ -10,6 +10,7 @@ class VerificationMethod;
 class MethodGuiItem;
 class OptionsGui;
 class UpldFrame;
+class QTabWidget;
 
 namespace cv
 {
@@ -33,22 +34,26 @@ public:
 	*/
 	void addVerificationMethod(std::string name, VerificationMethod* method);
 
+	/** \brief Adds the result and processed image to a new tab in corresponding view
+	*   \param methodName name of the method
+	*   \param resImg a result image
+	*   \param preprocImg a preprocessed image
+	*/
+	void addMethodResults(const QString& methodName, const cv::Mat* resImg, const cv::Mat* preprocImg);
+
 private:
+
+	bool findTab(const QTabWidget* tabWidget, const QString& name, int& intdex);
+
+	void clearTabs();
+
 	Ui::MainGui ui_;
 
 	//Original image initialized in constructor
 	cv::Mat* orgImg_;
-	//Preprocessed image, only pointers
-	cv::Mat* preprocImg_;
-	//Result image, only pointers
-	cv::Mat* resultImg_;
 
 	//View to display original image
 	FrameView* inputView_;
-	//View to display preprocessed image
-	FrameView* preprocView_;
-	//View to display result image
-	FrameView* resultView_;
 
 	//Types to make code more readable
 	typedef std::map<MethodGuiItem*, VerificationMethod*> ItemMethodMap;

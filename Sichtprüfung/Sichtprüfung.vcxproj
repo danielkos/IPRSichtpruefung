@@ -264,6 +264,7 @@
     </CustomBuild>
     <ClInclude Include="AngleVerification.h" />
     <ClInclude Include="Calibration.h" />
+    <ClInclude Include="Configs.h" />
     <ClInclude Include="cvmatandqimage.h" />
     <ClInclude Include="CLogger.h" />
     <ClInclude Include="GeneratedFiles\ui_Options.h" />

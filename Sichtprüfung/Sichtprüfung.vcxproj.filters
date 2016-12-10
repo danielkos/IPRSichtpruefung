@@ -57,6 +57,9 @@
     <Filter Include="Source Dateien\Utils">
       <UniqueIdentifier>{2ebd6e87-9cb8-4b02-9717-b9982e696205}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Dateien\Configuration">
+      <UniqueIdentifier>{e27bb960-8240-43f6-86e2-16d9e85f5399}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -194,6 +197,9 @@
     </ClInclude>
     <ClInclude Include="ShapeVerification.h">
       <Filter>Header Dateien\Computation</Filter>
+    </ClInclude>
+    <ClInclude Include="Configs.h">
+      <Filter>Header Dateien\Configuration</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 #include "Calibration.h"
+#include "Configs.h"
 #include <QVariant>
 #include <QSize>
 #include <opencv2\opencv.hpp>
@@ -92,8 +93,9 @@ bool Calibration::run(const cv::Mat* img)
 		std::vector<std::vector<cv::Point> > fittedLines;
 		cv::Mat tmp;
 		
+		//Init result image
+		initializeResultImage(img);
 		//Preprocess
-		img->copyTo(*resImg_);
 		cv::medianBlur(*img, *processedImg_, 7);
 		cv::cvtColor(*processedImg_, *processedImg_, cv::COLOR_BGR2GRAY);
 		cv::Canny(*processedImg_, *processedImg_, cannyLowerThresh_, cannyUpperThresh_);
@@ -114,7 +116,7 @@ bool Calibration::run(const cv::Mat* img)
 				{
 					continue;
 				}
-				cv::drawContours(*resImg_, contours, i, cv::Scalar(0, 215, 255), 3);
+				drawContour(contours, i, resultColor::contourColor);
 				
 				boundingBox_ = cv::minAreaRect(contours[i]);
 				cv::Point2f vertices[4];
@@ -130,21 +132,21 @@ bool Calibration::run(const cv::Mat* img)
 					{
 						cv::Point2f v1 = vertices[i];
 						cv::Point2f v2 = vertices[(i + 1) % 4];
-						cv::line(*resImg_, v1, v2, cv::Scalar(0, 255, 0), 6);
+						drawLine(v1, v2, resultColor::resultColor);
 						midVertices[i].x = (v1.x + v2.x) / 2;
 						midVertices[i].y = (v1.y + v2.y) / 2;
 					}
 					//draw mid lines
 					for (size_t i = 0; i < 4; i++)
 					{
-						cv::line(*resImg_, midVertices[i], midVertices[(i + 2) % 4], cv::Scalar(0, 0, 255), 6);
+						drawLine(midVertices[i], midVertices[(i + 2) % 4], resultColor::infoColor);
 					}
 
 					//draw points on top of the lines
 					for (size_t i = 0; i < 4; i++)
 					{
-						cv::circle(*resImg_, vertices[i], 18, cv::Scalar(255, 0, 0), -1);
-						cv::circle(*resImg_, midVertices[i], 18, cv::Scalar(0, 215, 255), -1);
+						drawPoint(vertices[i], resultColor::middleColor);
+						drawPoint(midVertices[i], resultColor::middleColor);
 					}
 				}
 			}

@@ -21,12 +21,12 @@ void VerificationMethod::initializeResultImage(const cv::Mat* img)
 }
 void VerificationMethod::drawPoint(cv::Point2f& point, const cv::Scalar& color)
 {
-	cv::circle(*resImg_, point, resultColorAlpha::circleRadius, color, -1);
+	cv::circle(*resImg_, point, resultColor::circleThickness, color, -1);
 }
 
 void VerificationMethod::drawLine(cv::Point2f& start, cv::Point2f& end, const cv::Scalar& color)
 {
-	cv::line(*resImg_, start, end, color, resultColorAlpha::lineThickness, CV_AA);
+	cv::line(*resImg_, start, end, color, resultColor::lineThickness, CV_AA);
 }
 
 void VerificationMethod::drawCircle(cv::Point2f& center, size_t radius, const cv::Scalar& color)
@@ -36,7 +36,7 @@ void VerificationMethod::drawCircle(cv::Point2f& center, size_t radius, const cv
 
 void VerificationMethod::drawContour(cv::InputArrayOfArrays& contours, size_t index, const cv::Scalar& color)
 {
-	cv::drawContours(*resImg_, contours, index, resultColorAlpha::contourColor, resultColorAlpha::contourThickness);
+	cv::drawContours(*resImg_, contours, index, resultColor::contourColor, resultColor::contourThickness);
 }
 
 cv::Mat* VerificationMethod::resultImg()

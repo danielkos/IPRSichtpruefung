@@ -11,9 +11,9 @@ HoleVerification::HoleVerification()
 	maxRadius_ = 90;
 	clampLow_ = 60;
 	clampHigh_ = 200;
-	centerTolerance_ = 5.0;
 	upperCannyThresh_ = 100;
 	centerThresh_ = 50;
+	centerEqualTolerance_ = 5.0;
 }
 
 HoleVerification::~HoleVerification()
@@ -30,9 +30,9 @@ void HoleVerification::setParameters(std::vector<Parameter>parameters)
 		maxRadius_ = parameters[1].value_.toInt();
 		clampLow_ = parameters[2].value_.toInt();
 		clampHigh_ = parameters[3].value_.toInt();
-		upperCannyThresh_ = parameters[5].value_.toDouble();
-		centerThresh_ = parameters[6].value_.toDouble();
-		centerTolerance_ = parameters[4].value_.toDouble();
+		upperCannyThresh_ = parameters[4].value_.toDouble();
+		centerThresh_ = parameters[5].value_.toDouble();
+		centerEqualTolerance_ = parameters[6].value_.toDouble();
 	}
 }
 
@@ -61,7 +61,7 @@ std::vector<Parameter> HoleVerification::parameters()
 	param.setUp("Hough: Center Threshold", QVariant(centerThresh_), QMetaType::Double);
 	parameters.push_back(param);
 
-	param.setUp("Object Center tolerance", QVariant(centerTolerance_), QMetaType::Double);
+	param.setUp("Object Center tolerance", QVariant(centerEqualTolerance_), QMetaType::Double);
 	parameters.push_back(param);
 
 	parametersSize_ = parameters.size();
@@ -151,12 +151,13 @@ bool HoleVerification::run(const cv::Mat* img)
 				drawContours(*resImg_, contours, i_cont, colorContour, 2);
 
 				// Drawing the center of the contour and printing the center coordinates
-				std::stringstream out;
-				out << objectCenterX << "x" << objectCenterY;
+				//std::stringstream out;
+				//out << objectCenterX << "x" << objectCenterY;
 			}
 		}
 
 		gray = gray(boundRect);
+
 		// Detect circles in the given image using Hough Transformation
 		HoughCircles(gray, circles_, cv::HOUGH_GRADIENT, 1,
 			gray.rows / 4, // change this value to detect circles with different distances to each other
@@ -178,8 +179,8 @@ bool HoleVerification::run(const cv::Mat* img)
 				// Compare detected object center with center of detected circles:
 				// Difference between the object center and the circle center should be <= centerTolerance_,
 				// then they're assumed to be equal
-				if (abs(c[0] - objectCenterX) <= centerTolerance_ 
-					&& abs(c[1] - objectCenterY) <= centerTolerance_) 
+				if (abs(c[0] - objectCenterX) <= centerEqualTolerance_
+					&& abs(c[1] - objectCenterY) <= centerEqualTolerance_)
 				{ 
 					circlesCentered_.push_back(true);
 				}

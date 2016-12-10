@@ -4,6 +4,7 @@
 #include "MethodGuiItem.h"
 #include "UpldFrame.h"
 #include "OptionsGui.h"
+#include "Configs.h"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -298,7 +299,7 @@ void MainGui::addFile()
 
 	QString filter = "Images(*.png *.bmp *.jpg *.jpeg)";
 	
-	filenames = dialog.getOpenFileNames(this, "Select an image", QString(), filter);
+	filenames = dialog.getOpenFileNames(this, "Select an image", QString::fromStdString(paths::defaultFolder), filter);
 
 	QStandardItemModel* model = static_cast<QStandardItemModel*>(ui_.treeViewInput->model());
 

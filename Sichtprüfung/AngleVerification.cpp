@@ -1,4 +1,5 @@
 #include "AngleVerification.h"
+#include "Configs.h"
 
 #include <QVariant>
 #include <opencv2\opencv.hpp>
@@ -96,7 +97,7 @@ bool AngleVerification::run(const cv::Mat* img)
 			rotationAngle = getAngleBtwLineAndXAxis(l);
 
 			// Draw the line that was used for the orientation correction with a blue color
-			cv::line(*resImg_, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(255, 0, 0), 2, CV_AA);
+			drawLine(cv::Point2f(l[0], l[1]), cv::Point2f(l[2], l[3]), resultColor::infoColor);
 		}
 		
 
@@ -143,7 +144,7 @@ bool AngleVerification::run(const cv::Mat* img)
 				}
 
 				// Draw the Hough-Lines that have been detected for the "Schwalbenschwanznut"
-				cv::line(*resImg_, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(0, 0, 255), 2, CV_AA);
+				drawLine(cv::Point2f(l[0], l[1]), cv::Point2f(l[2], l[3]), resultColor::resultColor);
 			}
 		}
 

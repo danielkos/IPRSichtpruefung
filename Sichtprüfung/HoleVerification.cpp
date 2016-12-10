@@ -1,8 +1,8 @@
 #include "HoleVerification.h"
 #include "CLogger.h"
+#include "Configs.h"
 
 #include <QVariant>
-
 #include <opencv2\imgproc.hpp>
 
 HoleVerification::HoleVerification()
@@ -153,9 +153,6 @@ bool HoleVerification::run(const cv::Mat* img)
 				// Drawing the center of the contour and printing the center coordinates
 				std::stringstream out;
 				out << objectCenterX << "x" << objectCenterY;
-				/*putText(*resImg_, out.str(), cv::Point(objectCenterX + 30, objectCenterY + 30), 
-						CV_FONT_HERSHEY_COMPLEX, 1, colorContour, 2, 8);
-				cv::circle(*resImg_, cv::Point(objectCenterX, objectCenterY), 2, colorContour, 3, cv::LINE_AA);*/
 			}
 		}
 
@@ -174,9 +171,9 @@ bool HoleVerification::run(const cv::Mat* img)
 				cv::Vec3i c = circles_[i];
 				cv::Scalar colorCircle (0, 0, 255);
 				// Draw detected circle on the image
-				cv::circle(*resImg_, cv::Point(c[0] + boundRect.x, c[1] + boundRect.y), c[2], colorCircle, 2, cv::LINE_AA);
+				drawCircle(cv::Point2f(c[0] + boundRect.x, c[1] + boundRect.y), c[2], resultColor::resultColor);
 				// Draw center of the detected circle on the image
-				cv::circle(*resImg_, cv::Point(c[0] + boundRect.x, c[1] + boundRect.y), 2, colorCircle, 3, cv::LINE_AA);
+				drawPoint(cv::Point2f(c[0] + boundRect.x, c[1] + boundRect.y), resultColor::resultColor);
 				
 				// Compare detected object center with center of detected circles:
 				// Difference between the object center and the circle center should be <= centerTolerance_,

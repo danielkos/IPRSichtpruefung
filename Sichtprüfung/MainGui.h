@@ -42,10 +42,20 @@ public:
 	void addMethodResults(const QString& methodName, const cv::Mat* resImg, const cv::Mat* preprocImg);
 
 private:
-
+	/** \brief Finds a tab in a widget with a name
+	*	\param tabWidget a tab widget
+	*   \param name name of method
+	*   \param index index which will be returned
+	*/
 	bool findTab(const QTabWidget* tabWidget, const QString& name, int& intdex);
 
+	/** \brief Clears all tabs */
 	void clearTabs();
+
+	/** \brief Sets a tab by name
+	*   \param methodName name of method 
+	*/
+	void setTab(QString methodName);
 
 	Ui::MainGui ui_;
 

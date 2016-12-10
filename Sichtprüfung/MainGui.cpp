@@ -152,6 +152,29 @@ void MainGui::addVerificationMethod(std::string name, VerificationMethod* method
 	ui_.tabWidgetResult->addTab(resView, QString::fromStdString(name));
 }
 
+void MainGui::setTab(QString methodName)
+{
+	int index = -1;
+
+	if (findTab(ui_.tabWidgetProcessed, methodName, index) && index >= 0)
+	{
+		ui_.tabWidgetProcessed->setCurrentIndex(index);
+	}
+	else
+	{
+		logOutput("Could not find processed tab with name " + methodName + " and index: " + QString::number(index));
+	}
+
+	if (findTab(ui_.tabWidgetResult, methodName, index) && index >= 0)
+	{
+		ui_.tabWidgetResult->setCurrentIndex(index);
+	}
+	else
+	{
+		logOutput("Could not find result tab with name " + methodName + " and index: " + QString::number(index));
+	}
+}
+
 void MainGui::addMethodResults(const QString& methodName, const cv::Mat* resImg, const cv::Mat* preprocImg)
 {
 	int index;
@@ -199,13 +222,14 @@ void MainGui::runSelectedMethods()
 	statusOutput("Run selected methods...");
 
 	cv::Mat oldResult;
+	QString methodName;
 
 	// Look for all checked methods an execute them
 	for (ItemMethodMap::iterator it = methods_.begin(); it != methods_.end(); it++)
 	{
 		if (it->first->selected())
 		{
-			QString methodName = QString::fromStdString(it->first->name());
+			methodName = QString::fromStdString(it->first->name());
 
 			logOutput("Running method: " + methodName);
 			//Get current parametrs from method
@@ -240,6 +264,8 @@ void MainGui::runSelectedMethods()
 
 		}
 	}
+
+	setTab(methodName);
 
 	ui_.listWidgetResults->addItem("-------------------------------------------------------------------------");
 

@@ -21,6 +21,7 @@
 #include <QTime>
 #include <QCameraInfo>
 #include <QFontMetrics>
+#include <QTabWidget>
 
 MainGui::MainGui(QWidget *parent)
 	: QMainWindow(parent)
@@ -30,20 +31,16 @@ MainGui::MainGui(QWidget *parent)
 
 	//set a parent for a view
 	inputView_ = new FrameView(ui_.widInputImage);
-	preprocView_ = new FrameView(ui_.widPreprocessed);
-	resultView_ = new FrameView(ui_.widResult);
 	
 	//add views to the layout of the parent widget
 	ui_.widInputImage->layout()->addWidget(inputView_);
-	ui_.widPreprocessed->layout()->addWidget(preprocView_);
-	ui_.widResult->layout()->addWidget(resultView_);
+
+	clearTabs();
 
 	//initialize space for original img, needed for copy
 	//preprocImg_ and resultImg_ store only the pointer 
 	//and are managed by the corresponding processes
 	orgImg_ = new cv::Mat();
-	preprocImg_ = NULL;
-	resultImg_ = NULL;
 
 	//Clear the current file path
 	currentFile_.clear();
@@ -93,25 +90,12 @@ MainGui::MainGui(QWidget *parent)
 	{
 		addFileStream(camera.deviceName());
 	}
-	/*
-	QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
-
 	
-	for (size_t i = 0; i < cameras.size(); i++)
-	{
-		if (!cameras[i].isNull())
-		{
-			addFileStream(cameras[i].deviceName());
-		}
-	}*/
-
 	logOutput("Start up");
 }
 MainGui::~MainGui()
 {
 	delete inputView_;
-	delete preprocView_;
-	delete resultView_;
 	delete orgImg_;
 	delete io_;
 }
@@ -121,15 +105,34 @@ void MainGui::setInputImage(cv::Mat* img)
 	if (!img->empty())
 	{
 		//be carefull on stream this might be invalid
-		//cut img to a 1:1 shape
-		/*cv::Size size = img->size();
-		int scale = (size.height > size.width) ? size.width : size.height;
-		cv::Mat subImg = *img;
-		cv::Rect roi(subImg.cols/2 - scale/2, 0, scale, scale);
-		*orgImg_ = subImg(roi);*/
 		img->copyTo(*orgImg_);
 		inputView_->showImage(orgImg_);
 	}
+}
+
+bool MainGui::findTab(const QTabWidget* tabWidget, const QString& name, int& index)
+{
+	bool ret = true;
+
+	index = -1;
+	
+	if (tabWidget && !name.isEmpty())
+	{
+		for (size_t i = 0; i < tabWidget->count(); i++)
+		{
+			if (tabWidget->tabText(i) == name)
+			{
+				index = i;
+				break;
+			}
+		}
+	}
+	else
+	{
+		ret = false;
+	}
+
+	return ret;
 }
 
 void MainGui::addVerificationMethod(std::string name, VerificationMethod* method)
@@ -137,10 +140,57 @@ void MainGui::addVerificationMethod(std::string name, VerificationMethod* method
 	logOutput("Adding method: " + QString::fromStdString(name));
 	//Create an item and attach it to the widget
 	MethodGuiItem* item = new MethodGuiItem(name, method->parameters(), ui_.groupBoxMethods);
+	FrameView* preprocView = new FrameView(ui_.tabWidgetProcessed);
+	FrameView* resView = new FrameView(ui_.tabWidgetResult);
+	
 	//Setup association
 	methods_.insert(ItemMethodPair(item, method));
 	//Add item to the layout
 	ui_.groupBoxMethods->layout()->addWidget(item);
+
+	ui_.tabWidgetProcessed->addTab(preprocView, QString::fromStdString(name));
+	ui_.tabWidgetResult->addTab(resView, QString::fromStdString(name));
+}
+
+void MainGui::addMethodResults(const QString& methodName, const cv::Mat* resImg, const cv::Mat* preprocImg)
+{
+	int index;
+
+	if (findTab(ui_.tabWidgetProcessed, methodName, index) && index >= 0)
+	{
+		static_cast<FrameView*>(ui_.tabWidgetProcessed->widget(index))->showImage(preprocImg);
+	}
+	else
+	{
+		logOutput("Could not find processed tab with name " + methodName + " and index: " + QString::number(index));
+	}
+
+	if (findTab(ui_.tabWidgetResult, methodName, index) && index >= 0)
+	{
+		static_cast<FrameView*>(ui_.tabWidgetResult->widget(index))->showImage(resImg);
+	}
+	else
+	{
+		logOutput("Could not find result tab with name " + methodName + " and index: " + QString::number(index));
+	}
+	
+	ui_.tabWidgetProcessed->show();
+	ui_.tabWidgetResult->show();
+}
+
+void MainGui::clearTabs()
+{
+	for (size_t i = 0; i < ui_.tabWidgetProcessed->count(); i++)
+	{
+		ui_.tabWidgetProcessed->removeTab(i);
+		ui_.tabWidgetProcessed->widget(i)->deleteLater();
+	}
+
+	for (size_t i = 0; i < ui_.tabWidgetResult->count(); i++)
+	{
+		ui_.tabWidgetResult->removeTab(i);
+		ui_.tabWidgetResult->widget(i)->deleteLater();
+	}
 }
 
 void MainGui::runSelectedMethods()
@@ -149,7 +199,7 @@ void MainGui::runSelectedMethods()
 	statusOutput("Run selected methods...");
 
 	cv::Mat oldResult;
-	
+
 	// Look for all checked methods an execute them
 	for (ItemMethodMap::iterator it = methods_.begin(); it != methods_.end(); it++)
 	{
@@ -163,31 +213,14 @@ void MainGui::runSelectedMethods()
 
 			if (it->second->run(orgImg_))
 			{
-				logOutput("Method: " + methodName + " successful");
-
-				if (resultImg_ && oldResult.type() == orgImg_->type())
-				{
-					resultImg_->copyTo(oldResult);
-				}
-				else
-				{
-					orgImg_->copyTo(oldResult);
-				}
-				
-				//Get results from method, in this case imgs
-				preprocImg_ = it->second->processed();
-				resultImg_ = it->second->resultImg();
-				
-				//If method was successful, combine results into one image
-				//In this state not suitable for parallelization
-				//Src and Dst have to have the same type
-				cv::addWeighted(oldResult, 0.5, *resultImg_, 0.5, 0.0, *resultImg_);
+				logOutput("Method: " + methodName + " successful");		
 				
 				it->first->setMode(true);
 
 				//Show imgs on gui
-				preprocView_->showImage(preprocImg_);
-				resultView_->showImage(resultImg_);
+				//preprocView_->showImage(preprocImg_);
+				addMethodResults(QString::fromStdString(it->first->name()), it->second->resultImg(), it->second->processed());
+				//resultView_->showImage(resultImg_);
 
 				resGenerator.setSettings(generateSettings());
 				QStringList res = resGenerator.results(methodName, it->second->results());
@@ -351,16 +384,6 @@ void MainGui::setCurrentFile(QModelIndex index)
 void MainGui::reset()
 {
 	orgImg_->release();
-
-	if (preprocImg_)
-	{
-		preprocImg_->release();
-	}
-	
-	if (resultImg_)
-	{
-		resultImg_->release();
-	}
 }
 
 void MainGui::logOutput(QString msg)

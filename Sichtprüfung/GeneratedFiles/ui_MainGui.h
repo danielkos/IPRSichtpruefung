@@ -70,13 +70,13 @@ public:
     QFrame *widInputImage;
     QHBoxLayout *horizontalLayout_4;
     QVBoxLayout *verticalLayout_9;
-    QFrame *widPreprocessed;
-    QVBoxLayout *verticalLayout_7;
-    QVBoxLayout *verticalLayout_10;
+    QTabWidget *tabWidgetProcessed;
+    QWidget *tab_5;
+    QWidget *tab_6;
     QLabel *labelResult;
-    QFrame *widResult;
-    QVBoxLayout *verticalLayout_8;
-    QVBoxLayout *verticalLayout_6;
+    QTabWidget *tabWidgetResult;
+    QWidget *tab_3;
+    QWidget *tab_4;
     QLabel *labelProgress;
     QSpacerItem *horizontalSpacer;
     QMenuBar *menuBar;
@@ -88,7 +88,7 @@ public:
     {
         if (MainGui->objectName().isEmpty())
             MainGui->setObjectName(QStringLiteral("MainGui"));
-        MainGui->resize(1200, 1000);
+        MainGui->resize(1247, 1000);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -325,25 +325,18 @@ public:
 
         gridLayout->addWidget(widInputImage, 2, 0, 1, 1);
 
-        widPreprocessed = new QFrame(gridWidget);
-        widPreprocessed->setObjectName(QStringLiteral("widPreprocessed"));
-        sizePolicy.setHeightForWidth(widPreprocessed->sizePolicy().hasHeightForWidth());
-        widPreprocessed->setSizePolicy(sizePolicy);
-        widPreprocessed->setFrameShape(QFrame::StyledPanel);
-        widPreprocessed->setFrameShadow(QFrame::Plain);
-        verticalLayout_7 = new QVBoxLayout(widPreprocessed);
-        verticalLayout_7->setSpacing(6);
-        verticalLayout_7->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_7->setObjectName(QStringLiteral("verticalLayout_7"));
-        verticalLayout_7->setContentsMargins(9, 9, 9, 9);
-        verticalLayout_10 = new QVBoxLayout();
-        verticalLayout_10->setSpacing(6);
-        verticalLayout_10->setObjectName(QStringLiteral("verticalLayout_10"));
+        tabWidgetProcessed = new QTabWidget(gridWidget);
+        tabWidgetProcessed->setObjectName(QStringLiteral("tabWidgetProcessed"));
+        tabWidgetProcessed->setTabShape(QTabWidget::Triangular);
+        tabWidgetProcessed->setMovable(true);
+        tab_5 = new QWidget();
+        tab_5->setObjectName(QStringLiteral("tab_5"));
+        tabWidgetProcessed->addTab(tab_5, QString());
+        tab_6 = new QWidget();
+        tab_6->setObjectName(QStringLiteral("tab_6"));
+        tabWidgetProcessed->addTab(tab_6, QString());
 
-        verticalLayout_7->addLayout(verticalLayout_10);
-
-
-        gridLayout->addWidget(widPreprocessed, 2, 1, 1, 1);
+        gridLayout->addWidget(tabWidgetProcessed, 2, 1, 1, 1);
 
 
         verticalLayout->addWidget(gridWidget);
@@ -367,25 +360,18 @@ public:
 
         verticalLayout->addWidget(labelResult);
 
-        widResult = new QFrame(verticalFrame);
-        widResult->setObjectName(QStringLiteral("widResult"));
-        sizePolicy.setHeightForWidth(widResult->sizePolicy().hasHeightForWidth());
-        widResult->setSizePolicy(sizePolicy);
-        widResult->setMinimumSize(QSize(0, 0));
-        widResult->setMaximumSize(QSize(16777215, 16777215));
-        widResult->setFrameShape(QFrame::StyledPanel);
-        verticalLayout_8 = new QVBoxLayout(widResult);
-        verticalLayout_8->setSpacing(6);
-        verticalLayout_8->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
-        verticalLayout_6 = new QVBoxLayout();
-        verticalLayout_6->setSpacing(6);
-        verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
+        tabWidgetResult = new QTabWidget(verticalFrame);
+        tabWidgetResult->setObjectName(QStringLiteral("tabWidgetResult"));
+        tabWidgetResult->setTabShape(QTabWidget::Triangular);
+        tabWidgetResult->setMovable(true);
+        tab_3 = new QWidget();
+        tab_3->setObjectName(QStringLiteral("tab_3"));
+        tabWidgetResult->addTab(tab_3, QString());
+        tab_4 = new QWidget();
+        tab_4->setObjectName(QStringLiteral("tab_4"));
+        tabWidgetResult->addTab(tab_4, QString());
 
-        verticalLayout_8->addLayout(verticalLayout_6);
-
-
-        verticalLayout->addWidget(widResult);
+        verticalLayout->addWidget(tabWidgetResult);
 
         labelProgress = new QLabel(verticalFrame);
         labelProgress->setObjectName(QStringLiteral("labelProgress"));
@@ -408,7 +394,7 @@ public:
         MainGui->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainGui);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1200, 21));
+        menuBar->setGeometry(QRect(0, 0, 1247, 21));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         menuOptions = new QMenu(menuBar);
@@ -445,7 +431,11 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tabLog), QApplication::translate("MainGui", "Log", 0));
         labelPreprocessed->setText(QApplication::translate("MainGui", "Preprocessed Image", 0));
         labelInput->setText(QApplication::translate("MainGui", "Input Image", 0));
+        tabWidgetProcessed->setTabText(tabWidgetProcessed->indexOf(tab_5), QApplication::translate("MainGui", "Tab 1", 0));
+        tabWidgetProcessed->setTabText(tabWidgetProcessed->indexOf(tab_6), QApplication::translate("MainGui", "Tab 2", 0));
         labelResult->setText(QApplication::translate("MainGui", "Detection Result", 0));
+        tabWidgetResult->setTabText(tabWidgetResult->indexOf(tab_3), QApplication::translate("MainGui", "Tab 1", 0));
+        tabWidgetResult->setTabText(tabWidgetResult->indexOf(tab_4), QApplication::translate("MainGui", "Tab 2", 0));
         labelProgress->setText(QString());
         menuFile->setTitle(QApplication::translate("MainGui", "File", 0));
         menuOptions->setTitle(QApplication::translate("MainGui", "Options", 0));

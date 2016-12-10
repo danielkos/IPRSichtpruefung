@@ -97,7 +97,7 @@ bool AngleVerification::run(const cv::Mat* img)
 			rotationAngle = getAngleBtwLineAndXAxis(l);
 
 			// Draw the line that was used for the orientation correction with a blue color
-			drawLine(cv::Point2f(l[0], l[1]), cv::Point2f(l[2], l[3]), resultColor::infoColor);
+			drawLine(cv::Point2f(l[0], l[1]), cv::Point2f(l[2], l[3]), colors::infoColor);
 		}
 		
 
@@ -144,7 +144,7 @@ bool AngleVerification::run(const cv::Mat* img)
 				}
 
 				// Draw the Hough-Lines that have been detected for the "Schwalbenschwanznut"
-				drawLine(cv::Point2f(l[0], l[1]), cv::Point2f(l[2], l[3]), resultColor::resultColor);
+				drawLine(cv::Point2f(l[0], l[1]), cv::Point2f(l[2], l[3]), colors::resultColor);
 			}
 		}
 

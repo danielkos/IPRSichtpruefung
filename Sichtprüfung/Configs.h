@@ -1,6 +1,6 @@
 #include <opencv2\opencv.hpp>
 
-namespace resultColor
+namespace colors
 {
 	const cv::Scalar contourColor(0, 215, 255);
 	const cv::Scalar middleColor(0, 255, 0);
@@ -11,6 +11,11 @@ namespace resultColor
 	const int contourThickness= 8;
 	const int pointThickness = 12;
 }
+namespace paths
+{
+	const std::string defaultFolder = "../Bilder";
+}
+
 
 
 

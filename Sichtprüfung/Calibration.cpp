@@ -116,7 +116,7 @@ bool Calibration::run(const cv::Mat* img)
 				{
 					continue;
 				}
-				drawContour(contours, i, resultColor::contourColor);
+				drawContour(contours, i, colors::contourColor);
 				
 				boundingBox_ = cv::minAreaRect(contours[i]);
 				cv::Point2f vertices[4];
@@ -132,21 +132,21 @@ bool Calibration::run(const cv::Mat* img)
 					{
 						cv::Point2f v1 = vertices[i];
 						cv::Point2f v2 = vertices[(i + 1) % 4];
-						drawLine(v1, v2, resultColor::resultColor);
+						drawLine(v1, v2, colors::resultColor);
 						midVertices[i].x = (v1.x + v2.x) / 2;
 						midVertices[i].y = (v1.y + v2.y) / 2;
 					}
 					//draw mid lines
 					for (size_t i = 0; i < 4; i++)
 					{
-						drawLine(midVertices[i], midVertices[(i + 2) % 4], resultColor::infoColor);
+						drawLine(midVertices[i], midVertices[(i + 2) % 4], colors::infoColor);
 					}
 
 					//draw points on top of the lines
 					for (size_t i = 0; i < 4; i++)
 					{
-						drawPoint(vertices[i], resultColor::middleColor);
-						drawPoint(midVertices[i], resultColor::middleColor);
+						drawPoint(vertices[i], colors::middleColor);
+						drawPoint(midVertices[i], colors::middleColor);
 					}
 				}
 			}

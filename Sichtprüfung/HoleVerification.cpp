@@ -171,9 +171,9 @@ bool HoleVerification::run(const cv::Mat* img)
 				cv::Vec3i c = circles_[i];
 				cv::Scalar colorCircle (0, 0, 255);
 				// Draw detected circle on the image
-				drawCircle(cv::Point2f(c[0] + boundRect.x, c[1] + boundRect.y), c[2], resultColor::resultColor);
+				drawCircle(cv::Point2f(c[0] + boundRect.x, c[1] + boundRect.y), c[2], colors::resultColor);
 				// Draw center of the detected circle on the image
-				drawPoint(cv::Point2f(c[0] + boundRect.x, c[1] + boundRect.y), resultColor::resultColor);
+				drawPoint(cv::Point2f(c[0] + boundRect.x, c[1] + boundRect.y), colors::resultColor);
 				
 				// Compare detected object center with center of detected circles:
 				// Difference between the object center and the circle center should be <= centerTolerance_,

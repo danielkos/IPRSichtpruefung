@@ -9,7 +9,7 @@ namespace resultColor
 
 	const int lineThickness = 6;
 	const int contourThickness= 8;
-	const int circleThickness = 12;
+	const int pointThickness = 12;
 }
 
 

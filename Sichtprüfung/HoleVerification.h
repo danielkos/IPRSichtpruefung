@@ -29,15 +29,17 @@ private:
 	int minRadius_;
 	int maxRadius_;
 
-	// Lower and upper threshold values that are used to clamp the pixel values
-	int clampLow_;
-	int clampHigh_;
-
 	// Tolerance value, how close the center of a detected circle and the center
 	// of the object need to be, to be reported as equal (tolerance in pixel)
 	double centerEqualTolerance_;
 
-	double upperCannyThresh_;
+	//Parameters for canny edge detection
+	double cannyLowerThresh_;
+	double cannyUpperThresh_;
+	//Interations of the morph close operation
+	int morphIterations_;
+
+	double houghUpperCannyThresh_;
 	double centerThresh_;
 
 	// Vector with the detected circles from the Hough Transformation:

@@ -11,7 +11,7 @@ class OptionsGui : public QMainWindow
 {
 	Q_OBJECT
 public:
-	OptionsGui(QWidget* parent = 0);
+	OptionsGui(QWidget* parent = 0, const std::string& configFile = "");
 	~OptionsGui();
 
 	void saveValues();
@@ -29,6 +29,8 @@ private:
 	QSize referenceSize_;
 	QVariant holeRadius_;
 	QVariant angle_;
+
+	std::string configFile_;
 
 	void setValues();
 

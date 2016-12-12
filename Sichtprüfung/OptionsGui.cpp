@@ -1,20 +1,38 @@
 #include "OptionsGui.h"
+#include "ConfigurationStorage.h"
+
 #include <QPushButton>
 
-OptionsGui::OptionsGui(QWidget* parent)
+OptionsGui::OptionsGui(QWidget* parent, const std::string& configFile)
 	:QMainWindow(parent)
 {
+	QVariant value;
+
 	ui_.setupUi(this);
 
-	objMetrics_.push_back(4.1);
-	objMetrics_.push_back(3.9);
-	objMetrics_.push_back(0.5);
+	if (configFile.empty())
+	{
+		configFile_ = "options.xml";
+	}
+	else
+	{
+		configFile_ = configFile;
+	}
+
+	ConfigurationStorage::instance().read(configFile_, "object_width", QMetaType::Double, value);
+	objMetrics_.push_back(value);
+	ConfigurationStorage::instance().read(configFile_, "object_length", QMetaType::Double, value);
+	objMetrics_.push_back(value);
+	ConfigurationStorage::instance().read(configFile_, "object_height", QMetaType::Double, value);
+	objMetrics_.push_back(value);
 
 	referenceSize_.setWidth(4.1);
 	referenceSize_.setHeight(3.9);
 	
-	holeRadius_ = 0.275;
-	angle_ = 45;
+	ConfigurationStorage::instance().read(configFile_, "object_hole_radius", QMetaType::Double, value);
+	holeRadius_ = value;
+	ConfigurationStorage::instance().read(configFile_, "object_side_angle", QMetaType::Double, value);
+	angle_ = value;
 
 	QPushButton* save = ui_.buttonBoxOptions->button(QDialogButtonBox::Save);
 	QPushButton* cancel = ui_.buttonBoxOptions->button(QDialogButtonBox::Cancel);
@@ -56,6 +74,13 @@ void OptionsGui::saveValues()
 
 	holeRadius_ = ui_.doubleSpinBoxDiameter->value();
 	angle_ = ui_.doubleSpinBoxAngle->value();
+
+	ConfigurationStorage::instance().write(configFile_, "object_width", objMetrics_[0]);
+	ConfigurationStorage::instance().write(configFile_, "object_length", objMetrics_[1]);
+	ConfigurationStorage::instance().write(configFile_, "object_height", objMetrics_[2]);
+	ConfigurationStorage::instance().write(configFile_, "object_hole_radius", holeRadius_);
+	ConfigurationStorage::instance().write(configFile_, "object_side_angle", angle_);
+	ConfigurationStorage::instance().realease();
 
 	close();
 }

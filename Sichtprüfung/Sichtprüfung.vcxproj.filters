@@ -60,6 +60,9 @@
     <Filter Include="Header Dateien\Configuration">
       <UniqueIdentifier>{e27bb960-8240-43f6-86e2-16d9e85f5399}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Dateien\Configuration">
+      <UniqueIdentifier>{af47f9c6-07bf-4957-8293-09179e48cb24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -131,6 +134,9 @@
     <ClCompile Include="ShapeVerification.cpp">
       <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
+    <ClCompile Include="ConfigurationStorage.cpp">
+      <Filter>Source Dateien\Configuration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainGui.ui">
@@ -199,6 +205,9 @@
       <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
     <ClInclude Include="Configs.h">
+      <Filter>Header Dateien\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigurationStorage.h">
       <Filter>Header Dateien\Configuration</Filter>
     </ClInclude>
   </ItemGroup>

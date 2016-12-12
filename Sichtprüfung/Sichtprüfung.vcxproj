@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="AngleVerification.cpp" />
     <ClCompile Include="Calibration.cpp" />
+    <ClCompile Include="ConfigurationStorage.cpp" />
     <ClCompile Include="cvmatandqimage.cpp" />
     <ClCompile Include="CLogger.cpp" />
     <ClCompile Include="FrameView.cpp" />
@@ -265,6 +266,7 @@
     <ClInclude Include="AngleVerification.h" />
     <ClInclude Include="Calibration.h" />
     <ClInclude Include="Configs.h" />
+    <ClInclude Include="ConfigurationStorage.h" />
     <ClInclude Include="cvmatandqimage.h" />
     <ClInclude Include="CLogger.h" />
     <ClInclude Include="GeneratedFiles\ui_Options.h" />

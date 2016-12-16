@@ -25,7 +25,7 @@ QString ResultGenerator::calibRes(ResultGenerator::ResultMap::iterator it)
 {
 	QSize refSize = settings_.at(mapping_.at(it->first)).value_.toSize();
 	QSize objSize = it->second.value_.toSize();
-	
+
 	QVariant widthRatio = (double)refSize.width() / objSize.width();
 	QVariant heightRatio = (double)refSize.height() / objSize.height();
 
@@ -43,13 +43,18 @@ QString ResultGenerator::circleRes(ResultGenerator::ResultMap::iterator it)
 
 	QString percentString = QString::number(percent.toDouble(), 'f', 2);	// Round percent number
 
-	return QString("Real radius: " + radius.toString() + "cm, Estimated radius: " + est.toString() + 
-					"cm, Deviation: " + dev.toString() + "cm (" + percentString + "%)");
+	return QString("Real radius: " + radius.toString() + "cm, Estimated radius: " + est.toString() +
+		"cm, Deviation: " + dev.toString() + "cm (" + percentString + "%)");
 }
 
 QString ResultGenerator::circleCenterRes(ResultGenerator::ResultMap::iterator it)
 {
 	return QString("Hole centered: " + it->second.value_.toString());
+}
+
+QString ResultGenerator::materialRes(ResultGenerator::ResultMap::iterator it)
+{
+	return QString("Metal: " + it->second.value_.toString());
 }
 
 QString ResultGenerator::angleRes(ResultGenerator::ResultMap::iterator it)
@@ -64,7 +69,7 @@ QString ResultGenerator::angleRes(ResultGenerator::ResultMap::iterator it)
 	QString percentString = QString::number(percent.toDouble(), 'f', 2);	// Round percent number
 
 	return QString("Real angle: " + angle.toString() + degree + ", Estimated angle: " + est.toString() +
-					degree + ", Deviation: " + dev.toString() + degree + " (" + percentString + "%)");
+		degree + ", Deviation: " + dev.toString() + degree + " (" + percentString + "%)");
 }
 
 QString ResultGenerator::objSizeRes(ResultGenerator::ResultMap::iterator it)
@@ -111,12 +116,15 @@ QStringList ResultGenerator::results(QString methodName, ResultGenerator::Result
 		case ResultGenerator::RES_CIRCLE_RADIUS:
 			ret = circleRes(it);
 			break;
+		case ResultGenerator::RES_MATERIAL:
+			ret = materialRes(it);
+			break;
 		default:
 			break;
 		}
-		
+
 		res << ret;
 	}
-	
+
 	return res;
 }

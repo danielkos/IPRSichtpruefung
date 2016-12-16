@@ -12,6 +12,7 @@
 #include "HoleVerification.h"
 #include "AngleVerification.h"
 #include "ShapeVerification.h"
+#include "MaterialVerification.h"
 
 int main(int argc, char *argv[])
 {
@@ -29,12 +30,14 @@ int main(int argc, char *argv[])
 	VerificationMethod* holeVer = new HoleVerification();
 	VerificationMethod* angleVer = new AngleVerification();
 	VerificationMethod* shapeVer = new ShapeVerification();
+	VerificationMethod* materialVer = new MaterialVerification();
 
 	mainGui.addVerificationMethod("Calibration", calib);
 	mainGui.addVerificationMethod("Hole detection", holeVer);
 	mainGui.addVerificationMethod("Angle detection", angleVer);
 	mainGui.addVerificationMethod("Shape Verification", shapeVer);
-	
+	mainGui.addVerificationMethod("Material Verification", materialVer);
+
 	mainGui.show();
 
 	QSize windowSize = mainGui.size();
@@ -48,6 +51,7 @@ int main(int argc, char *argv[])
 	delete calib;
 	delete holeVer;
 	delete angleVer;
-	
+	delete materialVer;
+
 	return res;
 }

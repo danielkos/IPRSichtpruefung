@@ -196,6 +196,7 @@
     <ClCompile Include="HoleVerification.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGui.cpp" />
+    <ClCompile Include="MaterialVerification.cpp" />
     <ClCompile Include="MethodGuiItem.cpp" />
     <ClCompile Include="OptionsGui.cpp" />
     <ClCompile Include="ResultGenerator.cpp" />
@@ -290,6 +291,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_UITOOLS_LIB -DQT_WIDGETS_LIB -DQT_MULTIMEDIA_LIB  "-I$(OPENCV_DIR)\..\..\include" "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtUiTools" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtMultimedia"</Command>
     </CustomBuild>
+    <ClInclude Include="MaterialVerification.h" />
     <ClInclude Include="Parameter.h" />
     <CustomBuild Include="UpldFrame.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

@@ -17,6 +17,7 @@ public:
 		RES_OBJ_ANGLE_RIGHT,
 		RES_CIRCLE_MIDDLE,
 		RES_CIRCLE_RADIUS,
+		RES_MATERIAL
 	};
 
 	//Defines all possible settings
@@ -56,6 +57,7 @@ private:
 	QString circleCenterRes(ResultGenerator::ResultMap::iterator it);
 	QString angleRes(ResultGenerator::ResultMap::iterator it);
 	QString objSizeRes(ResultGenerator::ResultMap::iterator it);
+	QString	materialRes(ResultGenerator::ResultMap::iterator it);
 
 	//Current settings
 	SettingsMap settings_;

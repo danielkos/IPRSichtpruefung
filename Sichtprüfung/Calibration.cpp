@@ -1,18 +1,24 @@
 #include "Calibration.h"
 #include "Configs.h"
+#include "ConfigurationStorage.h"
+
 #include <QVariant>
 #include <QSize>
 #include <opencv2\opencv.hpp>
 #include <opencv2\imgproc.hpp>
 
+#include <utility>
+#include <thread>
+
 Calibration::Calibration()
 {
-	cannyLowerThresh_ = 50;
-	cannyUpperThresh_ = 100;
-	morphIterations_ = 2;
-	ignoreContourSize_ = 100;
-	contourSize_ = 250;
-	drawLines_ = true;
+	numImgs_ = 10;
+	numCornersH_ = 3;
+	numConrersV_ = 4;
+	numSquares_ = numCornersH_ * numConrersV_;
+	sizeSquare_ = 10;
+	boardSize_ = cv::Size(numCornersH_, numConrersV_);
+	calibSuccess_ = true;
 }
 
 Calibration::~Calibration()
@@ -26,12 +32,11 @@ void Calibration::setParameters(std::vector<Parameter> parameters)
 	//The order is determined by parameters()
 	if (parameters.size() == parametersSize_)
 	{
-		cannyLowerThresh_ = parameters[0].value_.toDouble();
-		cannyUpperThresh_ = parameters[1].value_.toDouble();
-		morphIterations_ = parameters[2].value_.toInt();
-		ignoreContourSize_ = parameters[3].value_.toInt();
-		contourSize_ = parameters[4].value_.toInt();
-		drawLines_ = parameters[5].value_.toBool();
+		numImgs_ = parameters[0].value_.toInt();
+		numCornersH_ = parameters[1].value_.toInt();
+		numConrersV_ = parameters[2].value_.toInt();
+		numSquares_ = numCornersH_ * numConrersV_;
+		boardSize_ = cv::Size(numCornersH_, numConrersV_);
 	}
 }
 
@@ -40,22 +45,13 @@ std::vector<Parameter> Calibration::parameters()
 	std::vector<Parameter> parameters;
 	Parameter param;
 	//Setup parameter, name will be displayed on gui
-	param.setUp("Lower Threshold", QVariant(cannyLowerThresh_), QMetaType::Double);
+	param.setUp("Number of images", QVariant(numImgs_), QMetaType::Int);
 	parameters.push_back(param);
 	
-	param.setUp("Upper Threshold", QVariant(cannyUpperThresh_), QMetaType::Double);
+	param.setUp("Horizontal Corners", QVariant(numCornersH_), QMetaType::Int);
 	parameters.push_back(param);
 
-	param.setUp("Morph Close Iterations", QVariant(morphIterations_), QMetaType::Int);
-	parameters.push_back(param);
-
-	param.setUp("Ignore Contour Size", QVariant(ignoreContourSize_), QMetaType::Int);
-	parameters.push_back(param);
-
-	param.setUp("Contour Size(pixel)", QVariant(contourSize_), QMetaType::Int);
-	parameters.push_back(param);
-
-	param.setUp("Draw bounding rect", QVariant(drawLines_), QMetaType::Bool);
+	param.setUp("Vertical Corners", QVariant(numConrersV_), QMetaType::Int);
 	parameters.push_back(param);
 
 	parametersSize_ = parameters.size();
@@ -66,100 +62,108 @@ std::vector<Parameter> Calibration::parameters()
 ResultGenerator::ResultMap Calibration::results()
 {
 	ResultGenerator::ResultMap results;
-	Parameter param;
+	/*Parameter param;
 	QSize size(boundingBox_.size.width, boundingBox_.size.height);
 
 	param.setUp("Pixel ratio", size, QMetaType::QSize);
 
 	//Set a paramter definied for the generator
-	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_CALIBRATION, param));
+	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_CALIBRATION, param));*/
 
 	return results;
 }
 
-cv::RotatedRect* Calibration::boundingBox()
-{
-	return &boundingBox_;
-}
-
 bool Calibration::run(const cv::Mat* img)
 {
-	bool res = true;
+	bool found = false;
+	int counter = 0;
+	int pressedKey = 0;
+	std::vector<cv::Point3f> obj;
+	std::vector<cv::Mat> rvecs, tvecs;
+	cv::Mat K;
+	cv::Mat D;
+	cv::Mat* input;
 
-	//Check if img is empty
-	if (!img->empty())
+	//Open default cam
+	io_.setCamera("test");
+
+	//Generate 3D Points of the corners
+	for (int i = 0; i < numCornersH_; i++)
 	{
-		std::vector<std::vector<cv::Point> > contours;
-		std::vector<std::vector<cv::Point> > fittedLines;
-		cv::Mat tmp;
-		
-		//Init result image
-		initializeResultImage(img);
-		//Preprocess
-		cv::medianBlur(*img, *processedImg_, 7);
-		cv::cvtColor(*processedImg_, *processedImg_, cv::COLOR_BGR2GRAY);
-		cv::Canny(*processedImg_, *processedImg_, cannyLowerThresh_, cannyUpperThresh_);
-		cv::morphologyEx(*processedImg_, *processedImg_, cv::MORPH_CLOSE, cv::noArray(), cv::Point(-1, -1), morphIterations_);
-		cv::dilate(*processedImg_, *processedImg_, cv::getStructuringElement(cv::MORPH_DILATE, cv::Size(3, 3)));
-
-		//Copy processed img because next operations alters it
-		processedImg_->copyTo(tmp);
-		cv::findContours(tmp, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
-
-		if (!contours.empty())
+		for (int j = 0; j < numConrersV_; j++)
 		{
-			for (size_t i = 0; i < contours.size(); i++)
+			obj.push_back(cv::Point3f((float)i * sizeSquare_, (float)j * sizeSquare_, 0));
+		}
+	}
+
+	//Run corner aquisition as long as needed
+	while (counter <= numImgs_)
+	{
+		//Get image
+		input = io_.fromCamera(true);
+
+		if (!input->empty())
+		{
+			initializeResultImage(input);
+			cv::cvtColor(*resImg_, *processedImg_, CV_BGR2GRAY);
+
+			//Find chessboard
+			found = cv::findChessboardCorners(*resImg_, boardSize_, corners_, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+
+			if (found)
 			{
-				double inter = cv::contourArea(contours[i]);
-				//Ignore all contours without self-intersections
-				if (inter < ignoreContourSize_ || contours[i].size() < contourSize_)
-				{
-					continue;
-				}
-				drawContour(contours, i, colors::contourColor);
-				
-				boundingBox_ = cv::minAreaRect(contours[i]);
-				cv::Point2f vertices[4];
-				cv::Point2f midVertices[4];
-				
-				boundingBox_.points(vertices);
-				boundingBox_.size.width;
+				cv::cornerSubPix(*processedImg_, corners_, cv::Size(5, 5), cv::Size(-1, -1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+				cv::drawChessboardCorners(*processedImg_, boardSize_, corners_, found);
+			}
 
-				if (drawLines_)
-				{
-					//draw rect lines
-					for (size_t i = 0; i < 4; i++)
-					{
-						cv::Point2f v1 = vertices[i];
-						cv::Point2f v2 = vertices[(i + 1) % 4];
-						drawLine(v1, v2, colors::resultColor);
-						midVertices[i].x = (v1.x + v2.x) / 2;
-						midVertices[i].y = (v1.y + v2.y) / 2;
-					}
-					//draw mid lines
-					for (size_t i = 0; i < 4; i++)
-					{
-						drawLine(midVertices[i], midVertices[(i + 2) % 4], colors::infoColor);
-					}
+			//Show input img and chessboard corners
+			cv::imshow("Input Image", *resImg_);
+			cv::imshow("Detected Corners", *processedImg_);
+			//Wait for input
+			pressedKey = cv::waitKey(1);
 
-					//draw points on top of the lines
-					for (size_t i = 0; i < 4; i++)
-					{
-						drawPoint(vertices[i], colors::middleColor);
-						drawPoint(midVertices[i], colors::middleColor);
-					}
+			//ESC-> abort, Space-> store this run, Else-> skip run
+			if (found)
+			{
+				switch (pressedKey)
+				{
+				case 27:
+					calibSuccess_ = false;
+					break;
+				case ' ':
+					imagePoints_.push_back(corners_);
+					objectPoints_.push_back(obj);
+					counter++;
+					break;
+				default:
+					break;
 				}
 			}
 		}
 		else
 		{
-			res = false;
+			calibSuccess_ = false;
+		}
+		
+		if (!calibSuccess_)
+		{
+			break;
 		}
 	}
-	else
+	
+	//Calibrate if possible
+	if (calibSuccess_)
 	{
-		res = false;
+		calibrateCamera(objectPoints_, imagePoints_, resImg_->size(), K, D, rvecs, tvecs);
 	}
 	
-	return res;
+	//Write results
+	ConfigurationStorage::instance().write("calibration.xml", "K", K);
+	ConfigurationStorage::instance().write("calibration.xml", "D", D);
+	ConfigurationStorage::instance().write("calibration.xml", "square_size", sizeSquare_);
+	ConfigurationStorage::instance().write("calibration.xml", "num_hor_corners", numCornersH_);
+	ConfigurationStorage::instance().write("calibration.xml", "num_ver_corners", numConrersV_);
+	ConfigurationStorage::instance().realease();
+
+	return calibSuccess_;
 }

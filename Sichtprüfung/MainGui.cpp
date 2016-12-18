@@ -394,7 +394,7 @@ void MainGui::setCurrentFile(QModelIndex index)
 		if (currentFile_.isEmpty())
 		{
 			io_->setCamera(name->data(Qt::DisplayRole).value<QString>().toStdString());
-			std::thread ioThread(&UpldFrame::fromCamera, io_);
+			std::thread ioThread(&UpldFrame::fromCamera, io_, false);
 			ioThread.detach();
 		}
 		else

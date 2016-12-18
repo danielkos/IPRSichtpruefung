@@ -157,6 +157,8 @@ bool Calibration::run(const cv::Mat* img)
 		calibrateCamera(objectPoints_, imagePoints_, resImg_->size(), K, D, rvecs, tvecs);
 	}
 	
+	cv::undistort(*resImg_, *resImg_, K, D);
+
 	//Write results
 	ConfigurationStorage::instance().write("calibration.xml", "K", K);
 	ConfigurationStorage::instance().write("calibration.xml", "D", D);

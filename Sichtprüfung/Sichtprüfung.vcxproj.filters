@@ -169,6 +169,9 @@
     <CustomBuild Include="UpldFrame.h">
       <Filter>Header Dateien\IO</Filter>
     </CustomBuild>
+    <CustomBuild Include="Calibration.h">
+      <Filter>Header Dateien\Computation</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_MainGui.h">
@@ -179,9 +182,6 @@
     </ClInclude>
     <ClInclude Include="cvmatandqimage.h">
       <Filter>Header Dateien\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Calibration.h">
-      <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
     <ClInclude Include="Parameter.h">
       <Filter>Header Dateien\Computation</Filter>

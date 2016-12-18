@@ -16,6 +16,8 @@ public:
 	*  \param value value to be written
 	*/
 	bool write(const std::string& configPath, std::string node, QVariant value);
+
+	bool write(const std::string& configPath, std::string node, cv::Mat& matrix);
 	
 	/** \brief Read the \a value from \a node in the config at \a configPath
 	*  The variable \a value will be read

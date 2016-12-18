@@ -47,6 +47,24 @@ bool ConfigurationStorage::write(const std::string& configPath, std::string node
 	return ret;
 }
 
+bool ConfigurationStorage::write(const std::string& configPath, std::string node, cv::Mat& matrix)
+{
+	bool ret = true;
+	if (!storage_.isOpened())
+	{
+		ret = storage_.open(configPath, cv::FileStorage::WRITE);
+	}
+	else if (!matrix.empty() && !node.empty())
+	{
+		storage_ << node << matrix;
+	}
+	else
+	{
+		ret = false;
+	}
+	return ret;
+}
+
 bool ConfigurationStorage::read(const std::string& configPath, const std::string& node, int type, QVariant& value)
 {
 	bool ret = true;

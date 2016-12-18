@@ -20,7 +20,7 @@ public:
 	virtual ~UpldFrame();
 
 	static cv::Mat fromFile(std::string file_name);
-	void fromCamera();
+	cv::Mat* fromCamera(bool returnImg = false);
 	void terminateCameraStream();
 	void setCamera(std::string cameraName);
 Q_SIGNALS:

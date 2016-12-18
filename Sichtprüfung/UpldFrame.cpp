@@ -37,10 +37,11 @@ cv::Mat UpldFrame::fromFile(std::string filename)		//open an filename image
 	return img;
 }
 
-void UpldFrame::fromCamera()
+cv::Mat* UpldFrame::fromCamera(bool returnImg)
 {
 	cv::Mat frame;
 	exit_ = false;
+
 
 	cv::putText(frame, "Camera not opened!", cv::Point(50, 50), cv::FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255));
 
@@ -63,13 +64,24 @@ void UpldFrame::fromCamera()
 			frame.release();
 			// get a new frame from camera
 			videoCapture_->read(frame);
+
+			if (returnImg)
+			{
+				exit_ = true;
+			}
+
+			Q_EMIT newCameraImage(&frame);
+		}
+		else if (returnImg)
+		{
+			exit_ = true;
 		}
 
-		Q_EMIT newCameraImage(&frame);
-		
 		// Delay between two camera frames, to have some time for calculations on an image
 		std::this_thread::sleep_for(std::chrono::milliseconds(CAMERA_RECORD_DELAY));
 	}
 
 	videoCapture_->release();
+
+	return &frame;
 }

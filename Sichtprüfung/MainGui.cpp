@@ -77,7 +77,7 @@ MainGui::MainGui(QWidget *parent)
 	connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
 
 	//Create an option window without showing it
-	options_ = new OptionsGui();
+	options_ = new OptionsGui(this);
 
 	//Create IO 
 	io_ = new UpldFrame();
@@ -446,14 +446,8 @@ ResultGenerator::SettingsMap MainGui::generateSettings()
 	param.setUp("Real angle", options_->angle(), QMetaType::Double);
 	map.insert(ResultGenerator::SettingsPair(ResultGenerator::Settings::SET_OBJ_ANGLE, param));
 
-	QVariantList metrics = options_->objMetrics();
-	QSize size(metrics.at(0).toDouble(), metrics.at(1).toDouble());
-	param.setUp("Real object size", size, QVariant::Size);
-	map.insert(ResultGenerator::SettingsPair(ResultGenerator::Settings::SET_OBJ_METRICS, param));
-
-	size = options_->referenceSize();
-	param.setUp("Real reference size", size, QVariant::Size);
-	map.insert(ResultGenerator::SettingsPair(ResultGenerator::Settings::SET_REF_SIZE, param));
+	param.setUp("Real object size", options_->objSize(), QVariant::Size);
+	map.insert(ResultGenerator::SettingsPair(ResultGenerator::Settings::SET_OBJ_SIZE, param));
 
 	return map;
 }

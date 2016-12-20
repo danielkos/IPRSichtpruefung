@@ -10,6 +10,17 @@ ConfigurationStorage& ConfigurationStorage::instance()
 	static ConfigurationStorage storage;
 	return storage;
 }
+
+bool ConfigurationStorage::exists(const std::string& configPath)
+{
+	struct stat buf;
+	if (stat(configPath.c_str(), &buf) != -1)
+	{
+		return true;
+	}
+	return false;
+}
+
 bool ConfigurationStorage::write(const std::string& configPath, std::string node, QVariant value)
 {
 	bool ret = true;

@@ -7,8 +7,7 @@ ResultGenerator::ResultGenerator()
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_CIRCLE_RADIUS, ResultGenerator::Settings::SET_CIRCLE_RADIUS));
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_ANGLE_LEFT, ResultGenerator::Settings::SET_OBJ_ANGLE));
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_ANGLE_RIGHT, ResultGenerator::Settings::SET_OBJ_ANGLE));
-	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_SIZE, ResultGenerator::Settings::SET_OBJ_METRICS));
-	mapping_.insert(SetResPair(ResultGenerator::Results::RES_CALIBRATION, ResultGenerator::Settings::SET_REF_SIZE));
+	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_SIZE, ResultGenerator::Settings::SET_OBJ_SIZE));
 	pixelRatio_ = 1;
 }
 

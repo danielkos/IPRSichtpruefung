@@ -1,5 +1,9 @@
 #include <opencv2\opencv.hpp>
+#include <Windows.h>
+#include <string>
 
+#ifndef CONFIGS
+#define CONFIGS
 namespace colors
 {
 	const cv::Scalar contourColor(0, 215, 255);
@@ -15,8 +19,25 @@ namespace colors
 namespace paths
 {
 	const std::string defaultFolder = "../Bilder";
+	const std::string configFolder = "config\\";
+	const std::string cameraFolder = "camera\\";
+
+	static std::string getExecutablePath()
+	{
+		TCHAR result[2 * MAX_PATH];
+		GetModuleFileName(NULL, result, 2 * MAX_PATH);
+		std::wstring wpath(result);
+		std::string path(wpath.begin(), wpath.end());
+		return path.substr(0, path.find_last_of("\\/"));
+	}
+}
+namespace filenames
+{
+	const std::string optionsName = "options.xml";
+	const std::string calibrationName = "calibration.xml";
 }
 
+#endif
 
 
 

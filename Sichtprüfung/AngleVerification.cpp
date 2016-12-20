@@ -5,8 +5,6 @@
 #include <opencv2\opencv.hpp>
 #include <opencv2\imgproc.hpp>
 
-#include "CLogger.h"
-
 AngleVerification::AngleVerification()
 {
 	cannyLowerThresh_ = 50;

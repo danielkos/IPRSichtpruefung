@@ -1,6 +1,7 @@
 #ifndef CONFIGURATION_STORAGE_H
 #define CONFIGURATION_STORAGE_H
 
+#include <sys/stat.h>
 #include <opencv2\core\core.hpp>
 #include <QVariant>
 
@@ -9,6 +10,9 @@ class ConfigurationStorage
 public:
 
 	static ConfigurationStorage& instance();
+
+	bool exists(const std::string& configPath);
+
 	/** \brief Write the \a value into the config at \a configPath
 	*  The file will be rewritten and not realeased!
 	*  \param configPath a path to the config file

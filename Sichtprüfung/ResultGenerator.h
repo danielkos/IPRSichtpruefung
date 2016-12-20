@@ -23,10 +23,9 @@ public:
 	//Defines all possible settings
 	enum Settings
 	{
-		SET_OBJ_METRICS,
+		SET_OBJ_SIZE,
 		SET_CIRCLE_RADIUS,
 		SET_OBJ_ANGLE,
-		SET_REF_SIZE
 	};
 
 	//Storage for results from methods

@@ -19,7 +19,9 @@
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -32,12 +34,10 @@ public:
     QVBoxLayout *verticalLayout_2;
     QGroupBox *groupBoxSize;
     QGridLayout *gridLayout;
-    QDoubleSpinBox *doubleSpinBoxLength;
-    QDoubleSpinBox *doubleSpinBoxWidth;
     QLabel *label_2;
+    QDoubleSpinBox *doubleSpinBoxWidth;
     QLabel *label;
-    QLabel *label_3;
-    QDoubleSpinBox *doubleSpinBoxHeight;
+    QDoubleSpinBox *doubleSpinBoxLength;
     QGroupBox *groupBoxProperties;
     QGridLayout *gridLayout_3;
     QLabel *label_4;
@@ -47,9 +47,8 @@ public:
     QGroupBox *groupBoxReference;
     QGridLayout *gridLayout_4;
     QLabel *label_6;
-    QLabel *label_7;
-    QDoubleSpinBox *doubleSpinBoxRefWidth;
-    QDoubleSpinBox *doubleSpinBoxRefHeight;
+    QLineEdit *lineEditConfig;
+    QPushButton *pushButtonOpen;
     QDialogButtonBox *buttonBoxOptions;
 
     void setupUi(QMainWindow *Options)
@@ -68,50 +67,38 @@ public:
         groupBoxSize->setCheckable(false);
         gridLayout = new QGridLayout(groupBoxSize);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
-        doubleSpinBoxLength = new QDoubleSpinBox(groupBoxSize);
-        doubleSpinBoxLength->setObjectName(QStringLiteral("doubleSpinBoxLength"));
-        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(doubleSpinBoxLength->sizePolicy().hasHeightForWidth());
-        doubleSpinBoxLength->setSizePolicy(sizePolicy);
-        doubleSpinBoxLength->setMaximum(200);
-        doubleSpinBoxLength->setSingleStep(0.01);
-
-        gridLayout->addWidget(doubleSpinBoxLength, 3, 1, 1, 1);
-
-        doubleSpinBoxWidth = new QDoubleSpinBox(groupBoxSize);
-        doubleSpinBoxWidth->setObjectName(QStringLiteral("doubleSpinBoxWidth"));
-        sizePolicy.setHeightForWidth(doubleSpinBoxWidth->sizePolicy().hasHeightForWidth());
-        doubleSpinBoxWidth->setSizePolicy(sizePolicy);
-        doubleSpinBoxWidth->setMaximum(200);
-        doubleSpinBoxWidth->setSingleStep(0.01);
-
-        gridLayout->addWidget(doubleSpinBoxWidth, 3, 0, 1, 1);
-
         label_2 = new QLabel(groupBoxSize);
         label_2->setObjectName(QStringLiteral("label_2"));
 
         gridLayout->addWidget(label_2, 1, 0, 1, 1);
+
+        doubleSpinBoxWidth = new QDoubleSpinBox(groupBoxSize);
+        doubleSpinBoxWidth->setObjectName(QStringLiteral("doubleSpinBoxWidth"));
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(doubleSpinBoxWidth->sizePolicy().hasHeightForWidth());
+        doubleSpinBoxWidth->setSizePolicy(sizePolicy);
+        doubleSpinBoxWidth->setMaximum(200);
+        doubleSpinBoxWidth->setSingleStep(0.01);
+        doubleSpinBoxWidth->setValue(41);
+
+        gridLayout->addWidget(doubleSpinBoxWidth, 3, 0, 1, 1);
 
         label = new QLabel(groupBoxSize);
         label->setObjectName(QStringLiteral("label"));
 
         gridLayout->addWidget(label, 1, 1, 1, 1);
 
-        label_3 = new QLabel(groupBoxSize);
-        label_3->setObjectName(QStringLiteral("label_3"));
+        doubleSpinBoxLength = new QDoubleSpinBox(groupBoxSize);
+        doubleSpinBoxLength->setObjectName(QStringLiteral("doubleSpinBoxLength"));
+        sizePolicy.setHeightForWidth(doubleSpinBoxLength->sizePolicy().hasHeightForWidth());
+        doubleSpinBoxLength->setSizePolicy(sizePolicy);
+        doubleSpinBoxLength->setMaximum(200);
+        doubleSpinBoxLength->setSingleStep(0.01);
+        doubleSpinBoxLength->setValue(39);
 
-        gridLayout->addWidget(label_3, 1, 2, 1, 1);
-
-        doubleSpinBoxHeight = new QDoubleSpinBox(groupBoxSize);
-        doubleSpinBoxHeight->setObjectName(QStringLiteral("doubleSpinBoxHeight"));
-        sizePolicy.setHeightForWidth(doubleSpinBoxHeight->sizePolicy().hasHeightForWidth());
-        doubleSpinBoxHeight->setSizePolicy(sizePolicy);
-        doubleSpinBoxHeight->setMaximum(200);
-        doubleSpinBoxHeight->setSingleStep(0.01);
-
-        gridLayout->addWidget(doubleSpinBoxHeight, 3, 2, 1, 1);
+        gridLayout->addWidget(doubleSpinBoxLength, 3, 1, 1, 1);
 
 
         verticalLayout_2->addWidget(groupBoxSize);
@@ -132,11 +119,14 @@ public:
 
         doubleSpinBoxDiameter = new QDoubleSpinBox(groupBoxProperties);
         doubleSpinBoxDiameter->setObjectName(QStringLiteral("doubleSpinBoxDiameter"));
+        doubleSpinBoxDiameter->setValue(2.75);
 
         gridLayout_3->addWidget(doubleSpinBoxDiameter, 1, 0, 1, 1);
 
         doubleSpinBoxAngle = new QDoubleSpinBox(groupBoxProperties);
         doubleSpinBoxAngle->setObjectName(QStringLiteral("doubleSpinBoxAngle"));
+        doubleSpinBoxAngle->setDecimals(2);
+        doubleSpinBoxAngle->setValue(45);
 
         gridLayout_3->addWidget(doubleSpinBoxAngle, 1, 1, 1, 1);
 
@@ -152,21 +142,16 @@ public:
 
         gridLayout_4->addWidget(label_6, 0, 0, 1, 1);
 
-        label_7 = new QLabel(groupBoxReference);
-        label_7->setObjectName(QStringLiteral("label_7"));
+        lineEditConfig = new QLineEdit(groupBoxReference);
+        lineEditConfig->setObjectName(QStringLiteral("lineEditConfig"));
 
-        gridLayout_4->addWidget(label_7, 0, 1, 1, 1);
+        gridLayout_4->addWidget(lineEditConfig, 1, 0, 1, 1);
 
-        doubleSpinBoxRefWidth = new QDoubleSpinBox(groupBoxReference);
-        doubleSpinBoxRefWidth->setObjectName(QStringLiteral("doubleSpinBoxRefWidth"));
+        pushButtonOpen = new QPushButton(groupBoxReference);
+        pushButtonOpen->setObjectName(QStringLiteral("pushButtonOpen"));
+        pushButtonOpen->setMaximumSize(QSize(30, 16777215));
 
-        gridLayout_4->addWidget(doubleSpinBoxRefWidth, 1, 0, 1, 1);
-
-        doubleSpinBoxRefHeight = new QDoubleSpinBox(groupBoxReference);
-        doubleSpinBoxRefHeight->setObjectName(QStringLiteral("doubleSpinBoxRefHeight"));
-        doubleSpinBoxRefHeight->setFrame(true);
-
-        gridLayout_4->addWidget(doubleSpinBoxRefHeight, 1, 1, 1, 1);
+        gridLayout_4->addWidget(pushButtonOpen, 1, 1, 1, 1);
 
 
         verticalLayout_2->addWidget(groupBoxReference);
@@ -190,15 +175,15 @@ public:
     {
         Options->setWindowTitle(QApplication::translate("Options", "Options", 0));
         groupBoxSize->setTitle(QApplication::translate("Options", "Size", 0));
-        label_2->setText(QApplication::translate("Options", "Width (cm):", 0));
-        label->setText(QApplication::translate("Options", " Length (cm):", 0));
-        label_3->setText(QApplication::translate("Options", "Height (cm):", 0));
+        label_2->setText(QApplication::translate("Options", "Width (mm):", 0));
+        label->setText(QApplication::translate("Options", " Length (mm):", 0));
         groupBoxProperties->setTitle(QApplication::translate("Options", "Properties", 0));
-        label_4->setText(QApplication::translate("Options", "Hole Radius (cm):", 0));
+        label_4->setText(QApplication::translate("Options", "Hole Radius (mm):", 0));
         label_5->setText(QApplication::translate("Options", "Angle (\302\260):", 0));
-        groupBoxReference->setTitle(QApplication::translate("Options", "Reference Object", 0));
-        label_6->setText(QApplication::translate("Options", "Width:", 0));
-        label_7->setText(QApplication::translate("Options", "Length:", 0));
+        groupBoxReference->setTitle(QApplication::translate("Options", "Camera Configuration", 0));
+        label_6->setText(QApplication::translate("Options", "Path:", 0));
+        lineEditConfig->setText(QApplication::translate("Options", "\\camera\\config.ini", 0));
+        pushButtonOpen->setText(QApplication::translate("Options", "...", 0));
     } // retranslateUi
 
 };

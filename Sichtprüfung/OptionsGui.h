@@ -11,31 +11,34 @@ class OptionsGui : public QMainWindow
 {
 	Q_OBJECT
 public:
-	OptionsGui(QWidget* parent = 0, const std::string& configFile = "");
+	OptionsGui(QWidget* parent = 0);
 	~OptionsGui();
 
 	void saveValues();
 
-	QVariantList objMetrics();
-	QSize referenceSize();
+	QSize objSize();
 
 	QVariant holeRadius();
 	QVariant angle();
 
+	std::string cameraConfigPath();
+
 private:
 	Ui::Options ui_;
 
-	QVariantList objMetrics_;
-	QSize referenceSize_;
+	QSize objSize_;
 	QVariant holeRadius_;
 	QVariant angle_;
 
 	std::string configFile_;
+	std::string cameraConfig_;
 
 	void setValues();
 
 private slots:
 	void closeClicked();
+
+	void selectPathClicked();
 };
 
 #endif // !OPTIONS_GUI_H

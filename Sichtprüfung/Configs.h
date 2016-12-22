@@ -35,6 +35,7 @@ namespace filenames
 {
 	const std::string optionsName = "options.xml";
 	const std::string calibrationName = "calibration.xml";
+	const std::string cameraConfig = "IPR.ini";
 }
 
 #endif

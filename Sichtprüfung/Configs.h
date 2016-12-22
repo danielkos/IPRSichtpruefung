@@ -16,6 +16,7 @@ namespace colors
 	const int pointThickness = 3;
 	const int circleThickness = 3;
 }
+/** \brief Basic structure: exeDir/configFolder/cameraFolder or other folders*/
 namespace paths
 {
 	const std::string defaultFolder = "../Bilder";
@@ -28,7 +29,8 @@ namespace paths
 		GetModuleFileName(NULL, result, 2 * MAX_PATH);
 		std::wstring wpath(result);
 		std::string path(wpath.begin(), wpath.end());
-		return path.substr(0, path.find_last_of("\\/"));
+		path = path.substr(0, path.find_last_of("\\/")) + "\\";
+		return path;
 	}
 }
 namespace filenames

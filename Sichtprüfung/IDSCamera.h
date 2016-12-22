@@ -57,6 +57,8 @@ public:
 	// Calls LoadParameters() internally to read the .ini file with the
 	// camera parameters
 	void AppendParameters(const std::string& cameraConfigPath = "");
+
+	void aquireImageWithParams(const std::string& cameraConfigPath = "");
 	
 private:
 

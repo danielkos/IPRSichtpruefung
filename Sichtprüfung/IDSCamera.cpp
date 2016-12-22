@@ -369,6 +369,11 @@ void IDSCamera::AppendParameters(const std::string& cameraConfigPath)
 	}
 }
 
+void IDSCamera::aquireImageWithParams(const std::string& cameraConfigPath)
+{
+	AppendParameters(cameraConfigPath);
+	AcquireImage();
+}
 
 void IDSCamera::LoadParameters()
 {

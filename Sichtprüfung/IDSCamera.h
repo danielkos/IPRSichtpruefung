@@ -33,8 +33,10 @@
 //===========================================================================//
 #include "uEye.h"
 
-#include <QString>
-#include <QSettings>
+#include <opencv2\opencv.hpp>
+#include <QImage>
+#include <mutex>
+
 
 class IDSCamera
 {
@@ -45,6 +47,8 @@ public:
 
 	// Destructor
 	virtual ~IDSCamera();
+	
+	cv::Mat currentImage();
 
 	// Extracts a single frame from the continuous video stream.
 	void AcquireImage();
@@ -52,28 +56,28 @@ public:
 	// Appends the loaded camera parameters on the camera stream.
 	// Calls LoadParameters() internally to read the .ini file with the
 	// camera parameters
-	void AppendParameters();
+	void AppendParameters(const std::string& cameraConfigPath = "");
 	
 private:
 
 	// The path to the .ini file with the camera parameters
-	QString parameterFilePath;
+	std::string parameterFilePath_;
 
 	// uEye varibles
 	HIDS	m_hCam;			// handle to camera
-	HWND	m_hWndDisplay;	// handle to diplay window
+	INT		m_nSizeX;
+	INT		m_nSizeY;
 	INT		m_Ret;			// return value of uEye SDK functions
 	INT		m_nColorMode;	// Y8/RGB16/RGB24/REG32
 	INT		m_nBitsPerPixel;// number of bits needed store one pixel
-	INT		m_nSizeX;		// width of video 
-	INT		m_nSizeY;		// height of video
-	INT		m_nPosX;		// left offset of image
-	INT		m_nPosY;		// right offset of image
 	INT		m_lMemoryId;	// grabber memory - buffer ID
 	char*	m_pcImageMemory;// grabber memory - pointer to buffer
 	INT     m_nRenderMode;  // render  mode
 	SENSORINFO m_sInfo;	    // sensor information struct
+
+	std::mutex imgLock_;
 	
+	IplImage* currentImg_;
 
 	// Opens a handle to a connected camera
 	bool OpenCamera();

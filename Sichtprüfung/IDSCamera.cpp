@@ -30,26 +30,21 @@
 //===========================================================================//
 #include "IDSCamera.h"
 #include "CLogger.h"
+#include "Configs.h"
 
+#include <QSettings>
 
 IDSCamera::IDSCamera()
 {
-	parameterFilePath = "IPR.ini";
+	parameterFilePath_ = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::cameraConfig;
 
 	m_pcImageMemory = NULL;
+	currentImg_ = NULL;
 	m_lMemoryId = 0;
 	m_hCam = 0;
-	m_nRenderMode = IS_RENDER_FIT_TO_WINDOW;
-	m_nPosX = 0;
-	m_nPosY = 0;
-
-	m_hCam = 0;
-
-	//m_hWndDisplay = GetDlgItem(IDC_DISPLAY)->m_hWnd; // set display window handle
-
-	m_nSizeX = 640;		//rc.right - rc.left;	// set video width  to fit into display window
-	m_nSizeY = 480;		//rc.bottom - rc.top;	// set video height to fit into display window
-	m_nRenderMode = IS_RENDER_FIT_TO_WINDOW;
+	m_nSizeX = 0;
+	m_nSizeY = 0;
+	m_nRenderMode = IS_RENDER_NORMAL;
 
 	OpenCamera();		// open a camera handle
 
@@ -62,6 +57,14 @@ IDSCamera::~IDSCamera()
 	is_ExitCamera(m_hCam);
 }
 
+cv::Mat IDSCamera::currentImage()
+{
+	cv::Mat img;
+	imgLock_.lock();
+	img = cv::cvarrToMat(currentImg_);
+	imgLock_.unlock();
+	return img;
+}
 
 void IDSCamera::AcquireImage()
 {
@@ -74,7 +77,32 @@ void IDSCamera::AcquireImage()
 	{
 		if (is_FreezeVideo(m_hCam, IS_WAIT) == IS_SUCCESS)
 		{
-			is_RenderBitmap(m_hCam, m_lMemoryId, m_hWndDisplay, m_nRenderMode);
+			void *pMemVoid;
+			is_GetImageMem(m_hCam, &pMemVoid);
+
+			imgLock_.lock();
+
+			currentImg_ = cvCreateImage(cvSize(m_nSizeX, m_nSizeY), IPL_DEPTH_8U, 3);
+			currentImg_->nSize = 112;
+			currentImg_->ID = 0;
+			currentImg_->nChannels = 3;
+			currentImg_->alphaChannel = 0;
+			currentImg_->depth = 8;
+			currentImg_->dataOrder = 0;
+			currentImg_->origin = 0;
+			currentImg_->align = 4;
+			currentImg_->width = m_nSizeX;
+			currentImg_->height = m_nSizeY;
+			currentImg_->roi = NULL;
+			currentImg_->maskROI = NULL;
+			currentImg_->imageId = NULL;
+			currentImg_->tileInfo = NULL;
+			currentImg_->imageSize = 3 * m_nSizeX*m_nSizeY;
+			currentImg_->imageData = (char*)pMemVoid; 
+			currentImg_->widthStep = 3 * m_nSizeX;
+			currentImg_->imageDataOrigin = (char*)pMemVoid;
+
+			imgLock_.unlock();
 		}
 	}
 }
@@ -203,8 +231,12 @@ void IDSCamera::ExitCamera()
 }
 
 
-void IDSCamera::AppendParameters()
+void IDSCamera::AppendParameters(const std::string& cameraConfigPath)
 {
+	if (!cameraConfigPath.empty())
+	{
+		parameterFilePath_ = cameraConfigPath;
+	}
 	// Load the parameters from the .ini file
 	LoadParameters();
 
@@ -226,7 +258,9 @@ void IDSCamera::AppendParameters()
 			}
 
 			// realloc image mem with actual sizes and depth.
+			imgLock_.lock();
 			is_FreeImageMem(m_hCam, m_pcImageMemory, m_lMemoryId);
+			imgLock_.unlock();
 
 			IS_SIZE_2D imageSize;
 			is_AOI(m_hCam, IS_AOI_IMAGE_GET_SIZE, (void*)&imageSize, sizeof(imageSize));
@@ -312,7 +346,9 @@ void IDSCamera::AppendParameters()
 			}
 
 			// memory initialization
+			imgLock_.lock();
 			is_AllocImageMem(m_hCam, nAllocSizeX, nAllocSizeY, m_nBitsPerPixel, &m_pcImageMemory, &m_lMemoryId);
+			imgLock_.unlock();
 
 			// set memory active
 			is_SetImageMem(m_hCam, m_pcImageMemory, m_lMemoryId);
@@ -349,7 +385,7 @@ void IDSCamera::LoadParameters()
 	nGainB = is_SetHardwareGain(m_hCam, (int)IS_GET_DEFAULT_BLUE, -1, -1, -1);
 
 	// Read parameters of ini file with Qt
-	QSettings cameraParameters (parameterFilePath, QSettings::IniFormat);
+	QSettings cameraParameters (QString::fromStdString(parameterFilePath_), QSettings::IniFormat);
 	
 	UINT nPixelClock = cameraParameters.value("PixelClock", 10).toInt();
 	UINT nFrameRate = cameraParameters.value("FrameRate", 5).toInt();
@@ -406,3 +442,4 @@ INT IDSCamera::InitCamera(HIDS *hCam, HWND hWnd)
 
 	return nRet;
 }
+

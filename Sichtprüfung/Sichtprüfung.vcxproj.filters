@@ -64,10 +64,10 @@
       <UniqueIdentifier>{af47f9c6-07bf-4957-8293-09179e48cb24}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Dateien\IDS">
-      <UniqueIdentifier>{2b7e7946-aa4e-4f1a-9303-64d0e5eb2bdc}</UniqueIdentifier>
+      <UniqueIdentifier>{568e07b2-0b48-4930-8032-5f03ed7d5165}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Dateien\IDS">
-      <UniqueIdentifier>{8e94d3e0-28d5-48c9-b7be-8b9e8806c80e}</UniqueIdentifier>
+      <UniqueIdentifier>{c8d22fca-60c8-4e86-9eb7-2fce0806f951}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

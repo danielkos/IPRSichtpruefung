@@ -160,7 +160,7 @@ bool Calibration::run(const cv::Mat* img)
 	
 	cv::undistort(*resImg_, *resImg_, K, D);
 
-	std::string path = paths::configFolder + paths::cameraFolder + filenames::calibrationName;
+	std::string path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::calibrationName;
 
 	//Write results
 	if (!ConfigurationStorage::instance().write(path, "K", K))

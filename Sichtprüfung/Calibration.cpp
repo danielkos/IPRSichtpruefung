@@ -1,6 +1,7 @@
 #include "Calibration.h"
 #include "Configs.h"
 #include "ConfigurationStorage.h"
+#include "CLogger.h"
 
 #include <QVariant>
 #include <QSize>
@@ -12,11 +13,11 @@
 
 Calibration::Calibration()
 {
-	numImgs_ = 10;
-	numCornersH_ = 3;
-	numConrersV_ = 4;
+	numImgs_ = 11;
+	numCornersH_ = 4;
+	numConrersV_ = 5;
 	numSquares_ = numCornersH_ * numConrersV_;
-	sizeSquare_ = 10;
+	sizeSquare_ = 11;
 	boardSize_ = cv::Size(numCornersH_, numConrersV_);
 	calibSuccess_ = true;
 }
@@ -159,12 +160,29 @@ bool Calibration::run(const cv::Mat* img)
 	
 	cv::undistort(*resImg_, *resImg_, K, D);
 
+	std::string path = paths::configFolder + paths::cameraFolder + filenames::calibrationName;
+
 	//Write results
-	ConfigurationStorage::instance().write("calibration.xml", "K", K);
-	ConfigurationStorage::instance().write("calibration.xml", "D", D);
-	ConfigurationStorage::instance().write("calibration.xml", "square_size", sizeSquare_);
-	ConfigurationStorage::instance().write("calibration.xml", "num_hor_corners", numCornersH_);
-	ConfigurationStorage::instance().write("calibration.xml", "num_ver_corners", numConrersV_);
+	if (!ConfigurationStorage::instance().write(path, "K", K))
+	{
+		LOGGER->Log("Can not write K to %s", path);
+	}
+	if (!ConfigurationStorage::instance().write(path, "D", D))
+	{
+		LOGGER->Log("Can not write D to %s", path);
+	}
+	if (!ConfigurationStorage::instance().write(path, "square_size", sizeSquare_))
+	{
+		LOGGER->Log("Can not write square_size to %s", path);
+	}
+	if (ConfigurationStorage::instance().write(path, "num_hor_corners", numCornersH_))
+	{
+		LOGGER->Log("Can not write num_hor_corners to %s", path);
+	}
+	if (!ConfigurationStorage::instance().write(path, "num_ver_corners", numConrersV_))
+	{
+		LOGGER->Log("Can not write num_ver_corners to %s", path);
+	}
 	ConfigurationStorage::instance().realease();
 
 	return calibSuccess_;

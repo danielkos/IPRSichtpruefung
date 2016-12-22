@@ -94,7 +94,7 @@ bool ConfigurationStorage::read(const std::string& configPath, const std::string
 			case QMetaType::Bool:
 				value = QVariant((int)storage_[node]);
 				break;
-			case QMetaType::Char:
+			case QVariant::String:
 				value = QVariant(QString::fromStdString((std::string)storage_[node]));
 				break;
 			}

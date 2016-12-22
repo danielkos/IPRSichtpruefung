@@ -5,6 +5,7 @@
 #include "UpldFrame.h"
 #include "OptionsGui.h"
 #include "Configs.h"
+#include "IDSCamera.h"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -81,6 +82,7 @@ MainGui::MainGui(QWidget *parent)
 
 	//Create IO 
 	io_ = new UpldFrame();
+	cam_ = new IDSCamera();
 		
 	connect(io_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
 	
@@ -89,7 +91,7 @@ MainGui::MainGui(QWidget *parent)
 
 	if (!camera.isNull())
 	{
-		addFileStream(camera.deviceName());
+		addFileStream("Default Camera");
 	}
 	
 	logOutput("Start up");
@@ -99,6 +101,7 @@ MainGui::~MainGui()
 	delete inputView_;
 	delete orgImg_;
 	delete io_;
+	delete cam_;
 }
 
 void MainGui::setInputImage(cv::Mat* img)
@@ -393,8 +396,9 @@ void MainGui::setCurrentFile(QModelIndex index)
 
 		if (currentFile_.isEmpty())
 		{
-			io_->setCamera(name->data(Qt::DisplayRole).value<QString>().toStdString());
-			std::thread ioThread(&UpldFrame::fromCamera, io_, false);
+			/*io_->setCamera(name->data(Qt::DisplayRole).value<QString>().toStdString());
+			std::thread ioThread(&UpldFrame::fromCamera, io_, false);*/
+			std::thread ioThread(&IDSCamera::aquireImageWithParams, cam_, options_->cameraConfigPath()); 
 			ioThread.detach();
 		}
 		else

@@ -11,6 +11,7 @@ class MethodGuiItem;
 class OptionsGui;
 class UpldFrame;
 class QTabWidget;
+class IDSCamera;
 
 namespace cv
 {
@@ -80,6 +81,7 @@ private:
 	//IO
 	UpldFrame* io_;
 
+	IDSCamera* cam_;
 	//Result presenter
 	ResultGenerator resGenerator;
 

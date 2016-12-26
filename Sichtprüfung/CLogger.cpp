@@ -17,7 +17,7 @@ CLogger* CLogger::GetLogger() {
 	return m_pThis;
 }
 
-void CLogger::Log(const char * format, ...)
+void CLogger::log(const char * format, ...)
 {
 	char* sMessage = NULL;
 	int nLength = 0;
@@ -36,7 +36,7 @@ void CLogger::Log(const char * format, ...)
 	delete[] sMessage;
 }
 
-void CLogger::Log(const string& sMessage)
+void CLogger::log(const string& sMessage)
 {
 	m_Logfile << Util::CurrentDateTime() << ":\t";
 	m_Logfile << sMessage << "\n";

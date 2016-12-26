@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define LOGGER CLogger::GetLogger()
+#define TLOG CLogger::GetLogger()
 
 /**
 Implements a simple logger that logs the given output to a file on the local
@@ -38,12 +38,12 @@ public:
 	*   Logs a message
 	*   @param sMessage message to be logged.
 	*/
-	void Log(const std::string& sMessage);
+	void log(const std::string& sMessage);
 	/**
 	*   Variable Length Logger function
 	*   @param format string for the message to be logged.
 	*/
-	void Log(const char * format, ...);
+	void log(const char * format, ...);
 	/**
 	*   << overloaded function to Logs a message
 	*   @param sMessage message to be logged.

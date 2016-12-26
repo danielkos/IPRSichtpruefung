@@ -29,7 +29,7 @@
 //                                                                           //
 //===========================================================================//
 #include "IDSCamera.h"
-#include "CLogger.h"
+#include "Logger.h"
 #include "Configs.h"
 
 #include <QSettings>
@@ -46,9 +46,7 @@ IDSCamera::IDSCamera()
 	m_nSizeY = 0;
 	m_nRenderMode = IS_RENDER_NORMAL;
 
-	OpenCamera();		// open a camera handle
-
-	LoadParameters();
+	terminate_ = false;
 }
 
 IDSCamera::~IDSCamera()
@@ -98,13 +96,15 @@ void IDSCamera::AcquireImage()
 			currentImg_->imageId = NULL;
 			currentImg_->tileInfo = NULL;
 			currentImg_->imageSize = 3 * m_nSizeX*m_nSizeY;
-			currentImg_->imageData = (char*)pMemVoid; 
+			currentImg_->imageData = (char*)pMemVoid;
 			currentImg_->widthStep = 3 * m_nSizeX;
 			currentImg_->imageDataOrigin = (char*)pMemVoid;
 
 			imgLock_.unlock();
 		}
 	}
+
+	Q_EMIT newCameraImage(&currentImage());
 }
 
 
@@ -189,7 +189,7 @@ bool IDSCamera::OpenCamera()
 		m_Ret = is_SetErrorReport(m_hCam, IS_ENABLE_ERR_REP); //IS_DISABLE_ERR_REP);
 		if (m_Ret != IS_SUCCESS)
 		{
-			LOGGER->Log("ERROR: Can not enable the automatic uEye error report!");
+			LOGGER.log("Can not enable the automatic uEye error report!");
 			return false;
 		}
 
@@ -198,7 +198,7 @@ bool IDSCamera::OpenCamera()
 	}
 	else
 	{
-		LOGGER->Log("ERROR: Can not open uEye camera!");
+		LOGGER.log("Can not open uEye camera!");
 		return false;
 	}
 
@@ -237,9 +237,7 @@ void IDSCamera::AppendParameters(const std::string& cameraConfigPath)
 	{
 		parameterFilePath_ = cameraConfigPath;
 	}
-	// Load the parameters from the .ini file
-	LoadParameters();
-
+	
 	if (m_hCam == 0)
 	{
 		OpenCamera();
@@ -369,10 +367,18 @@ void IDSCamera::AppendParameters(const std::string& cameraConfigPath)
 	}
 }
 
+void IDSCamera::terminateCameraStream()
+{
+	terminate_ = true;
+}
 void IDSCamera::aquireImageWithParams(const std::string& cameraConfigPath)
 {
 	AppendParameters(cameraConfigPath);
-	AcquireImage();
+
+	while (!terminate_)
+	{
+		AcquireImage();
+	}
 }
 
 void IDSCamera::LoadParameters()
@@ -437,7 +443,7 @@ INT IDSCamera::InitCamera(HIDS *hCam, HWND hWnd)
 		INT nUploadTime = 25000;
 		is_GetDuration(*hCam, IS_STARTER_FW_UPLOAD, &nUploadTime);
 		
-		LOGGER->Log("This camera requires a new firmware!");
+		LOGGER.log("This camera requires a new firmware!");
 
 		// Try again to open the camera. This time we allow the automatic upload of the firmware by
 		// specifying "IS_ALLOW_STARTER_FIRMWARE_UPLOAD"

@@ -36,10 +36,13 @@
 #include <opencv2\opencv.hpp>
 #include <QImage>
 #include <mutex>
+#include <QObject>
 
 
-class IDSCamera
+class IDSCamera : public QObject
 {
+	Q_OBJECT
+
 public:
 
 	// Constructor
@@ -47,6 +50,9 @@ public:
 
 	// Destructor
 	virtual ~IDSCamera();
+
+	// Opens a handle to a connected camera
+	bool OpenCamera();
 	
 	cv::Mat currentImage();
 
@@ -59,6 +65,12 @@ public:
 	void AppendParameters(const std::string& cameraConfigPath = "");
 
 	void aquireImageWithParams(const std::string& cameraConfigPath = "");
+
+	void terminateCameraStream();
+
+Q_SIGNALS:
+	void newCameraImage(cv::Mat* img);
+
 	
 private:
 
@@ -76,13 +88,11 @@ private:
 	char*	m_pcImageMemory;// grabber memory - pointer to buffer
 	INT     m_nRenderMode;  // render  mode
 	SENSORINFO m_sInfo;	    // sensor information struct
+	bool terminate_;
 
 	std::mutex imgLock_;
 	
 	IplImage* currentImg_;
-
-	// Opens a handle to a connected camera
-	bool OpenCamera();
 
 	// Returns the maximum image size of a single camera frame
 	void GetMaxImageSize(INT *pnSizeX, INT *pnSizeY);
@@ -97,4 +107,5 @@ private:
 	INT InitCamera(HIDS *hCam, HWND hWnd);
 
 };
+Q_DECLARE_METATYPE(cv::Mat*);
 #endif

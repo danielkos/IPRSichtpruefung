@@ -1,5 +1,5 @@
 #include "MaterialVerification.h"
-#include "CLogger.h"
+#include "Logger.h"
 #include "Configs.h"
 
 #include <QVariant>
@@ -60,8 +60,7 @@ ResultGenerator::ResultMap MaterialVerification::results()
 		param.setUp(" Metal",materialMetal_ , QMetaType::Bool);
 		results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_MATERIAL, param));
 
-		LOGGER->Log("Metal", materialMetal_);
-
+		LOGGER.log("Metal: " + materialMetal_);
 
 	return results;
 }

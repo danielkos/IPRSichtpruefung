@@ -1,7 +1,7 @@
 #include "OptionsGui.h"
 #include "ConfigurationStorage.h"
 #include "Configs.h"
-#include "CLogger.h"
+#include "Logger.h"
 
 #include <QDir>
 #include <QPushButton>
@@ -18,13 +18,15 @@ OptionsGui::OptionsGui(QWidget* parent)
 	
 	if (ConfigurationStorage::instance().exists(configFile_))
 	{
+		LOGGER.log("Reading file: " + configFile_);
+
 		if (ConfigurationStorage::instance().read(configFile_, "object_width", QMetaType::Double, value))
 		{
 			objSize_.setWidth(value.toDouble());
 		}
 		else
 		{
-			LOGGER->Log("Can not read object_width from %s", configFile_);
+			LOGGER.log("Can not read object_width from " + configFile_);
 		}
 
 		if (ConfigurationStorage::instance().read(configFile_, "object_length", QMetaType::Double, value))
@@ -33,7 +35,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 		}
 		else
 		{
-			LOGGER->Log("Can not read object_length from %s", configFile_);
+			LOGGER.log("Can not read object_length from " + configFile_);
 		}
 		
 		if (ConfigurationStorage::instance().read(configFile_, "object_hole_radius", QMetaType::Double, value))
@@ -42,7 +44,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 		}
 		else
 		{
-			LOGGER->Log("Can not read object_hole_radius from %s", configFile_);
+			LOGGER.log("Can not read object_hole_radius from " + configFile_);
 		}
 
 		if (ConfigurationStorage::instance().read(configFile_, "object_side_angle", QMetaType::Double, value))
@@ -51,7 +53,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 		}
 		else
 		{
-			LOGGER->Log("Can not read object_side_angle from %s", configFile_);
+			LOGGER.log("Can not read object_side_angle from " + configFile_);
 		}
 		
 		if (ConfigurationStorage::instance().read(configFile_, "camera_config_path", QVariant::String, value))
@@ -60,14 +62,31 @@ OptionsGui::OptionsGui(QWidget* parent)
 		}
 		else
 		{
-			LOGGER->Log("Can not read camera_config_path from %s", configFile_);
+			LOGGER.log("Can not read camera_config_path from " + configFile_);
 			cameraConfig_ = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::cameraConfig;
 		}
 		setValues();
 	}
 	else
 	{
-		LOGGER->Log("%s does not exist. File will be created at same destination", configFile_);
+		LOGGER.log(configFile_ + " does not exist. File will be created at same destination");
+		
+		bool exists;
+		std::string path = paths::getExecutablePath() + paths::configFolder;
+		bool ret = paths::createDir(path, exists);
+	
+		if (!ret && exists)
+		{
+			LOGGER.log("Reusing directory: " + path);
+		}
+		else if (ret)
+		{
+			LOGGER.log("Directory: " + path + "  created");
+		}
+		else if (!ret && !exists)
+		{
+			LOGGER.log("Unknown error while creating directory: " + path);
+		}
 	}
 	
 	QPushButton* save = ui_.buttonBoxOptions->button(QDialogButtonBox::Save);
@@ -129,31 +148,30 @@ void OptionsGui::saveValues()
 
 	if (!ConfigurationStorage::instance().write(configFile_, "object_width", objSize_.width()))
 	{
-		LOGGER->Log("Can not write object_width to %s", configFile_);
+		LOGGER.log("Can not write object_width to " + configFile_);
 	}
 
 	if (!ConfigurationStorage::instance().write(configFile_, "object_length", objSize_.height()))
 	{
-		LOGGER->Log("Can not write object_length to %s", configFile_);
+		LOGGER.log("Can not write object_length to " + configFile_);
 	}
 
 	if (!ConfigurationStorage::instance().write(configFile_, "object_hole_radius", holeRadius_))
 	{
-		LOGGER->Log("Can not write object_hole_radius to %s", configFile_);
+		LOGGER.log("Can not write object_hole_radius to " + configFile_);
 	}
 
 	if (!ConfigurationStorage::instance().write(configFile_, "object_side_angle", angle_))
 	{
-		LOGGER->Log("Can not write object_side_angle to %s", configFile_);
+		LOGGER.log("Can not write object_side_angle to " + configFile_);
 	}
 
 	if (!ConfigurationStorage::instance().write(configFile_, "camera_config_path", QString::fromStdString(cameraConfig_)))
 	{
-		LOGGER->Log("Can not write camera_config_path to %s", configFile_);
+		LOGGER.log("Can not write camera_config_path to " + configFile_);
 	}
 
 	ConfigurationStorage::instance().realease();
-
 	close();
 }
 

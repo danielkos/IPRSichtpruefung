@@ -1,5 +1,5 @@
 #include "HoleVerification.h"
-#include "CLogger.h"
+#include "Logger.h"
 #include "Configs.h"
 
 #include <QVariant>
@@ -91,7 +91,7 @@ ResultGenerator::ResultMap HoleVerification::results()
 		param.setUp(name + " centered", centered, QMetaType::Bool);
 		results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_CIRCLE_MIDDLE, param));
 	
-		LOGGER->Log("Hole %d: radius = %d, centered = %d", i, circle[2], centered);
+		LOGGER.log("Hole " + QString::number(i) + ": radius = " + QString::number(circle[2]) + ", centered = " + centered);
 	}
 	
 	return results;

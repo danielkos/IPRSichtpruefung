@@ -1,6 +1,9 @@
+#include "Logger.h"
+
 #include <opencv2\opencv.hpp>
 #include <Windows.h>
 #include <string>
+#include <atlstr.h>
 
 #ifndef CONFIGS
 #define CONFIGS
@@ -31,6 +34,25 @@ namespace paths
 		std::string path(wpath.begin(), wpath.end());
 		path = path.substr(0, path.find_last_of("\\/")) + "\\";
 		return path;
+	}
+
+	static bool createDir(const std::string& path, bool& exists)
+	{
+		bool ret = true;
+		exists = false;
+		TCHAR *str = new TCHAR[path.size() + 1];
+		str[path.size()] = 0;
+		//can cause problems with UTF-16
+		std::copy(path.begin(), path.end(), str);
+		
+		ret = CreateDirectory(str, NULL);
+		
+		if (GetLastError() == ERROR_ALREADY_EXISTS)
+		{
+			exists = true;
+			ret = false;
+		}
+		return ret;
 	}
 }
 namespace filenames

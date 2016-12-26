@@ -3,8 +3,7 @@
 
 #include "VerificationMethod.h"
 #include "Parameter.h"
-#include "UpldFrame.h"
-
+#include "IDSCamera.h"
 #include <opencv2\opencv.hpp>
 
 namespace cv
@@ -49,7 +48,7 @@ protected:
 	//Corners on the chessboard
 	std::vector<cv::Point2f> corners_;
 	//IO to grav images
-	UpldFrame io_;
+	IDSCamera cam_;
 };
 
 #endif

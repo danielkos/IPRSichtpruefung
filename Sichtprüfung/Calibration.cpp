@@ -1,7 +1,7 @@
 #include "Calibration.h"
 #include "Configs.h"
 #include "ConfigurationStorage.h"
-#include "CLogger.h"
+#include "Logger.h"
 
 #include <QVariant>
 #include <QSize>
@@ -19,7 +19,25 @@ Calibration::Calibration()
 	numSquares_ = numCornersH_ * numConrersV_;
 	sizeSquare_ = 11;
 	boardSize_ = cv::Size(numCornersH_, numConrersV_);
-	calibSuccess_ = true;
+	calibSuccess_ = false;
+	
+	bool exists;
+	bool ret;
+	std::string path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder;
+	ret = paths::createDir(path, exists);
+	
+	if (!ret && exists)
+	{
+		LOGGER.log("Reusing directory: " + path);
+	}
+	else if(ret)
+	{
+		LOGGER.log("Directory: " + path + "  created");
+	}
+	else if (!ret && !exists)
+	{
+		LOGGER.log("Unknown error while creating directory: " + path);
+	}
 }
 
 Calibration::~Calibration()
@@ -86,69 +104,71 @@ bool Calibration::run(const cv::Mat* img)
 	cv::Mat* input;
 
 	//Open default cam
-	io_.setCamera("test");
-
-	//Generate 3D Points of the corners
-	for (int i = 0; i < numCornersH_; i++)
+	if (cam_.OpenCamera())
 	{
-		for (int j = 0; j < numConrersV_; j++)
+		//Generate 3D Points of the corners
+		for (int i = 0; i < numCornersH_; i++)
 		{
-			obj.push_back(cv::Point3f((float)i * sizeSquare_, (float)j * sizeSquare_, 0));
-		}
-	}
-
-	//Run corner aquisition as long as needed
-	while (counter <= numImgs_)
-	{
-		//Get image
-		input = io_.fromCamera(true);
-
-		if (!input->empty())
-		{
-			initializeResultImage(input);
-			cv::cvtColor(*resImg_, *processedImg_, CV_BGR2GRAY);
-
-			//Find chessboard
-			found = cv::findChessboardCorners(*resImg_, boardSize_, corners_, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-
-			if (found)
+			for (int j = 0; j < numConrersV_; j++)
 			{
-				cv::cornerSubPix(*processedImg_, corners_, cv::Size(5, 5), cv::Size(-1, -1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
-				cv::drawChessboardCorners(*processedImg_, boardSize_, corners_, found);
+				obj.push_back(cv::Point3f((float)i * sizeSquare_, (float)j * sizeSquare_, 0));
 			}
+		}
 
-			//Show input img and chessboard corners
-			cv::imshow("Input Image", *resImg_);
-			cv::imshow("Detected Corners", *processedImg_);
-			//Wait for input
-			pressedKey = cv::waitKey(1);
+		//Run corner aquisition as long as needed
+		while (counter <= numImgs_)
+		{
+			cam_.aquireImageWithParams();
+			//Get image
+			input = new cv::Mat(cam_.currentImage());
 
-			//ESC-> abort, Space-> store this run, Else-> skip run
-			if (found)
+			if (!input->empty())
 			{
-				switch (pressedKey)
+				initializeResultImage(input);
+				cv::cvtColor(*resImg_, *processedImg_, CV_BGR2GRAY);
+
+				//Find chessboard
+				found = cv::findChessboardCorners(*resImg_, boardSize_, corners_, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+
+				if (found)
 				{
-				case 27:
-					calibSuccess_ = false;
-					break;
-				case ' ':
-					imagePoints_.push_back(corners_);
-					objectPoints_.push_back(obj);
-					counter++;
-					break;
-				default:
-					break;
+					cv::cornerSubPix(*processedImg_, corners_, cv::Size(5, 5), cv::Size(-1, -1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+					cv::drawChessboardCorners(*processedImg_, boardSize_, corners_, found);
+				}
+
+				//Show input img and chessboard corners
+				cv::imshow("Input Image", *resImg_);
+				cv::imshow("Detected Corners", *processedImg_);
+				//Wait for input
+				pressedKey = cv::waitKey(1);
+
+				//ESC-> abort, Space-> store this run, Else-> skip run
+				if (found)
+				{
+					switch (pressedKey)
+					{
+					case 27:
+						calibSuccess_ = false;
+						break;
+					case ' ':
+						imagePoints_.push_back(corners_);
+						objectPoints_.push_back(obj);
+						counter++;
+						break;
+					default:
+						break;
+					}
 				}
 			}
-		}
-		else
-		{
-			calibSuccess_ = false;
-		}
-		
-		if (!calibSuccess_)
-		{
-			break;
+			else
+			{
+				calibSuccess_ = false;
+			}
+
+			if (!calibSuccess_)
+			{
+				break;
+			}
 		}
 	}
 	
@@ -156,34 +176,34 @@ bool Calibration::run(const cv::Mat* img)
 	if (calibSuccess_)
 	{
 		calibrateCamera(objectPoints_, imagePoints_, resImg_->size(), K, D, rvecs, tvecs);
-	}
-	
-	cv::undistort(*resImg_, *resImg_, K, D);
 
-	std::string path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::calibrationName;
+		cv::undistort(*resImg_, *resImg_, K, D);
 
-	//Write results
-	if (!ConfigurationStorage::instance().write(path, "K", K))
-	{
-		LOGGER->Log("Can not write K to %s", path);
+		std::string path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::calibrationName;
+
+		//Write results
+		if (!ConfigurationStorage::instance().write(path, "K", K))
+		{
+			LOGGER.log("Can not write K to " + path);
+		}
+		if (!ConfigurationStorage::instance().write(path, "D", D))
+		{
+			LOGGER.log("Can not write D to " + path);
+		}
+		if (!ConfigurationStorage::instance().write(path, "square_size", sizeSquare_))
+		{
+			LOGGER.log("Can not write square_size to " + path);
+		}
+		if (ConfigurationStorage::instance().write(path, "num_hor_corners", numCornersH_))
+		{
+			LOGGER.log("Can not write num_hor_corners to " + path);
+		}
+		if (!ConfigurationStorage::instance().write(path, "num_ver_corners", numConrersV_))
+		{
+			LOGGER.log("Can not write num_ver_corners to " + path);
+		}
+		ConfigurationStorage::instance().realease();
 	}
-	if (!ConfigurationStorage::instance().write(path, "D", D))
-	{
-		LOGGER->Log("Can not write D to %s", path);
-	}
-	if (!ConfigurationStorage::instance().write(path, "square_size", sizeSquare_))
-	{
-		LOGGER->Log("Can not write square_size to %s", path);
-	}
-	if (ConfigurationStorage::instance().write(path, "num_hor_corners", numCornersH_))
-	{
-		LOGGER->Log("Can not write num_hor_corners to %s", path);
-	}
-	if (!ConfigurationStorage::instance().write(path, "num_ver_corners", numConrersV_))
-	{
-		LOGGER->Log("Can not write num_ver_corners to %s", path);
-	}
-	ConfigurationStorage::instance().realease();
 
 	return calibSuccess_;
 }

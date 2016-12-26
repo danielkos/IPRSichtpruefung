@@ -9,7 +9,6 @@ class FrameView;
 class VerificationMethod;
 class MethodGuiItem;
 class OptionsGui;
-class UpldFrame;
 class QTabWidget;
 class IDSCamera;
 
@@ -78,9 +77,6 @@ private:
 	//Options dialog
 	OptionsGui* options_;
 
-	//IO
-	UpldFrame* io_;
-
 	IDSCamera* cam_;
 	//Result presenter
 	ResultGenerator resGenerator;
@@ -124,11 +120,6 @@ private slots:
 	* \brief Resets all stored images
 	*/
 	void reset();
-
-	/**
-	* \brief Displayes msg onto log tab
-	*/
-	void logOutput(QString msg);
 
 	/**
 	* \brief Displays msg onto status label

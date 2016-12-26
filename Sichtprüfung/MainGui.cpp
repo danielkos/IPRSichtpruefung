@@ -2,10 +2,12 @@
 #include "FrameView.h"
 #include "VerificationMethod.h"
 #include "MethodGuiItem.h"
-#include "UpldFrame.h"
 #include "OptionsGui.h"
 #include "Configs.h"
+#include "UpldFrame.h"
 #include "IDSCamera.h"
+#include "Logger.h"
+#include "GLogger.h"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -30,6 +32,8 @@ MainGui::MainGui(QWidget *parent)
 {
 	//setup ui
 	ui_.setupUi(this);
+
+	GLOG.setListWidget(ui_.listWidgetLog);
 
 	//set a parent for a view
 	inputView_ = new FrameView(ui_.widInputImage);
@@ -80,27 +84,22 @@ MainGui::MainGui(QWidget *parent)
 	//Create an option window without showing it
 	options_ = new OptionsGui(this);
 
-	//Create IO 
-	io_ = new UpldFrame();
+	//Create IO
 	cam_ = new IDSCamera();
 		
-	connect(io_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
-	
-	//Get default camera
-	QCameraInfo camera = QCameraInfo::defaultCamera();
+	QObject::connect(cam_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
 
-	if (!camera.isNull())
+	if (cam_->OpenCamera())
 	{
 		addFileStream("Default Camera");
 	}
 	
-	logOutput("Start up");
+	LOGGER.log("Start up");
 }
 MainGui::~MainGui()
 {
 	delete inputView_;
 	delete orgImg_;
-	delete io_;
 	delete cam_;
 }
 
@@ -141,7 +140,7 @@ bool MainGui::findTab(const QTabWidget* tabWidget, const QString& name, int& ind
 
 void MainGui::addVerificationMethod(std::string name, VerificationMethod* method)
 {
-	logOutput("Adding method: " + QString::fromStdString(name));
+	LOGGER.log("Adding method:" + QString::fromStdString(name));
 	//Create an item and attach it to the widget
 	MethodGuiItem* item = new MethodGuiItem(name, method->parameters(), ui_.groupBoxMethods);
 	FrameView* preprocView = new FrameView(ui_.tabWidgetProcessed);
@@ -166,7 +165,7 @@ void MainGui::setTab(QString methodName)
 	}
 	else
 	{
-		logOutput("Could not find processed tab with name " + methodName + " and index: " + QString::number(index));
+		LOGGER.log("Could not find processed tab with name " + methodName + " and index: " + QString::number(index));
 	}
 
 	if (findTab(ui_.tabWidgetResult, methodName, index) && index >= 0)
@@ -175,7 +174,7 @@ void MainGui::setTab(QString methodName)
 	}
 	else
 	{
-		logOutput("Could not find result tab with name " + methodName + " and index: " + QString::number(index));
+		LOGGER.log("Could not find result tab with name " + methodName + " and index: " + QString::number(index));
 	}
 }
 
@@ -189,7 +188,7 @@ void MainGui::addMethodResults(const QString& methodName, const cv::Mat* resImg,
 	}
 	else
 	{
-		logOutput("Could not find processed tab with name " + methodName + " and index: " + QString::number(index));
+		LOGGER.log("Could not find processed tab with name " + methodName + " and index: " + QString::number(index));
 	}
 
 	if (findTab(ui_.tabWidgetResult, methodName, index) && index >= 0)
@@ -198,7 +197,7 @@ void MainGui::addMethodResults(const QString& methodName, const cv::Mat* resImg,
 	}
 	else
 	{
-		logOutput("Could not find result tab with name " + methodName + " and index: " + QString::number(index));
+		LOGGER.log("Could not find result tab with name " + methodName + " and index: " + QString::number(index));
 	}
 	
 	ui_.tabWidgetProcessed->show();
@@ -235,13 +234,13 @@ void MainGui::runSelectedMethods()
 		{
 			methodName = QString::fromStdString(it->first->name());
 
-			logOutput("Running method: " + methodName);
+			LOGGER.log("Running method: " + methodName);
 			//Get current parametrs from method
 			it->second->setParameters(it->first->parameters());
 
 			if (it->second->run(orgImg_))
 			{
-				logOutput("Method: " + methodName + " successful");		
+				LOGGER.log("Method: " + methodName + " successful");
 				
 				it->first->setMode(true);
 
@@ -263,7 +262,7 @@ void MainGui::runSelectedMethods()
 			{
 				//If method fails change appearance 
 				it->first->setMode(false);
-				logOutput("Method: " + methodName + " failed");
+				LOGGER.log("Method: " + methodName + " failed");
 			}
 
 		}
@@ -285,7 +284,7 @@ void MainGui::addFileStream(QString stream)
 		//Add filename and filepath to the model
 		QStandardItem* name = new QStandardItem(stream);
 
-		logOutput("Adding Camera: " + stream);
+		LOGGER.log("Adding Camera: " + stream);
 
 		name->setEditable(false);
 
@@ -318,7 +317,7 @@ void MainGui::addFile()
 			QStandardItem* name = new QStandardItem(fileInfo.fileName());
 			QStandardItem* path = new QStandardItem(fileInfo.filePath());
 			
-			logOutput("Adding file: " + fileInfo.fileName() + " with path: " + fileInfo.filePath());
+			LOGGER.log("Adding file: " + fileInfo.fileName() + " with path: " + fileInfo.filePath());
 			
 			name->setEditable(false);
 			path->setEditable(false);
@@ -348,7 +347,7 @@ void MainGui::addFile()
 
 void MainGui::removeFile()
 {
-	logOutput("Removing last file");
+	LOGGER.log("Removing last file");
 	QModelIndexList selection = ui_.treeViewInput->selectionModel()->selectedRows();
 
 	// Multiple rows can be selected
@@ -358,9 +357,9 @@ void MainGui::removeFile()
 		ui_.treeViewInput->model()->removeRow(index.row());
 	}
 
-	if (io_)
+	if (cam_)
 	{
-		io_->terminateCameraStream();
+		cam_->terminateCameraStream();
 	}
 
 	reset();
@@ -377,7 +376,7 @@ void MainGui::setCurrentFile(QModelIndex index)
 	if (path || name)
 	{
 		//stop camera 
-		io_->terminateCameraStream();
+		cam_->terminateCameraStream();
 		//Get the file path
 		if (path)
 		{
@@ -391,15 +390,20 @@ void MainGui::setCurrentFile(QModelIndex index)
 		if (currentFile_.isEmpty() == false) 
 		{
 			// Camera image has no file
-			logOutput("Using current file: " + currentFile_);
+			LOGGER.log("Using current file: " + currentFile_);
 		}
 
 		if (currentFile_.isEmpty())
 		{
-			/*io_->setCamera(name->data(Qt::DisplayRole).value<QString>().toStdString());
-			std::thread ioThread(&UpldFrame::fromCamera, io_, false);*/
-			std::thread ioThread(&IDSCamera::aquireImageWithParams, cam_, options_->cameraConfigPath()); 
-			ioThread.detach();
+			if (cam_)
+			{
+				std::thread ioThread(&IDSCamera::aquireImageWithParams, cam_, options_->cameraConfigPath());
+				ioThread.detach();
+			}
+			else
+			{
+				LOGGER.log("Can not open camera");
+			}
 		}
 		else
 		{
@@ -415,15 +419,6 @@ void MainGui::setCurrentFile(QModelIndex index)
 void MainGui::reset()
 {
 	orgImg_->release();
-}
-
-void MainGui::logOutput(QString msg)
-{
-	if (msg.isEmpty() == false)
-	{
-		QString str = "[" + QTime::currentTime().toString() + "]: " + msg;
-		ui_.listWidgetLog->addItem(str);
-	}
 }
 
 void MainGui::statusOutput(QString msg)

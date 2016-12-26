@@ -116,12 +116,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_OptionsGui.cpp">
       <Filter>Generierte Dateien\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_UpldFrame.cpp">
-      <Filter>Generierte Dateien\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_UpldFrame.cpp">
-      <Filter>Generierte Dateien\Release</Filter>
-    </ClCompile>
     <ClCompile Include="ResultGenerator.cpp">
       <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
@@ -148,6 +142,18 @@
     </ClCompile>
     <ClCompile Include="IDSCamera.cpp">
       <Filter>Source Dateien\IDS</Filter>
+    </ClCompile>
+    <ClCompile Include="GLogger.cpp">
+      <Filter>Source Dateien\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Source Dateien\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_IDSCamera.cpp">
+      <Filter>Generierte Dateien\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_IDSCamera.cpp">
+      <Filter>Generierte Dateien\Release</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +186,9 @@
     </CustomBuild>
     <CustomBuild Include="Calibration.h">
       <Filter>Header Dateien\Computation</Filter>
+    </CustomBuild>
+    <CustomBuild Include="IDSCamera.h">
+      <Filter>Header Dateien\IDS</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -225,8 +234,11 @@
     <ClInclude Include="MaterialVerification.h">
       <Filter>Header Dateien\Computation</Filter>
     </ClInclude>
-    <ClInclude Include="IDSCamera.h">
-      <Filter>Header Dateien\IDS</Filter>
+    <ClInclude Include="GLogger.h">
+      <Filter>Header Dateien\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Dateien\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

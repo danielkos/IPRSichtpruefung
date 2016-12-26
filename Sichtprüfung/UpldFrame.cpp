@@ -9,26 +9,27 @@
 
 UpldFrame::UpldFrame()
 {
-	videoCapture_ = new cv::VideoCapture();
-	exit_ = false;
+	//videoCapture_ = new cv::VideoCapture();
+	//exit_ = false;
 }
 
 UpldFrame::~UpldFrame()
 {
-	delete videoCapture_;
+	//delete videoCapture_;
 }
 
-void UpldFrame::setCamera(std::string cameraName)
+/*
+bool UpldFrame::openCamera()
 {
 	// Use 0 to use default camera of OS
-	videoCapture_->open(0);
+	return videoCapture_->open(0);
 }
 
 void UpldFrame::terminateCameraStream()
 {
 	exit_ = true;
 }
-
+*/
 cv::Mat UpldFrame::fromFile(std::string filename)		//open an filename image 
 {
 	cv::Mat img;
@@ -36,7 +37,7 @@ cv::Mat UpldFrame::fromFile(std::string filename)		//open an filename image
 
 	return img;
 }
-
+/*
 cv::Mat* UpldFrame::fromCamera(bool returnImg)
 {
 	cv::Mat frame;
@@ -84,4 +85,4 @@ cv::Mat* UpldFrame::fromCamera(bool returnImg)
 	videoCapture_->release();
 
 	return &frame;
-}
+}*/

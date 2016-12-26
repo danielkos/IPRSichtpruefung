@@ -2,7 +2,6 @@
 #define UPLDFRAME_H 
 
 #include <functional>
-#include <Qobject>
 #include <opencv2\opencv.hpp>
 
 namespace cv
@@ -11,35 +10,31 @@ namespace cv
 	class VideoCapture;
 }
 
-class UpldFrame : public QObject
+class UpldFrame
 {
-	Q_OBJECT
 	
 public:
 	UpldFrame();
 	virtual ~UpldFrame();
 
 	static cv::Mat fromFile(std::string file_name);
-	cv::Mat* fromCamera(bool returnImg = false);
-	void terminateCameraStream();
-	void setCamera(std::string cameraName);
-Q_SIGNALS:
-	void newCameraImage(cv::Mat* img);
+	//cv::Mat* fromCamera(bool returnImg = false);
+	//void terminateCameraStream();
+	//bool openCamera();
 
 private:
 
 	// Time delay (in milliseconds) between the recording of two camera frames.
 	// IPR camera works with 11.2fps => ~89ms per frame
-	const long CAMERA_RECORD_DELAY = 90;
+	//const long CAMERA_RECORD_DELAY = 90;
 
 	// Camera parameters
-	const double CAMERA_WIDHT = 2048;
-	const double CAMERA_HEIGHT = 1536;
-	const double CAMERA_FPS = 11.2;
+	//const double CAMERA_WIDHT = 2048;
+	//const double CAMERA_HEIGHT = 1536;
+	//const double CAMERA_FPS = 11.2;
 
-	cv::VideoCapture* videoCapture_;
-	bool exit_;
+	//cv::VideoCapture* videoCapture_;
+	//bool exit_;
 	std::string cameraName_;
 };
-Q_DECLARE_METATYPE(cv::Mat*);
 #endif

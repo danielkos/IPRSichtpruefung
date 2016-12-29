@@ -40,12 +40,9 @@ namespace paths
 	{
 		bool ret = true;
 		exists = false;
-		TCHAR *str = new TCHAR[path.size() + 1];
-		str[path.size()] = 0;
-		//can cause problems with UTF-16
-		std::copy(path.begin(), path.end(), str);
+		std::wstring str = std::wstring(path.begin(), path.end());
 		
-		ret = CreateDirectory(str, NULL);
+		ret = CreateDirectory(str.c_str(), NULL);
 		
 		if (GetLastError() == ERROR_ALREADY_EXISTS)
 		{

@@ -140,7 +140,7 @@ bool MainGui::findTab(const QTabWidget* tabWidget, const QString& name, int& ind
 
 void MainGui::addVerificationMethod(std::string name, VerificationMethod* method)
 {
-	LOGGER.log("Adding method:" + QString::fromStdString(name));
+	LOGGER.log("Adding method: " + QString::fromStdString(name));
 	//Create an item and attach it to the widget
 	MethodGuiItem* item = new MethodGuiItem(name, method->parameters(), ui_.groupBoxMethods);
 	FrameView* preprocView = new FrameView(ui_.tabWidgetProcessed);

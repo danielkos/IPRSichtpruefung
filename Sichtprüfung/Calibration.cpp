@@ -54,6 +54,7 @@ void Calibration::setParameters(std::vector<Parameter> parameters)
 		numImgs_ = parameters[0].value_.toInt();
 		numCornersH_ = parameters[1].value_.toInt();
 		numConrersV_ = parameters[2].value_.toInt();
+		sizeSquare_ = parameters[3].value_.toDouble();
 		numSquares_ = numCornersH_ * numConrersV_;
 		boardSize_ = cv::Size(numCornersH_, numConrersV_);
 	}
@@ -71,6 +72,9 @@ std::vector<Parameter> Calibration::parameters()
 	parameters.push_back(param);
 
 	param.setUp("Vertical Corners", QVariant(numConrersV_), QMetaType::Int);
+	parameters.push_back(param);
+
+	param.setUp("Square Size", QVariant(sizeSquare_), QMetaType::Double);	// mm
 	parameters.push_back(param);
 
 	parametersSize_ = parameters.size();

@@ -59,6 +59,9 @@ public:
 	// Extracts a single frame from the continuous video stream.
 	void AcquireImage();
 
+	// Stores the current camera frame on the local file system
+	void storeImage();
+
 	// Appends the loaded camera parameters on the camera stream.
 	// Calls LoadParameters() internally to read the .ini file with the
 	// camera parameters
@@ -89,7 +92,7 @@ private:
 	INT     m_nRenderMode;  // render  mode
 	SENSORINFO m_sInfo;	    // sensor information struct
 	bool terminate_;
-
+	
 	std::mutex imgLock_;
 	
 	IplImage* currentImg_;

@@ -51,8 +51,7 @@ IDSCamera::IDSCamera()
 
 IDSCamera::~IDSCamera()
 {
-	is_FreeImageMem(m_hCam, m_pcImageMemory, m_lMemoryId);
-	is_ExitCamera(m_hCam);
+	ExitCamera();
 }
 
 cv::Mat IDSCamera::currentImage()
@@ -61,50 +60,78 @@ cv::Mat IDSCamera::currentImage()
 	imgLock_.lock();
 	img = cv::cvarrToMat(currentImg_);
 	imgLock_.unlock();
+		
+	//cvShowImage("A", &img);
+	//cv::waitKey(1);
+
 	return img;
 }
 
 void IDSCamera::AcquireImage()
 {
+	int success = -1;
+
 	if (m_hCam == 0)
 	{
 		OpenCamera();
 	}
-
+	
 	if (m_hCam != 0)
 	{
 		if (is_FreezeVideo(m_hCam, IS_WAIT) == IS_SUCCESS)
 		{
+			// Rausnehmen
 			void *pMemVoid;
-			is_GetImageMem(m_hCam, &pMemVoid);
+			int success = is_GetImageMem(m_hCam, &pMemVoid);
 
-			imgLock_.lock();
+			if (success == IS_SUCCESS && pMemVoid != 0)
+			{
+				imgLock_.lock();
+				currentImg_ = cvCreateImageHeader(cvSize(m_nSizeX, m_nSizeY), IPL_DEPTH_8U, 4);
+				//currentImg_->nSize = 112;
+				currentImg_->ID = 0;
+				currentImg_->nChannels = 4;
+				currentImg_->alphaChannel = 0;
+				currentImg_->depth = 8;
+				currentImg_->dataOrder = 0;
+				currentImg_->origin = 0;
+				currentImg_->align = 4;
+				currentImg_->width = m_nSizeX;
+				currentImg_->height = m_nSizeY;
+				currentImg_->roi = NULL;
+				currentImg_->maskROI = NULL;
+				currentImg_->imageId = NULL;
+				currentImg_->tileInfo = NULL;
+				currentImg_->imageSize = 4 * m_nSizeX * m_nSizeY;
+				currentImg_->widthStep = 4 * m_nSizeX;
+				currentImg_->imageData = (char*) pMemVoid;
+				
+				/*cv::Mat frame (m_nSizeX, m_nSizeY, CV_8UC3);
+				frame = cv::cvarrToMat(currentImg_);
+				cvShowImage("PROVA", currentImg_);
+				cv::waitKey(0);*/
 
-			currentImg_ = cvCreateImage(cvSize(m_nSizeX, m_nSizeY), IPL_DEPTH_8U, 3);
-			currentImg_->nSize = 112;
-			currentImg_->ID = 0;
-			currentImg_->nChannels = 3;
-			currentImg_->alphaChannel = 0;
-			currentImg_->depth = 8;
-			currentImg_->dataOrder = 0;
-			currentImg_->origin = 0;
-			currentImg_->align = 4;
-			currentImg_->width = m_nSizeX;
-			currentImg_->height = m_nSizeY;
-			currentImg_->roi = NULL;
-			currentImg_->maskROI = NULL;
-			currentImg_->imageId = NULL;
-			currentImg_->tileInfo = NULL;
-			currentImg_->imageSize = 3 * m_nSizeX*m_nSizeY;
-			currentImg_->imageData = (char*)pMemVoid;
-			currentImg_->widthStep = 3 * m_nSizeX;
-			currentImg_->imageDataOrigin = (char*)pMemVoid;
-
-			imgLock_.unlock();
+				imgLock_.unlock();
+				
+				Q_EMIT newCameraImage(&currentImage());
+			}
 		}
 	}
+}
 
-	Q_EMIT newCameraImage(&currentImage());
+void IDSCamera::storeImage()
+{
+	IMAGE_FILE_PARAMS ImageFileParams;
+	ImageFileParams.pwchFileName = NULL;
+	ImageFileParams.pnImageID = NULL;
+	ImageFileParams.ppcImageMem = NULL;
+	ImageFileParams.nQuality = 0;
+	ImageFileParams.pwchFileName = L"C:\\Users\\Sven\\Desktop\\test.jpg";
+	ImageFileParams.nFileType = IS_IMG_JPG;
+	ImageFileParams.nQuality = 80;
+
+	is_ImageFile(m_hCam, IS_IMAGE_FILE_CMD_SAVE, (void*)&ImageFileParams,
+		sizeof(ImageFileParams));
 }
 
 
@@ -139,7 +166,7 @@ void IDSCamera::GetMaxImageSize(INT *pnSizeX, INT *pnSizeY)
 		is_AOI(m_hCam, IS_AOI_IMAGE_GET_SIZE, (void*)&imageSize, sizeof(imageSize));
 
 		*pnSizeX = imageSize.s32Width;
-		*pnSizeY = imageSize.s32Height;
+		*pnSizeX = imageSize.s32Height;
 	}
 }
 
@@ -156,6 +183,7 @@ bool IDSCamera::OpenCamera()
 	// init camera
 	m_hCam = (HIDS)0;						// open next camera
 	m_Ret = InitCamera(&m_hCam, NULL);		// init camera - no window handle required
+
 	if (m_Ret == IS_SUCCESS)
 	{
 		// Get sensor info
@@ -176,7 +204,7 @@ bool IDSCamera::OpenCamera()
 			&m_lMemoryId);
 		is_SetImageMem(m_hCam, m_pcImageMemory, m_lMemoryId);	// set memory active
 
-																// display initialization
+		// display initialization
 		IS_SIZE_2D imageSize;
 		imageSize.s32Width = m_nSizeX;
 		imageSize.s32Height = m_nSizeY;
@@ -194,7 +222,6 @@ bool IDSCamera::OpenCamera()
 		}
 
 		LoadParameters();
-
 	}
 	else
 	{
@@ -246,7 +273,10 @@ void IDSCamera::AppendParameters(const std::string& cameraConfigPath)
 	// Append the loaded parameters on the camera frames
 	if (m_hCam != 0)
 	{
-		if (is_ParameterSet(m_hCam, IS_PARAMETERSET_CMD_LOAD_FILE, NULL, NULL) == IS_SUCCESS && m_pcImageMemory != NULL)
+		// Vorher: is_ParameterSet(m_hCam, IS_PARAMETERSET_CMD_LOAD_FILE, &parameterFilePath_, NULL) == IS_SUCCESS && m_pcImageMemory != NULL
+		std::wstring str = std::wstring(parameterFilePath_.begin(), parameterFilePath_.end());
+
+		if (is_ParameterSet(m_hCam, IS_PARAMETERSET_CMD_LOAD_FILE, &str, NULL) == IS_SUCCESS && m_pcImageMemory != NULL)
 		{
 			// determine live capture
 			BOOL bWasLive = (BOOL)(is_CaptureVideo(m_hCam, IS_GET_LIVE));
@@ -371,15 +401,19 @@ void IDSCamera::terminateCameraStream()
 {
 	terminate_ = true;
 }
+
+
+
 void IDSCamera::aquireImageWithParams(const std::string& cameraConfigPath)
 {
 	AppendParameters(cameraConfigPath);
-
+	
 	while (!terminate_)
 	{
 		AcquireImage();
-	}
+	} 
 }
+
 
 void IDSCamera::LoadParameters()
 {
@@ -400,7 +434,7 @@ void IDSCamera::LoadParameters()
 	
 	UINT nPixelClock = cameraParameters.value("PixelClock", 10).toInt();
 	UINT nFrameRate = cameraParameters.value("FrameRate", 5).toInt();
-	UINT nExposureTime = cameraParameters.value("ExposureTime", 100).toInt();
+	UINT nExposureTime = cameraParameters.value("Exposure", 100).toInt();
 	nGainM = cameraParameters.value("GainMaster", nGainM).toInt();
 	nGainR = cameraParameters.value("GainRed", nGainR).toInt();
 	nGainG = cameraParameters.value("GainGreen", nGainG).toInt();

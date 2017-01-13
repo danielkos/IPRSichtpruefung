@@ -8,6 +8,7 @@
 #include "IDSCamera.h"
 #include "Logger.h"
 #include "GLogger.h"
+#include "CLogger.h"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -107,6 +108,7 @@ void MainGui::setInputImage(cv::Mat* img)
 {
 	if (!img->empty())
 	{
+		LOGGER.log("New image received");
 		//be carefull on stream this might be invalid
 		img->copyTo(*orgImg_);
 		inputView_->showImage(orgImg_);
@@ -371,12 +373,12 @@ void MainGui::setCurrentFile(QModelIndex index)
 	QStandardItem* path = static_cast<QStandardItemModel*>(ui_.treeViewInput->model())->item(index.row(), 1);
 	QStandardItem* name = static_cast<QStandardItemModel*>(ui_.treeViewInput->model())->item(index.row(), 0);
 	cv::Mat img;
-
+	
 	//Check if cast was successful
 	if (path || name)
 	{
 		//stop camera 
-		cam_->terminateCameraStream();
+		//cam_->terminateCameraStream();
 		//Get the file path
 		if (path)
 		{

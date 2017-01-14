@@ -31,8 +31,13 @@
 #include "IDSCamera.h"
 #include "Logger.h"
 #include "Configs.h"
+#include <opencv2\core\mat.hpp>
 
 #include <QSettings>
+
+#include <string>
+#include <locale>
+#include <codecvt>
 
 IDSCamera::IDSCamera()
 {
@@ -54,7 +59,7 @@ IDSCamera::~IDSCamera()
 	ExitCamera();
 }
 
-cv::Mat IDSCamera::currentImage()
+/*cv::Mat IDSCamera::currentImage()
 {
 	cv::Mat img;
 	imgLock_.lock();
@@ -64,6 +69,35 @@ cv::Mat IDSCamera::currentImage()
 	//cvShowImage("A", &img);
 	//cv::waitKey(1);
 
+	return img;
+}*/
+
+cv::Mat IDSCamera::currentImage()
+{
+	cv::Mat img;
+	imgLock_.lock();
+
+	if (CV_IS_IMAGE(currentImg_))
+	{
+		int depth = IPL2CV_DEPTH(currentImg_->depth);
+		size_t esz;
+		img.cols = currentImg_->width;
+		img.rows = currentImg_->height;
+		
+		img.flags = cv::Mat::MAGIC_VAL + CV_MAKETYPE(depth, currentImg_->nChannels); //magic_val from prior cv versions
+		esz = CV_ELEM_SIZE(img.flags);
+		img.step[0] = currentImg_->widthStep;
+
+		img.datastart = (uchar*)currentImg_->imageData;
+		img.data = (uchar*)currentImg_->imageData;
+		img.datalimit = img.datastart + img.step.p[0] * img.rows;
+		img.dataend = img. datastart + img.step.p[0] * (img.rows - 1) + esz * img.cols;
+
+		img.flags |= (img.cols*esz == img.step.p[0] || img.rows == 1 ? CV_MAT_CONT_FLAG : 0);
+		img.step[1] = esz;
+	}
+
+	imgLock_.unlock();
 	return img;
 }
 
@@ -80,39 +114,33 @@ void IDSCamera::AcquireImage()
 	{
 		if (is_FreezeVideo(m_hCam, IS_WAIT) == IS_SUCCESS)
 		{
-			void *pMemVoid;
-			int success = is_GetImageMem(m_hCam, &pMemVoid);
-
-			if (success == IS_SUCCESS && pMemVoid != 0)
+			if (m_pcImageMemory)
 			{
 				imgLock_.lock();
+
 				currentImg_ = cvCreateImageHeader(cvSize(m_nSizeX, m_nSizeY), IPL_DEPTH_8U, 4);
-				//currentImg_->nSize = 112;	// Keep. Wrong value causes crashes?
-				currentImg_->ID = 0;
-				currentImg_->nChannels = 4;
-				currentImg_->alphaChannel = 0;
-				currentImg_->depth = 8;
-				currentImg_->dataOrder = 0;
-				currentImg_->origin = 0;
-				currentImg_->align = 4;
+				currentImg_->nSize = sizeof(IplImage);
+				currentImg_->dataOrder = 0; //has to be 0 for intervealed images
+				currentImg_->depth = IPL_DEPTH_8U;
+				currentImg_->ID = 0; //actually ignored
+
 				currentImg_->width = m_nSizeX;
 				currentImg_->height = m_nSizeY;
-				currentImg_->roi = NULL;
+				currentImg_->nChannels = 4;
+				currentImg_->widthStep = currentImg_->nChannels * currentImg_->width;
+				currentImg_->imageSize = currentImg_->height * currentImg_->widthStep;
+
+				currentImg_->origin = 0; //top-left corner
 				currentImg_->maskROI = NULL;
-				currentImg_->imageId = NULL;
+				currentImg_->roi = NULL;
 				currentImg_->tileInfo = NULL;
-				currentImg_->imageSize = 4 * m_nSizeX * m_nSizeY;
-				currentImg_->widthStep = 4 * m_nSizeX;
-				currentImg_->imageData = (char*) pMemVoid;
-				
-				/*storeImage();
-				cv::Mat frame (m_nSizeX, m_nSizeY, CV_8UC3);
-				frame = cv::cvarrToMat(currentImg_);
-				cvShowImage("PROVA", currentImg_);
-				cv::waitKey(0);*/
+
+				currentImg_->imageId = NULL;
+				currentImg_->imageData = m_pcImageMemory;
+				currentImg_->imageDataOrigin = m_pcImageMemory;
 
 				imgLock_.unlock();
-				
+
 				Q_EMIT newCameraImage(&currentImage());
 			}
 		}
@@ -192,7 +220,8 @@ bool IDSCamera::OpenCamera()
 		GetMaxImageSize(&m_nSizeX, &m_nSizeY);
 
 		// setup the color depth to the current windows setting
-		is_GetColorDepth(m_hCam, &m_nBitsPerPixel, &m_nColorMode);
+		//is_GetColorDepth(m_hCam, &m_nBitsPerPixel, &m_nColorMode); //Probably dont need this, because we need RGBA32
+		m_nColorMode = IS_CM_BGRA8_PACKED; // opencv uses  this mode
 		is_SetColorMode(m_hCam, m_nColorMode);
 
 		// memory initialization
@@ -273,10 +302,11 @@ void IDSCamera::AppendParameters(const std::string& cameraConfigPath)
 	// Append the loaded parameters on the camera frames
 	if (m_hCam != 0)
 	{
-		// Vorher: is_ParameterSet(m_hCam, IS_PARAMETERSET_CMD_LOAD_FILE, &parameterFilePath_, NULL) == IS_SUCCESS && m_pcImageMemory != NULL
-		std::wstring str = std::wstring(parameterFilePath_.begin(), parameterFilePath_.end());
+		//If the conversion should not worl then change &path to &parameterFilePath_
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		std::wstring path = converter.from_bytes(parameterFilePath_); 
 
-		if (is_ParameterSet(m_hCam, IS_PARAMETERSET_CMD_LOAD_FILE, &str, NULL) == IS_SUCCESS && m_pcImageMemory != NULL)
+		if (is_ParameterSet(m_hCam, IS_PARAMETERSET_CMD_LOAD_FILE, &path, NULL) == IS_SUCCESS && m_pcImageMemory != NULL)
 		{
 			// determine live capture
 			BOOL bWasLive = (BOOL)(is_CaptureVideo(m_hCam, IS_GET_LIVE));

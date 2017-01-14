@@ -423,7 +423,7 @@ public:
         MainGui->setWindowTitle(QApplication::translate("MainGui", "Sichtpr\303\274fung", 0));
         action_About->setText(QApplication::translate("MainGui", "&About", 0));
         action_Exit->setText(QApplication::translate("MainGui", "&Exit", 0));
-        actionTest_Object->setText(QApplication::translate("MainGui", "Test Object", 0));
+        actionTest_Object->setText(QApplication::translate("MainGui", "Configuration", 0));
         groupBoxMethods->setTitle(QApplication::translate("MainGui", "Methods", 0));
         groupBoxResults->setTitle(QApplication::translate("MainGui", "Results", 0));
         tabWidget->setTabText(tabWidget->indexOf(tabTestMethods), QApplication::translate("MainGui", "Test Methods", 0));

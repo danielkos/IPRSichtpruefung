@@ -1,0 +1,9 @@
+2017-01-14.10:11:14:	Reading file: C:\Users\Sven\Documents\Visual Studio 2015\Projects\IPRSichtpruefung\x64\Debug\config\options.xml
+2017-01-14.10:11:14:	Can not open uEye camera!
+2017-01-14.10:11:14:	Start up
+2017-01-14.10:11:14:	Reusing directory: C:\Users\Sven\Documents\Visual Studio 2015\Projects\IPRSichtpruefung\x64\Debug\config\camera\
+2017-01-14.10:11:14:	Adding method: Calibration
+2017-01-14.10:11:14:	Adding method: Hole detection
+2017-01-14.10:11:14:	Adding method: Angle detection
+2017-01-14.10:11:14:	Adding method: Shape Verification
+2017-01-14.10:11:14:	Adding method: Material Verification

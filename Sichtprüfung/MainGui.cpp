@@ -108,7 +108,6 @@ void MainGui::setInputImage(cv::Mat* img)
 {
 	if (!img->empty())
 	{
-		LOGGER.log("New image received");
 		//be carefull on stream this might be invalid
 		img->copyTo(*orgImg_);
 		inputView_->showImage(orgImg_);

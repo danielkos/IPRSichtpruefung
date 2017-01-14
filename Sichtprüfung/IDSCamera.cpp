@@ -80,7 +80,6 @@ void IDSCamera::AcquireImage()
 	{
 		if (is_FreezeVideo(m_hCam, IS_WAIT) == IS_SUCCESS)
 		{
-			// Rausnehmen
 			void *pMemVoid;
 			int success = is_GetImageMem(m_hCam, &pMemVoid);
 
@@ -88,7 +87,7 @@ void IDSCamera::AcquireImage()
 			{
 				imgLock_.lock();
 				currentImg_ = cvCreateImageHeader(cvSize(m_nSizeX, m_nSizeY), IPL_DEPTH_8U, 4);
-				//currentImg_->nSize = 112;
+				//currentImg_->nSize = 112;	// Keep. Wrong value causes crashes?
 				currentImg_->ID = 0;
 				currentImg_->nChannels = 4;
 				currentImg_->alphaChannel = 0;
@@ -106,7 +105,8 @@ void IDSCamera::AcquireImage()
 				currentImg_->widthStep = 4 * m_nSizeX;
 				currentImg_->imageData = (char*) pMemVoid;
 				
-				/*cv::Mat frame (m_nSizeX, m_nSizeY, CV_8UC3);
+				/*storeImage();
+				cv::Mat frame (m_nSizeX, m_nSizeY, CV_8UC3);
 				frame = cv::cvarrToMat(currentImg_);
 				cvShowImage("PROVA", currentImg_);
 				cv::waitKey(0);*/
@@ -126,7 +126,7 @@ void IDSCamera::storeImage()
 	ImageFileParams.pnImageID = NULL;
 	ImageFileParams.ppcImageMem = NULL;
 	ImageFileParams.nQuality = 0;
-	ImageFileParams.pwchFileName = L"C:\\Users\\Sven\\Desktop\\test.jpg";
+	ImageFileParams.pwchFileName = L"C:\\Users\\Sven\\Desktop\\test.jpg";	// Just for testing
 	ImageFileParams.nFileType = IS_IMG_JPG;
 	ImageFileParams.nQuality = 80;
 

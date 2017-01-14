@@ -77,7 +77,7 @@ private:
 	//Options dialog
 	OptionsGui* options_;
 
-	IDSCamera* cam_;
+	IDSCamera* idsCam_;
 	//Result presenter
 	ResultGenerator resGenerator;
 
@@ -112,9 +112,9 @@ private slots:
 	void removeFile();
 
 	/**
-	* \brief Sets the path of the current selected file
+	* \brief Sets the current selected object (camera or file)
 	*/
-	void setCurrentFile(QModelIndex index);
+	void setCurrentItem(QModelIndex index);
 
 	/**
 	* \brief Resets all stored images

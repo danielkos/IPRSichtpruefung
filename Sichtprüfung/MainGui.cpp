@@ -77,7 +77,7 @@ MainGui::MainGui(QWidget *parent)
 	ui_.treeViewInput->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 	ui_.treeViewInput->setAutoScroll(false);
 
-	connect(ui_.treeViewInput, SIGNAL(clicked(QModelIndex)), this, SLOT(setCurrentFile(QModelIndex)));
+	connect(ui_.treeViewInput, SIGNAL(clicked(QModelIndex)), this, SLOT(setCurrentItem(QModelIndex)));
 
 	connect(ui_.action_Exit, &QAction::triggered, this, &QMainWindow::close);
 	connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
@@ -86,11 +86,11 @@ MainGui::MainGui(QWidget *parent)
 	options_ = new OptionsGui(this);
 
 	//Create IO
-	cam_ = new IDSCamera();
+	idsCam_ = new IDSCamera();
 		
-	QObject::connect(cam_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
+	QObject::connect(idsCam_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
 
-	if (cam_->OpenCamera())
+	if (idsCam_->OpenCamera())
 	{
 		addFileStream("Default Camera");
 	}
@@ -101,7 +101,7 @@ MainGui::~MainGui()
 {
 	delete inputView_;
 	delete orgImg_;
-	delete cam_;
+	delete idsCam_;
 }
 
 void MainGui::setInputImage(cv::Mat* img)
@@ -343,7 +343,7 @@ void MainGui::addFile()
 	//Select last added file
 	QModelIndex index = model->index(model->rowCount() - 1, model->columnCount() - 1);
 	ui_.treeViewInput->setCurrentIndex(index);
-	setCurrentFile(index);
+	setCurrentItem(index);
 }
 
 void MainGui::removeFile()
@@ -358,15 +358,15 @@ void MainGui::removeFile()
 		ui_.treeViewInput->model()->removeRow(index.row());
 	}
 
-	if (cam_)
+	if (idsCam_)
 	{
-		cam_->terminateCameraStream();
+		idsCam_->terminateCameraStream();
 	}
 
 	reset();
 }
 
-void MainGui::setCurrentFile(QModelIndex index)
+void MainGui::setCurrentItem(QModelIndex index)
 {
 	//Cast from QAbstractItemModel to QStandardItemModel to have full functionality
 	QStandardItem* path = static_cast<QStandardItemModel*>(ui_.treeViewInput->model())->item(index.row(), 1);
@@ -376,9 +376,6 @@ void MainGui::setCurrentFile(QModelIndex index)
 	//Check if cast was successful
 	if (path || name)
 	{
-		//stop camera 
-		//cam_->terminateCameraStream();
-		//Get the file path
 		if (path)
 		{
 			currentFile_ = path->data(Qt::DisplayRole).value<QString>();
@@ -388,17 +385,12 @@ void MainGui::setCurrentFile(QModelIndex index)
 			currentFile_.clear();
 		}
 
-		if (currentFile_.isEmpty() == false) 
-		{
-			// Camera image has no file
-			LOGGER.log("Using current file: " + currentFile_);
-		}
-
 		if (currentFile_.isEmpty())
 		{
-			if (cam_)
+			if (idsCam_)
 			{
-				std::thread ioThread(&IDSCamera::aquireImageWithParams, cam_, options_->cameraConfigPath());
+				//cam reset needed !!!!!!
+				std::thread ioThread(&IDSCamera::aquireImageWithParams, idsCam_, options_->cameraConfigPath());
 				ioThread.detach();
 			}
 			else
@@ -408,7 +400,9 @@ void MainGui::setCurrentFile(QModelIndex index)
 		}
 		else
 		{
+			idsCam_->terminateCameraStream();
 			img = UpldFrame::fromFile(currentFile_.toStdString());
+			LOGGER.log("Using current file: " + currentFile_);
 		}
 
 		statusOutput("Image loaded");

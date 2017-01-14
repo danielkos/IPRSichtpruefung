@@ -452,7 +452,7 @@ void IDSCamera::LoadParameters()
 		return;
 	}
 
-	UINT nGainR, nGainG, nGainB, nGainM;
+	int nGainR, nGainG, nGainB, nGainM;
 
 	nGainM = is_SetHardwareGain(m_hCam, (int)IS_GET_DEFAULT_MASTER, -1, -1, -1);
 	nGainR = is_SetHardwareGain(m_hCam, (int)IS_GET_DEFAULT_RED, -1, -1, -1);
@@ -462,17 +462,15 @@ void IDSCamera::LoadParameters()
 	// Read parameters of ini file with Qt
 	QSettings cameraParameters (QString::fromStdString(parameterFilePath_), QSettings::IniFormat);
 	
-	UINT nPixelClock = cameraParameters.value("PixelClock", 10).toInt();
-	UINT nFrameRate = cameraParameters.value("FrameRate", 5).toInt();
-	UINT nExposureTime = cameraParameters.value("Exposure", 100).toInt();
-	nGainM = cameraParameters.value("GainMaster", nGainM).toInt();
-	nGainR = cameraParameters.value("GainRed", nGainR).toInt();
-	nGainG = cameraParameters.value("GainGreen", nGainG).toInt();
-	nGainB = cameraParameters.value("GainBlue", nGainB).toInt();
-	UINT nColorCorrection = cameraParameters.value("ColorCorrection", IS_CCOR_DISABLE).toInt();
-	UINT nBayerMode = cameraParameters.value("BayerMode", IS_SET_BAYER_CV_NORMAL).toInt();
-	UINT m_nRenderMode = cameraParameters.value("RenderMode", IS_RENDER_NORMAL).toInt();	
-
+	int nPixelClock = cameraParameters.value("Timing/Pixelclock", 10).toInt();
+	double nFrameRate = cameraParameters.value("Timing/Framerate", 5).toDouble();
+	double nExposureTime = cameraParameters.value("Timing/Exposure", 100).toDouble();
+	nGainM = cameraParameters.value("Gain/Master", nGainM).toInt();
+	nGainR = cameraParameters.value("Gain/Red", nGainR).toInt();
+	nGainG = cameraParameters.value("Gain/Green", nGainG).toInt();
+	nGainB = cameraParameters.value("Gain/Blue", nGainB).toInt();
+	int nColorCorrection = cameraParameters.value("Processing/color correction", IS_CCOR_DISABLE).toInt();
+	int nBayerMode = cameraParameters.value("Processing/Bayer Conversion", IS_SET_BAYER_CV_NORMAL).toInt();
 
 	m_Ret = is_PixelClock(m_hCam, IS_PIXELCLOCK_CMD_SET, (void*)&nPixelClock, sizeof(nPixelClock));
 	m_Ret = is_SetFrameRate(m_hCam, (double)nFrameRate, NULL);

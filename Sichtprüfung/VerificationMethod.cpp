@@ -39,6 +39,12 @@ void VerificationMethod::drawContour(cv::InputArrayOfArrays& contours, size_t in
 	cv::drawContours(*resImg_, contours, index, colors::contourColor, colors::contourThickness);
 }
 
+void VerificationMethod::drawRectangle(cv::Point2i& corner1, cv::Point2i& corner2, const cv::Scalar&color)
+{
+	cv::rectangle(*resImg_, corner1, corner2, color, colors::circleThickness);
+}
+
+
 cv::Mat* VerificationMethod::resultImg()
 {
 	return resImg_;

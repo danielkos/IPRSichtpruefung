@@ -7,11 +7,13 @@
 
 MaterialVerification::MaterialVerification()
 {
-	 minBrightness_ = 243;
-	
-	 ratio_ = 2.0;
-	 materialMetal_ = false;
-	 pixelAmount_ = 400000;
+	minBrightness_ = 243;
+	ratio_ = 3.0;
+	materialMetal_ = false;
+	pixelAmount_ = 400000;
+	minPixelAmount_ = 8000;
+	minWidth_ = 10;
+	minHeight_ = 10;
 }
 
 MaterialVerification::~MaterialVerification()
@@ -27,6 +29,9 @@ void MaterialVerification::setParameters(std::vector<Parameter>parameters)
 		minBrightness_ = parameters[0].value_.toInt();
 		ratio_ = parameters[1].value_.toFloat();
 		pixelAmount_ = parameters[2].value_.toInt();
+		minPixelAmount_ = parameters[3].value_.toInt();
+		minWidth_ = parameters[4].value_.toInt();
+		minHeight_ = parameters[5].value_.toInt();
 	}
 }
 
@@ -45,7 +50,16 @@ std::vector<Parameter> MaterialVerification::parameters()
 
 	param.setUp("Amount of pixels", QVariant(pixelAmount_), QMetaType::Int);
 	parameters.push_back(param);
-	
+
+	param.setUp("Minimal amount of pixels", QVariant(minPixelAmount_), QMetaType::Int);
+	parameters.push_back(param);
+
+	param.setUp("Minimal width", QVariant(minWidth_), QMetaType::Int);
+	parameters.push_back(param);
+
+	param.setUp("Minimal width", QVariant(minHeight_), QMetaType::Int);
+	parameters.push_back(param);
+
 	parametersSize_ = parameters.size();
 
 
@@ -56,11 +70,12 @@ ResultGenerator::ResultMap MaterialVerification::results()
 {
 	ResultGenerator::ResultMap results;
 
-		Parameter param;	
-		param.setUp(" Metal",materialMetal_ , QMetaType::Bool);
-		results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_MATERIAL, param));
+	Parameter param;
+	param.setUp(" Metal", materialMetal_, QMetaType::Bool);
+	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_MATERIAL, param));
 
-		LOGGER.log("Metal: " + materialMetal_);
+	LOGGER.log("Metal" + materialMetal_);
+
 
 	return results;
 }
@@ -77,10 +92,10 @@ bool MaterialVerification::run(const cv::Mat* img)
 		initializeResultImage(img);
 		// remove noise
 		cv::GaussianBlur(*img, *processedImg_, cv::Size(), 2, 2);
-		
+
 		cv::Mat src_hsv, brightness, saturation;
 		std::vector<cv::Mat> hsv_planes;
-		
+
 		cv::cvtColor(*processedImg_, src_hsv, cv::COLOR_BGR2HSV);
 		cv::split(src_hsv, hsv_planes);
 		brightness = hsv_planes[2];
@@ -89,6 +104,7 @@ bool MaterialVerification::run(const cv::Mat* img)
 		cv::Mat mask;
 		//get the mask
 		cv::threshold(brightness, mask, minBrightness_, 255, cv::THRESH_BINARY);
+		//morphologyEx(mask, mask, cv::MORPH_CLOSE, cv::noArray(), cv::Point(-1, -1), 2);
 		//get contours of Reflection field
 		findContours(mask, contoursReflection, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
@@ -96,9 +112,12 @@ bool MaterialVerification::run(const cv::Mat* img)
 		int max = 0;		// area of current contour with maximum area
 		int i_cont = -1;	// index of current contour with maximum area
 		float temp;
-		// Searching the contour with the maximum area
+		// Draw all contours and search for the contour with the maximum area
 		for (int i = 0; i< contoursReflection.size(); i++)
 		{
+			//draw all contours
+			drawContour(contoursReflection, i, colors::contourColor);
+
 			if (abs(cv::contourArea(cv::Mat(contoursReflection[i]))) > max)
 			{
 				max = abs(cv::contourArea(cv::Mat(contoursReflection[i])));
@@ -106,39 +125,53 @@ bool MaterialVerification::run(const cv::Mat* img)
 			}
 		}
 		cv::Rect boundRect;
-		
-		if (i_cont >= 0)
-		{	//drawing biggest contour
-			drawContour(contoursReflection, i_cont, colors::contourColor);
-			//creating bounding rectangle of biggest contour
-			boundRect = cv::boundingRect(cv::Mat(contoursReflection[i_cont]));
-			// TO DO : DRAWING RECTANGLE 
-			//rectangle( boundRect.tl(), boundRect.br(), (255, 0, 0), 2, 8, 0);
-			
-			
+		float maxRatio = 0;
+		int RatioIndex;
+		for (int i = 0; i < contoursReflection.size(); i++)
+		{
+			//creating bounding rectangle of every contour
+			boundRect = cv::boundingRect(cv::Mat(contoursReflection[i]));
+
+			if (abs(cv::contourArea(cv::Mat(contoursReflection[i]))) > minPixelAmount_ && boundRect.width>minWidth_ && boundRect.height>minHeight_)
+			{
+				//	drawRectangle(boundRect.tl(), boundRect.br(), colors::contourColor);
+
 				if (boundRect.width >= boundRect.height)
 				{
 					temp = float(boundRect.width) / float(boundRect.height);
 				}
 				else
 				{
-					temp = boundRect.height / boundRect.width;
+					temp = float(boundRect.height) / float(boundRect.width);
 				}
-				//check if metal properties have been found
-				if (temp > ratio_ || cv::contourArea(cv::Mat(contoursReflection[i_cont])) > pixelAmount_)
+				if (temp > maxRatio)
 				{
-					materialMetal_ = true;
+					maxRatio = temp;
+					RatioIndex = i;
 				}
-				else
-				{
-					materialMetal_ = false;
-				}
-
+			}
+		}
+		//check if metal properties have been found
+		if (maxRatio > ratio_)
+		{
+			boundRect = cv::boundingRect(cv::Mat(contoursReflection[RatioIndex]));
+			drawRectangle(boundRect.tl(), boundRect.br(), colors::resultColor);
+			materialMetal_ = true;
 		}
 		else
 		{
-			res = false;
+			if (cv::contourArea(cv::Mat(contoursReflection[i_cont])) > pixelAmount_)
+			{
+				boundRect = cv::boundingRect(cv::Mat(contoursReflection[i_cont]));
+				drawRectangle(boundRect.tl(), boundRect.br(), colors::resultColor);
+				materialMetal_ = true;
+			}
+			else
+			{
+				materialMetal_ = false;
+			}
 		}
+
 	}
 	else
 	{
@@ -147,12 +180,6 @@ bool MaterialVerification::run(const cv::Mat* img)
 
 	return res;
 }
-
-
-
-
-
-
 
 
 

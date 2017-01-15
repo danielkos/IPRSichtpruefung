@@ -19,7 +19,7 @@ class VerificationMethod
 public:
 	VerificationMethod();
 	virtual ~VerificationMethod();
-	
+
 	/**
 	* \brief Pure abstract function which applies the method
 	*/
@@ -32,8 +32,10 @@ public:
 	void drawLine(cv::Point2f& start, cv::Point2f& end, const cv::Scalar& color);
 
 	void drawCircle(cv::Point2f& center, size_t radius, const cv::Scalar& color);
-	
+
 	void drawContour(cv::InputArrayOfArrays& contours, size_t index, const cv::Scalar& color);
+
+	void drawRectangle(cv::Point2i& corner1, cv::Point2i& corner2, const cv::Scalar&Color);
 
 	/**
 	* \brief Pure abstract function which set the parameters

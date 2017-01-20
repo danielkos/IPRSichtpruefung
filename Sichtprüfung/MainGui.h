@@ -2,6 +2,7 @@
 #define MAINGUI_H
 
 #include <QtWidgets/QMainWindow>
+
 #include "ui_MainGui.h"
 #include "ResultGenerator.h"
 
@@ -78,8 +79,10 @@ private:
 	OptionsGui* options_;
 
 	IDSCamera* idsCam_;
+	
 	//Result presenter
 	ResultGenerator resGenerator;
+
 
 public slots:
 	/**

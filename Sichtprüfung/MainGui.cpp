@@ -87,8 +87,9 @@ MainGui::MainGui(QWidget *parent)
 
 	//Create IO
 	idsCam_ = new IDSCamera();
-		
-	QObject::connect(idsCam_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
+	
+	connect(idsCam_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
+
 
 	if (idsCam_->OpenCamera())
 	{
@@ -104,15 +105,22 @@ MainGui::~MainGui()
 	delete idsCam_;
 }
 
+
 void MainGui::setInputImage(cv::Mat* img)
 {
 	if (!img->empty())
 	{
-		//be carefull on stream this might be invalid
-		img->copyTo(*orgImg_);
+		// Only this copy operation works, otherwise image is always empty
+		// or grey completely
+		cv::Mat tmpFrame (img->rows, img->cols, img->type());
+		tmpFrame.data = img->data;
+
+		*orgImg_ = tmpFrame.clone();
+
 		inputView_->showImage(orgImg_);
 	}
 }
+
 
 bool MainGui::findTab(const QTabWidget* tabWidget, const QString& name, int& index)
 {
@@ -236,8 +244,15 @@ void MainGui::runSelectedMethods()
 			methodName = QString::fromStdString(it->first->name());
 
 			LOGGER.log("Running method: " + methodName);
+			
 			//Get current parametrs from method
 			it->second->setParameters(it->first->parameters());
+			
+			if (methodName == "Calibration")
+			{
+				idsCam_->terminateCameraStream();
+				idsCam_->ExitCamera();
+			}
 
 			if (it->second->run(orgImg_))
 			{

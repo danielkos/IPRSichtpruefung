@@ -56,28 +56,17 @@ IDSCamera::IDSCamera()
 
 IDSCamera::~IDSCamera()
 {
+	terminateCameraStream();
 	ExitCamera();
 }
 
-/*cv::Mat IDSCamera::currentImage()
-{
-	cv::Mat img;
-	imgLock_.lock();
-	img = cv::cvarrToMat(currentImg_);
-	imgLock_.unlock();
-		
-	//cvShowImage("A", &img);
-	//cv::waitKey(1);
-
-	return img;
-}*/
 
 cv::Mat IDSCamera::currentImage()
 {
 	cv::Mat img;
 	imgLock_.lock();
 
-	if (CV_IS_IMAGE(currentImg_))
+	if (CV_IS_IMAGE(currentImg_) != NULL)
 	{
 		int depth = IPL2CV_DEPTH(currentImg_->depth);
 		size_t esz;
@@ -98,6 +87,7 @@ cv::Mat IDSCamera::currentImage()
 	}
 
 	imgLock_.unlock();
+
 	return img;
 }
 
@@ -114,7 +104,7 @@ void IDSCamera::AcquireImage()
 	{
 		if (is_FreezeVideo(m_hCam, IS_WAIT) == IS_SUCCESS)
 		{
-			if (m_pcImageMemory)
+			if (m_pcImageMemory != NULL)
 			{
 				imgLock_.lock();
 
@@ -129,7 +119,7 @@ void IDSCamera::AcquireImage()
 				currentImg_->nChannels = 4;
 				currentImg_->widthStep = currentImg_->nChannels * currentImg_->width;
 				currentImg_->imageSize = currentImg_->height * currentImg_->widthStep;
-
+				
 				currentImg_->origin = 0; //top-left corner
 				currentImg_->maskROI = NULL;
 				currentImg_->roi = NULL;
@@ -138,10 +128,21 @@ void IDSCamera::AcquireImage()
 				currentImg_->imageId = NULL;
 				currentImg_->imageData = m_pcImageMemory;
 				currentImg_->imageDataOrigin = m_pcImageMemory;
+				
+				//storeImage();
+				//cvShowImage("PROVA", currentImg_);
+				//cv::waitKey(0);
 
 				imgLock_.unlock();
+				
+				// Also important: don't call Q_EMIT newCameraImage(&currentImage());
+				// directly, if so the MainGui does not receive the emitted image (image empty)
+				cv::Mat img = currentImage();
+				Q_EMIT newCameraImage(&img);
 
-				Q_EMIT newCameraImage(&currentImage());
+				// Sleep very important. If no sleep used, the MainGui does not receive
+				// the emitted image (image empty)
+				std::this_thread::sleep_for(std::chrono::milliseconds(CAMERA_RECORD_DELAY));
 			}
 		}
 	}
@@ -220,8 +221,8 @@ bool IDSCamera::OpenCamera()
 		GetMaxImageSize(&m_nSizeX, &m_nSizeY);
 
 		// setup the color depth to the current windows setting
-		//is_GetColorDepth(m_hCam, &m_nBitsPerPixel, &m_nColorMode); //Probably dont need this, because we need RGBA32
-		m_nColorMode = IS_CM_BGRA8_PACKED; // opencv uses  this mode
+		is_GetColorDepth(m_hCam, &m_nBitsPerPixel, &m_nColorMode);	// Needs to be called, otherwise the camera memory is not initialized
+		m_nColorMode = IS_CM_BGRA8_PACKED;	// // opencv uses  this mode
 		is_SetColorMode(m_hCam, m_nColorMode);
 
 		// memory initialization
@@ -451,7 +452,7 @@ void IDSCamera::LoadParameters()
 	{
 		return;
 	}
-
+	LOGGER.log("Parameter loaded");
 	int nGainR, nGainG, nGainB, nGainM;
 
 	nGainM = is_SetHardwareGain(m_hCam, (int)IS_GET_DEFAULT_MASTER, -1, -1, -1);
@@ -471,6 +472,7 @@ void IDSCamera::LoadParameters()
 	nGainB = cameraParameters.value("Gain/Blue", nGainB).toInt();
 	int nColorCorrection = cameraParameters.value("Processing/color correction", IS_CCOR_DISABLE).toInt();
 	int nBayerMode = cameraParameters.value("Processing/Bayer Conversion", IS_SET_BAYER_CV_NORMAL).toInt();
+	UINT m_nRenderMode = cameraParameters.value("RenderMode", IS_RENDER_NORMAL).toInt();
 
 	m_Ret = is_PixelClock(m_hCam, IS_PIXELCLOCK_CMD_SET, (void*)&nPixelClock, sizeof(nPixelClock));
 	m_Ret = is_SetFrameRate(m_hCam, (double)nFrameRate, NULL);

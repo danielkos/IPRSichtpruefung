@@ -67,9 +67,13 @@ bool AngleVerification::run(const cv::Mat* img)
 {
 	bool res = true;
 
+	LOGGER.log("1");
+
 	// Check if img is empty
 	if (!img->empty())
 	{
+		LOGGER.log("2");
+
 		// Generating a white contour of the object on a black background
 		cv::cvtColor(*img, *processedImg_, cv::COLOR_BGR2GRAY);
 		cv::medianBlur(*img, *resImg_, 5);

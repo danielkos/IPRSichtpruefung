@@ -54,10 +54,15 @@ public:
 	// Opens a handle to a connected camera
 	bool OpenCamera();
 	
+	// Returns the current camera frame
 	cv::Mat currentImage();
 
 	// Extracts a single frame from the continuous video stream.
 	void AcquireImage();
+
+	// Extracts a single frame from the continuous video stream, but also
+	// applies the parameters from the config file
+	void aquireImageWithParams(const std::string& cameraConfigPath = "");
 
 	// Stores the current camera frame on the local file system
 	void storeImage();
@@ -66,16 +71,22 @@ public:
 	// Calls LoadParameters() internally to read the .ini file with the
 	// camera parameters
 	void AppendParameters(const std::string& cameraConfigPath = "");
-
-	void aquireImageWithParams(const std::string& cameraConfigPath = "");
-
+	
+	// Kills the camera video stream
 	void terminateCameraStream();
 
+	// Exists the instance of the camera
+	void ExitCamera();
+
 Q_SIGNALS:
+
 	void newCameraImage(cv::Mat* img);
 
 	
 private:
+
+	// Time delay (in milliseconds) between the recording of two camera frames.
+	const long CAMERA_RECORD_DELAY = 500;
 
 	// The path to the .ini file with the camera parameters
 	std::string parameterFilePath_;
@@ -91,17 +102,20 @@ private:
 	char*	m_pcImageMemory;// grabber memory - pointer to buffer
 	INT     m_nRenderMode;  // render  mode
 	SENSORINFO m_sInfo;	    // sensor information struct
+
+	// If the camera video stream should be terminated or not
 	bool terminate_;
 	
+	// Mutex lock, because this camera class runs in a separate thread (see MainGui)
 	std::mutex imgLock_;
 	
+	// The current camera frame
 	IplImage* currentImg_;
 
 	// Returns the maximum image size of a single camera frame
 	void GetMaxImageSize(INT *pnSizeX, INT *pnSizeY);
 
-	// Exists the instance of the camera
-	void ExitCamera();
+
 
 	// Loads the camera parameters from an .ini file from the local file system
 	void LoadParameters();

@@ -5,7 +5,7 @@
 
 #include <QVariant>
 #include <QSize>
-#include <opencv2\opencv.hpp>
+#include <opencv2\highgui.hpp>
 #include <opencv2\imgproc.hpp>
 
 #include <utility>
@@ -101,15 +101,18 @@ bool Calibration::run(const cv::Mat* img)
 	bool found = false;
 	int counter = 0;
 	int pressedKey = 0;
+	std::string inputWindowName = "Input Image";
+	std::string calibWindowName = "Input Image";
 	std::vector<cv::Point3f> obj;
 	std::vector<cv::Mat> rvecs, tvecs;
 	cv::Mat K;
 	cv::Mat D;
-	cv::Mat* input;
+	cv::Mat* input = new cv::Mat();
 
 	//Open default cam
 	if (cam_.OpenCamera())
 	{
+		cam_.AppendParameters();
 		//Generate 3D Points of the corners
 		for (int i = 0; i < numCornersH_; i++)
 		{
@@ -122,9 +125,9 @@ bool Calibration::run(const cv::Mat* img)
 		//Run corner aquisition as long as needed
 		while (counter <= numImgs_)
 		{
-			cam_.aquireImageWithParams();
+			cam_.AcquireImage();
 			//Get image
-			input = new cv::Mat(cam_.currentImage());
+			cam_.currentImage()->copyTo(*input);
 
 			if (!input->empty())
 			{
@@ -141,8 +144,12 @@ bool Calibration::run(const cv::Mat* img)
 				}
 
 				//Show input img and chessboard corners
-				cv::imshow("Input Image", *resImg_);
-				cv::imshow("Detected Corners", *processedImg_);
+				cv::namedWindow(inputWindowName, cv::WINDOW_NORMAL);
+				cv::namedWindow(calibWindowName, cv::WINDOW_NORMAL);
+				cv::resizeWindow(inputWindowName, 600, 500);
+				cv::resizeWindow(calibWindowName, 600, 500);
+				cv::imshow(inputWindowName, *resImg_);
+				cv::imshow(calibWindowName, *processedImg_);
 				//Wait for input
 				pressedKey = cv::waitKey(1);
 

@@ -55,7 +55,7 @@ public:
 	bool OpenCamera();
 	
 	// Returns the current camera frame
-	cv::Mat currentImage();
+	cv::Mat* currentImage();
 
 	// Extracts a single frame from the continuous video stream.
 	void AcquireImage();
@@ -110,7 +110,9 @@ private:
 	std::mutex imgLock_;
 	
 	// The current camera frame
-	IplImage* currentImg_;
+	IplImage* currentIlpImg_;
+
+	cv::Mat* currentImg_;
 
 	// Returns the maximum image size of a single camera frame
 	void GetMaxImageSize(INT *pnSizeX, INT *pnSizeY);

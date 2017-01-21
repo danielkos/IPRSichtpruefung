@@ -44,6 +44,7 @@ IDSCamera::IDSCamera()
 	parameterFilePath_ = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::cameraConfig;
 
 	m_pcImageMemory = NULL;
+	currentIlpImg_ = NULL;
 	currentImg_ = NULL;
 	m_lMemoryId = 0;
 	m_hCam = 0;
@@ -61,34 +62,34 @@ IDSCamera::~IDSCamera()
 }
 
 
-cv::Mat IDSCamera::currentImage()
+cv::Mat* IDSCamera::currentImage()
 {
-	cv::Mat img;
 	imgLock_.lock();
 
-	if (CV_IS_IMAGE(currentImg_) != NULL)
+	if (CV_IS_IMAGE(currentIlpImg_) != NULL)
 	{
-		int depth = IPL2CV_DEPTH(currentImg_->depth);
+		currentImg_ = new cv::Mat();
+		int depth = IPL2CV_DEPTH(currentIlpImg_->depth);
 		size_t esz;
-		img.cols = currentImg_->width;
-		img.rows = currentImg_->height;
+		currentImg_->cols = currentIlpImg_->width;
+		currentImg_->rows = currentIlpImg_->height;
 		
-		img.flags = cv::Mat::MAGIC_VAL + CV_MAKETYPE(depth, currentImg_->nChannels); //magic_val from prior cv versions
-		esz = CV_ELEM_SIZE(img.flags);
-		img.step[0] = currentImg_->widthStep;
+		currentImg_->flags = cv::Mat::MAGIC_VAL + CV_MAKETYPE(depth, currentIlpImg_->nChannels); //magic_val from prior cv versions
+		esz = CV_ELEM_SIZE(currentImg_->flags);
+		currentImg_->step[0] = currentIlpImg_->widthStep;
 
-		img.datastart = (uchar*)currentImg_->imageData;
-		img.data = (uchar*)currentImg_->imageData;
-		img.datalimit = img.datastart + img.step.p[0] * img.rows;
-		img.dataend = img. datastart + img.step.p[0] * (img.rows - 1) + esz * img.cols;
+		currentImg_->datastart = (uchar*)currentIlpImg_->imageData;
+		currentImg_->data = (uchar*)currentIlpImg_->imageData;
+		currentImg_->datalimit = currentImg_->datastart + currentImg_->step.p[0] * currentImg_->rows;
+		currentImg_->dataend = currentImg_->datastart + currentImg_->step.p[0] * (currentImg_->rows - 1) + esz * currentImg_->cols;
 
-		img.flags |= (img.cols*esz == img.step.p[0] || img.rows == 1 ? CV_MAT_CONT_FLAG : 0);
-		img.step[1] = esz;
+		currentImg_->flags |= (currentImg_->cols*esz == currentImg_->step.p[0] || currentImg_->rows == 1 ? CV_MAT_CONT_FLAG : 0);
+		currentImg_->step[1] = esz;
 	}
 
 	imgLock_.unlock();
 
-	return img;
+	return currentImg_;
 }
 
 void IDSCamera::AcquireImage()
@@ -108,26 +109,26 @@ void IDSCamera::AcquireImage()
 			{
 				imgLock_.lock();
 
-				currentImg_ = cvCreateImageHeader(cvSize(m_nSizeX, m_nSizeY), IPL_DEPTH_8U, 4);
-				currentImg_->nSize = sizeof(IplImage);
-				currentImg_->dataOrder = 0; //has to be 0 for intervealed images
-				currentImg_->depth = IPL_DEPTH_8U;
-				currentImg_->ID = 0; //actually ignored
+				currentIlpImg_ = cvCreateImageHeader(cvSize(m_nSizeX, m_nSizeY), IPL_DEPTH_8U, 4);
+				currentIlpImg_->nSize = sizeof(IplImage);
+				currentIlpImg_->dataOrder = 0; //has to be 0 for intervealed images
+				currentIlpImg_->depth = IPL_DEPTH_8U;
+				currentIlpImg_->ID = 0; //actually ignored
 
-				currentImg_->width = m_nSizeX;
-				currentImg_->height = m_nSizeY;
-				currentImg_->nChannels = 4;
-				currentImg_->widthStep = currentImg_->nChannels * currentImg_->width;
-				currentImg_->imageSize = currentImg_->height * currentImg_->widthStep;
+				currentIlpImg_->width = m_nSizeX;
+				currentIlpImg_->height = m_nSizeY;
+				currentIlpImg_->nChannels = 4;
+				currentIlpImg_->widthStep = currentIlpImg_->nChannels * currentIlpImg_->width;
+				currentIlpImg_->imageSize = currentIlpImg_->height * currentIlpImg_->widthStep;
 				
-				currentImg_->origin = 0; //top-left corner
-				currentImg_->maskROI = NULL;
-				currentImg_->roi = NULL;
-				currentImg_->tileInfo = NULL;
+				currentIlpImg_->origin = 0; //top-left corner
+				currentIlpImg_->maskROI = NULL;
+				currentIlpImg_->roi = NULL;
+				currentIlpImg_->tileInfo = NULL;
 
-				currentImg_->imageId = NULL;
-				currentImg_->imageData = m_pcImageMemory;
-				currentImg_->imageDataOrigin = m_pcImageMemory;
+				currentIlpImg_->imageId = NULL;
+				currentIlpImg_->imageData = m_pcImageMemory;
+				currentIlpImg_->imageDataOrigin = m_pcImageMemory;
 				
 				//storeImage();
 				//cvShowImage("PROVA", currentImg_);
@@ -137,8 +138,8 @@ void IDSCamera::AcquireImage()
 				
 				// Also important: don't call Q_EMIT newCameraImage(&currentImage());
 				// directly, if so the MainGui does not receive the emitted image (image empty)
-				cv::Mat img = currentImage();
-				Q_EMIT newCameraImage(&img);
+				//cv::Mat img = currentImage();
+				Q_EMIT newCameraImage(currentImage());
 
 				// Sleep very important. If no sleep used, the MainGui does not receive
 				// the emitted image (image empty)

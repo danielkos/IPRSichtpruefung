@@ -75,6 +75,8 @@ public:
 	// Kills the camera video stream
 	void terminateCameraStream();
 
+	void resetCameraStream();
+
 	// Exists the instance of the camera
 	void ExitCamera();
 

@@ -404,7 +404,7 @@ void MainGui::setCurrentItem(QModelIndex index)
 		{
 			if (idsCam_)
 			{
-				//cam reset needed !!!!!!
+				idsCam_->resetCameraStream();
 				std::thread ioThread(&IDSCamera::aquireImageWithParams, idsCam_, options_->cameraConfigPath());
 				ioThread.detach();
 			}

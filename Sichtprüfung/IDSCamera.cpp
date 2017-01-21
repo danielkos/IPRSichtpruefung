@@ -434,7 +434,10 @@ void IDSCamera::terminateCameraStream()
 	terminate_ = true;
 }
 
-
+void IDSCamera::resetCameraStream()
+{
+	terminate_ = false;
+}
 
 void IDSCamera::aquireImageWithParams(const std::string& cameraConfigPath)
 {

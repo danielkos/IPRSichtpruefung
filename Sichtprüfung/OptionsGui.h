@@ -34,6 +34,7 @@ private:
 	std::string cameraConfig_;
 
 	void setValues();
+	void getValues();
 
 private slots:
 	void closeClicked();

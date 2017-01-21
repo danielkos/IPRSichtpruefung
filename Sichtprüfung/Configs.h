@@ -54,7 +54,7 @@ namespace paths
 }
 namespace filenames
 {
-	const std::string optionsName = "options.xml";
+	const std::string optionsName = "options.ini";
 	const std::string calibrationName = "calibration.xml";
 	const std::string cameraConfig = "IPR.ini";
 }

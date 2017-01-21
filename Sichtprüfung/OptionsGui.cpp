@@ -14,6 +14,8 @@ OptionsGui::OptionsGui(QWidget* parent)
 
 	ui_.setupUi(this);
 
+	getValues();
+
 	configFile_ = paths::getExecutablePath() + paths::configFolder + filenames::optionsName;
 	
 	if (ConfigurationStorage::instance().exists(configFile_))
@@ -114,6 +116,17 @@ void OptionsGui::setValues()
 	ui_.lineEditConfig->setText(QString::fromStdString(cameraConfig_));
 }
 
+void OptionsGui::getValues()
+{
+	objSize_.setWidth(ui_.doubleSpinBoxWidth->value());
+	objSize_.setHeight(ui_.doubleSpinBoxLength->value());
+
+	holeRadius_ = ui_.doubleSpinBoxDiameter->value();
+	angle_ = ui_.doubleSpinBoxAngle->value();
+
+	cameraConfig_ = ui_.lineEditConfig->text().toStdString();
+}
+
 void OptionsGui::selectPathClicked()
 {
 	QFileDialog dialog(this);
@@ -132,7 +145,6 @@ void OptionsGui::selectPathClicked()
 
 void OptionsGui::closeClicked()
 {
-	setValues();
 	close();
 }
 

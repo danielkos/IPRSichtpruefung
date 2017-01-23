@@ -11,7 +11,6 @@ HoleVerification::HoleVerification()
 	maxRadius_ = 110;
 	houghUpperCannyThresh_ = 80;
 	centerThresh_ = 40;
-	centerEqualTolerance_ = 5.0;
 	cannyLowerThresh_ = 50;
 	cannyUpperThresh_ = 100;
 	morphIterations_ = 2;
@@ -175,6 +174,7 @@ bool HoleVerification::run(const cv::Mat* img)
 
 		if (!circles_.empty())
 		{
+			circlesCentered_.clear();
 			for (size_t i = 0; i < circles_.size(); i++)
 			{
 				cv::Vec3i c = circles_[i];
@@ -186,8 +186,8 @@ bool HoleVerification::run(const cv::Mat* img)
 				// Compare detected object center with center of detected circles:
 				// Difference between the object center and the circle center should be <= centerTolerance_,
 				// then they're assumed to be equal
-				if (abs(c[0] - objectCenterX) <= centerEqualTolerance_
-					&& abs(c[1] - objectCenterY) <= centerEqualTolerance_)
+				if (abs(c[0] + boundingBox.boundingRect().x - objectCenterX) <= centerEqualTolerance_
+					&& abs(c[1] + boundingBox.boundingRect().y - objectCenterY) <= centerEqualTolerance_)
 				{
 					circlesCentered_.push_back(true);
 				}
@@ -195,6 +195,7 @@ bool HoleVerification::run(const cv::Mat* img)
 				{
 					circlesCentered_.push_back(false);
 				}
+			
 			}
 		}
 		else

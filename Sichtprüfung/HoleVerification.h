@@ -31,7 +31,7 @@ private:
 
 	// Tolerance value, how close the center of a detected circle and the center
 	// of the object need to be, to be reported as equal (tolerance in pixel)
-	double centerEqualTolerance_;
+	int centerEqualTolerance_;
 
 	//Parameters for canny edge detection
 	double cannyLowerThresh_;

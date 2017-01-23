@@ -8,7 +8,7 @@
 MaterialVerification::MaterialVerification()
 {
 	minBrightness_ = 243;
-	ratio_ = 3.0;
+	ratio_ = 2.5;
 	materialMetal_ = false;
 	pixelAmount_ = 400000;
 	minPixelAmount_ = 8000;
@@ -134,7 +134,6 @@ bool MaterialVerification::run(const cv::Mat* img)
 
 			if (abs(cv::contourArea(cv::Mat(contoursReflection[i]))) > minPixelAmount_ && boundRect.width>minWidth_ && boundRect.height>minHeight_)
 			{
-				//	drawRectangle(boundRect.tl(), boundRect.br(), colors::contourColor);
 
 				if (boundRect.width >= boundRect.height)
 				{

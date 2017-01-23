@@ -14,6 +14,7 @@ HoleVerification::HoleVerification()
 	cannyLowerThresh_ = 50;
 	cannyUpperThresh_ = 100;
 	morphIterations_ = 2;
+	centerEqualTolerance_=10;
 }
 
 HoleVerification::~HoleVerification()

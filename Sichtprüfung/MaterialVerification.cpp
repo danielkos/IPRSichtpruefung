@@ -134,7 +134,7 @@ bool MaterialVerification::run(const cv::Mat* img)
 
 			if (abs(cv::contourArea(cv::Mat(contoursReflection[i]))) > minPixelAmount_ && boundRect.width>minWidth_ && boundRect.height>minHeight_)
 			{
-
+				//	drawRectangle(boundRect.tl(), boundRect.br(), colors::contourColor);
 				if (boundRect.width >= boundRect.height)
 				{
 					temp = float(boundRect.width) / float(boundRect.height);

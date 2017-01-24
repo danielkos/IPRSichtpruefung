@@ -25,7 +25,7 @@ private:
 	//minimal value of pixel considered as reflection
 	int minBrightness_;
 	// ratio between sides of rectangle higher than ratio_ is describing metall reflection
-	float ratio_;
+	double ratio_;
 	//if material is metal
 	bool materialMetal_;
 	//amount of pixels within biggest reflection area

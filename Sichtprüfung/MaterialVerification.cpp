@@ -27,7 +27,7 @@ void MaterialVerification::setParameters(std::vector<Parameter>parameters)
 	if (parameters.size() == parametersSize_)
 	{
 		minBrightness_ = parameters[0].value_.toInt();
-		ratio_ = parameters[1].value_.toFloat();
+		ratio_ = parameters[1].value_.toDouble();
 		pixelAmount_ = parameters[2].value_.toInt();
 		minPixelAmount_ = parameters[3].value_.toInt();
 		minWidth_ = parameters[4].value_.toInt();
@@ -45,7 +45,7 @@ std::vector<Parameter> MaterialVerification::parameters()
 	param.setUp("Minimal Brightness", QVariant(minBrightness_), QMetaType::Int);
 	parameters.push_back(param);
 
-	param.setUp("Side ratio", QVariant(ratio_), QMetaType::Float);
+	param.setUp("Side ratio", QVariant(ratio_), QMetaType::Double);
 	parameters.push_back(param);
 
 	param.setUp("Amount of pixels", QVariant(pixelAmount_), QMetaType::Int);
@@ -57,7 +57,7 @@ std::vector<Parameter> MaterialVerification::parameters()
 	param.setUp("Minimal width", QVariant(minWidth_), QMetaType::Int);
 	parameters.push_back(param);
 
-	param.setUp("Minimal width", QVariant(minHeight_), QMetaType::Int);
+	param.setUp("Minimal height", QVariant(minHeight_), QMetaType::Int);
 	parameters.push_back(param);
 
 	parametersSize_ = parameters.size();
@@ -75,7 +75,6 @@ ResultGenerator::ResultMap MaterialVerification::results()
 	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_MATERIAL, param));
 
 	LOGGER.log("Metal" + materialMetal_);
-
 
 	return results;
 }

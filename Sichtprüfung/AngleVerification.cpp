@@ -8,8 +8,10 @@
 AngleVerification::AngleVerification()
 {
 	cannyLowerThresh_ = 50;
-	cannyUpperThresh_ = 200;
-	angleTolerance_ = 8.0;
+	cannyUpperThresh_ = 100;
+	minHough_dominantOrientation_ = 200;
+	minHough_angleLine_ = 60;
+	angleTolerance_ = 10.0;
 }
 
 AngleVerification::~AngleVerification()
@@ -24,7 +26,9 @@ void AngleVerification::setParameters(std::vector<Parameter>parameters)
 	{
 		cannyLowerThresh_ = parameters[0].value_.toDouble();
 		cannyUpperThresh_ = parameters[1].value_.toDouble();
-		angleTolerance_ = parameters[2].value_.toDouble();
+		minHough_dominantOrientation_ = parameters[2].value_.toInt();
+		minHough_angleLine_ = parameters[3].value_.toInt();
+		angleTolerance_ = parameters[4].value_.toDouble();
 	}
 }
 
@@ -39,6 +43,12 @@ std::vector<Parameter> AngleVerification::parameters()
 	parameters.push_back(param);
 
 	param.setUp("Canny Upper Threshold", QVariant(cannyUpperThresh_), QMetaType::Double);
+	parameters.push_back(param);
+
+	param.setUp("Min Hough: Object Orientation", QVariant(minHough_dominantOrientation_), QMetaType::Int);
+	parameters.push_back(param);
+
+	param.setUp("Min Hough: Angle", QVariant(minHough_angleLine_), QMetaType::Int);
 	parameters.push_back(param);
 
 	param.setUp("Angle Equal Tolerance", QVariant(angleTolerance_), QMetaType::Double);
@@ -67,17 +77,14 @@ bool AngleVerification::run(const cv::Mat* img)
 {
 	bool res = true;
 
-	LOGGER.log("1");
-
 	// Check if img is empty
 	if (!img->empty())
 	{
-		LOGGER.log("2");
-
 		// Generating a white contour of the object on a black background
+		// Filter surrounding lights, optimum: only object contours are visible with straight thin lines
 		cv::cvtColor(*img, *processedImg_, cv::COLOR_BGR2GRAY);
 		cv::medianBlur(*img, *resImg_, 5);
-		inRange(*processedImg_, 50, 200, *processedImg_);
+		inRange(*processedImg_, 50, 70, *processedImg_);
 		cv::Canny(*processedImg_, *processedImg_, cannyLowerThresh_, cannyUpperThresh_);
 		cv::morphologyEx(*processedImg_, *processedImg_, cv::MORPH_CLOSE, cv::noArray(), cv::Point(-1, -1), 2);
 		cv::dilate(*processedImg_, *processedImg_, cv::getStructuringElement(cv::MORPH_DILATE, cv::Size(3, 3)));
@@ -86,7 +93,7 @@ bool AngleVerification::run(const cv::Mat* img)
 		// Hough-Transformation to find the dominant orientation of the object => only consider
 		// lines with big length
 		std::vector<cv::Vec4i> lines;
-		cv::HoughLinesP(*processedImg_, lines, 1, CV_PI / 180, 20, 100, 0);
+		cv::HoughLinesP(*processedImg_, lines, 1, CV_PI / 180, 40, minHough_dominantOrientation_, 0);
 		
 		double rotationAngle = 0.0;		// Angle between the dominant orientation of the object
 										// and the horizontal x axis
@@ -112,7 +119,7 @@ bool AngleVerification::run(const cv::Mat* img)
 		// Use Hough-Transformation again to approximate the contour of the object with straight lines.
 		// Use small minimum line length parameter now to approximate the contour of the object as good
 		// as possible
-		cv::HoughLinesP(*processedImg_, lines, 1, CV_PI / 180, 20, 20, 0);
+		cv::HoughLinesP(*processedImg_, lines, 1, CV_PI / 180, 40, minHough_angleLine_, 0);
 			
 		// Calculate the angle between the detected Hough-Lines and the horizontal x axis.
 		// Because the object should be parallel to the x-axis in the image, only the Hough-Lines that

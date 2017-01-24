@@ -57,8 +57,20 @@ private:
 	// Upper threshold for the canny edge detection
 	double cannyUpperThresh_;
 
+	// Minimum length of a Hough line to find the dominant orientation of 
+	// the object. Value should be a big (100-600).
+	// Value depends on the resolution of the image. Length in pixel.
+	int minHough_dominantOrientation_;
+
+	// Minimum length of the Hough line to find the edges/lines that belong
+	// to the angle nuts. Value should be small (20-100).
+	// Value depends on the resolution of the image.Length in pixel.
+	int minHough_angleLine_;
+
 	// Tolerance value that defines when two angles are assumed
-	// to be equal
+	// to be equal. The bigger, the more detected lines are used for the result 
+	// calculation, but result can be distorted because of extreme outliers
+	// (Mean average is calculated).
 	double angleTolerance_;
 
 

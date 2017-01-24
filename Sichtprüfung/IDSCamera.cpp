@@ -136,12 +136,9 @@ void IDSCamera::AcquireImage()
 
 				imgLock_.unlock();
 				
-				// Also important: don't call Q_EMIT newCameraImage(&currentImage());
-				// directly, if so the MainGui does not receive the emitted image (image empty)
-				//cv::Mat img = currentImage();
 				Q_EMIT newCameraImage(currentImage());
 
-				// Sleep very important. If no sleep used, the MainGui does not receive
+				// Sleep very important. If sleep not used, the MainGui does not receive
 				// the emitted image (image empty)
 				std::this_thread::sleep_for(std::chrono::milliseconds(CAMERA_RECORD_DELAY));
 			}

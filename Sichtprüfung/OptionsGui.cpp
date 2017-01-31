@@ -16,7 +16,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 
 	getValues();
 
-	configFile_ = paths::getExecutablePath() + paths::configFolder + filenames::optionsName;
+	configFile_ = paths::getExecutablePath() + paths::configFolder + filenames::optionsName + extensions::optionsExt;
 	
 	if (ConfigurationStorage::instance().exists(configFile_))
 	{
@@ -65,7 +65,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 		else
 		{
 			LOGGER.log("Can not read camera_config_path from " + configFile_);
-			cameraConfig_ = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::cameraConfig;
+			cameraConfig_ = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::cameraConfig + extensions::cameraConfigExt;
 		}
 		setValues();
 	}
@@ -131,7 +131,7 @@ void OptionsGui::selectPathClicked()
 {
 	QFileDialog dialog(this);
 	QString filename;
-	QString filter = "Configuration Files(*.ini)";
+	QString filter = "Configuration Files(*." + QString::fromStdString(extensions::optionsExt) + ")";
 	std::string path = paths::getExecutablePath() + paths::configFolder;
 	filename = dialog.getOpenFileName(this, "Select an image", QString::fromStdString(path), filter);
 

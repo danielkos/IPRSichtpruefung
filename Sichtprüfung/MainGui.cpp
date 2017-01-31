@@ -31,6 +31,8 @@
 MainGui::MainGui(QWidget *parent)
 	: QMainWindow(parent)
 {
+	LOGGER.log("Start up");
+
 	//setup ui
 	ui_.setupUi(this);
 
@@ -60,9 +62,9 @@ MainGui::MainGui(QWidget *parent)
 	remove->setText("Remove");
 
 	//Connect the signals from the button box to other functions
-	connect(apply, &QPushButton::clicked, this, &MainGui::runSelectedMethods);
-	connect(open, &QPushButton::clicked, this, &MainGui::addFile);
-	connect(remove, &QPushButton::clicked, this, &MainGui::removeFile);
+	QObject::connect(apply, &QPushButton::clicked, this, &MainGui::runSelectedMethods);
+	QObject::connect(open, &QPushButton::clicked, this, &MainGui::addFile);
+	QObject::connect(remove, &QPushButton::clicked, this, &MainGui::removeFile);
 	
 	//Labels for the input tab model
 	QStringList labels;
@@ -77,10 +79,10 @@ MainGui::MainGui(QWidget *parent)
 	ui_.treeViewInput->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 	ui_.treeViewInput->setAutoScroll(false);
 
-	connect(ui_.treeViewInput, SIGNAL(clicked(QModelIndex)), this, SLOT(setCurrentItem(QModelIndex)));
+	QObject::connect(ui_.treeViewInput, SIGNAL(clicked(QModelIndex)), this, SLOT(setCurrentItem(QModelIndex)));
 
-	connect(ui_.action_Exit, &QAction::triggered, this, &QMainWindow::close);
-	connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
+	QObject::connect(ui_.action_Exit, &QAction::triggered, this, &QMainWindow::close);
+	QObject::connect(ui_.actionTest_Object, &QAction::triggered, this, &MainGui::openOptions);
 
 	//Create an option window without showing it
 	options_ = new OptionsGui(this);
@@ -193,7 +195,10 @@ void MainGui::addMethodResults(const QString& methodName, const cv::Mat* resImg,
 
 	if (findTab(ui_.tabWidgetProcessed, methodName, index) && index >= 0)
 	{
-		static_cast<FrameView*>(ui_.tabWidgetProcessed->widget(index))->showImage(preprocImg);
+		if (preprocImg)
+		{
+			static_cast<FrameView*>(ui_.tabWidgetProcessed->widget(index))->showImage(preprocImg);
+		}
 	}
 	else
 	{
@@ -202,7 +207,10 @@ void MainGui::addMethodResults(const QString& methodName, const cv::Mat* resImg,
 
 	if (findTab(ui_.tabWidgetResult, methodName, index) && index >= 0)
 	{
-		static_cast<FrameView*>(ui_.tabWidgetResult->widget(index))->showImage(resImg);
+		if (resImg)
+		{
+			static_cast<FrameView*>(ui_.tabWidgetResult->widget(index))->showImage(resImg);
+		}
 	}
 	else
 	{

@@ -184,13 +184,13 @@ bool Calibration::run(const cv::Mat* img)
 	}
 	
 	//Calibrate if possible
-	if (calibSuccess_)
+	if (calibSuccess_ && !imagePoints_.empty())
 	{
 		calibrateCamera(objectPoints_, imagePoints_, resImg_->size(), K, D, rvecs, tvecs);
 
 		cv::undistort(*resImg_, *resImg_, K, D);
 
-		std::string path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::calibrationName;
+		std::string path = paths::getExecutablePath() + paths::configFolder + paths::profilesFolder + typeid(Calibration).name() + extensions::calibrationExt;
 
 		//Write results
 		if (!ConfigurationStorage::instance().write(path, "K", K))

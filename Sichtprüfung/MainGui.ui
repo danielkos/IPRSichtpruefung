@@ -112,7 +112,14 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_11">
            <item>
-            <widget class="QListWidget" name="listWidgetResults"/>
+            <widget class="QListWidget" name="listWidgetResults">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

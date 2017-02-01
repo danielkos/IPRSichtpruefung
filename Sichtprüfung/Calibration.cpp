@@ -10,6 +10,7 @@
 
 #include <utility>
 #include <thread>
+#include <typeinfo>
 
 Calibration::Calibration()
 {
@@ -19,7 +20,7 @@ Calibration::Calibration()
 	numSquares_ = numCornersH_ * numConrersV_;
 	sizeSquare_ = 11;
 	boardSize_ = cv::Size(numCornersH_, numConrersV_);
-	calibSuccess_ = false;
+	calibSuccess_ = true;
 	
 	bool exists;
 	bool ret;
@@ -101,85 +102,73 @@ bool Calibration::run(const cv::Mat* img)
 	bool found = false;
 	int counter = 0;
 	int pressedKey = 0;
-	std::string inputWindowName = "Input Image";
-	std::string calibWindowName = "Input Image";
+	std::string calibWindowName = "Pattern Image";
 	std::vector<cv::Point3f> obj;
 	std::vector<cv::Mat> rvecs, tvecs;
 	cv::Mat K;
 	cv::Mat D;
-	cv::Mat* input = new cv::Mat();
 
-	//Open default cam
-	if (cam_.OpenCamera())
+	//Generate 3D Points of the corners
+	for (int i = 0; i < numCornersH_; i++)
 	{
-		cam_.AppendParameters();
-		//Generate 3D Points of the corners
-		for (int i = 0; i < numCornersH_; i++)
+		for (int j = 0; j < numConrersV_; j++)
 		{
-			for (int j = 0; j < numConrersV_; j++)
+			obj.push_back(cv::Point3f((float)i * sizeSquare_, (float)j * sizeSquare_, 0));
+		}
+	}
+
+	cv::namedWindow(calibWindowName, cv::WINDOW_NORMAL);
+	cv::resizeWindow(calibWindowName, 600, 500); 
+	
+	
+	//Run corner aquisition as long as needed 
+	//THIS IMPLEMENTATION IS BAD BECAUS OPENCV HANDLES ITS OWN WINDOW--> Different Execution flow
+	while (cv::getWindowProperty(calibWindowName, 0) == 0)
+	{
+		if (!img->empty())
+		{
+			initializeResultImage(img);
+			cv::cvtColor(*resImg_, *processedImg_, CV_BGR2GRAY);
+
+			//Find chessboard
+			found = cv::findChessboardCorners(*resImg_, boardSize_, corners_, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+
+			if (found)
 			{
-				obj.push_back(cv::Point3f((float)i * sizeSquare_, (float)j * sizeSquare_, 0));
+				cv::cornerSubPix(*processedImg_, corners_, cv::Size(5, 5), cv::Size(-1, -1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+				cv::drawChessboardCorners(*processedImg_, boardSize_, corners_, found);
+			}
+
+
+			//Show input img and chessboard corners
+			//
+			//Wait for input
+			cv::imshow(calibWindowName, *processedImg_);
+			pressedKey = cv::waitKey(1);
+
+			//ESC-> abort, Space-> store this run, Else-> skip run
+
+			switch (pressedKey)
+			{
+			case 27:
+				calibSuccess_ = false;
+				break;
+			case ' ':
+				if (!corners_.empty())
+				{
+					imagePoints_.push_back(corners_);
+					objectPoints_.push_back(obj);
+				}
+				counter++;
+				break;
+			default:
+				break;
 			}
 		}
 
-		//Run corner aquisition as long as needed
-		while (counter <= numImgs_)
+		if (!calibSuccess_)
 		{
-			cam_.AcquireImage();
-			//Get image
-			cam_.currentImage()->copyTo(*input);
-
-			if (!input->empty())
-			{
-				initializeResultImage(input);
-				cv::cvtColor(*resImg_, *processedImg_, CV_BGR2GRAY);
-
-				//Find chessboard
-				found = cv::findChessboardCorners(*resImg_, boardSize_, corners_, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-
-				if (found)
-				{
-					cv::cornerSubPix(*processedImg_, corners_, cv::Size(5, 5), cv::Size(-1, -1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
-					cv::drawChessboardCorners(*processedImg_, boardSize_, corners_, found);
-				}
-
-				//Show input img and chessboard corners
-				cv::namedWindow(inputWindowName, cv::WINDOW_NORMAL);
-				cv::namedWindow(calibWindowName, cv::WINDOW_NORMAL);
-				cv::resizeWindow(inputWindowName, 600, 500);
-				cv::resizeWindow(calibWindowName, 600, 500);
-				cv::imshow(inputWindowName, *resImg_);
-				cv::imshow(calibWindowName, *processedImg_);
-				//Wait for input
-				pressedKey = cv::waitKey(1);
-
-				//ESC-> abort, Space-> store this run, Else-> skip run
-				if (found)
-				{
-					switch (pressedKey)
-					{
-					case 27:
-						calibSuccess_ = false;
-						break;
-					case ' ':
-						imagePoints_.push_back(corners_);
-						objectPoints_.push_back(obj);
-						counter++;
-						break;
-					default:
-						break;
-					}
-				}
-			}
-			else
-			{
-				calibSuccess_ = false;
-			}
-
-			if (!calibSuccess_)
-			{
-				break;
-			}
+			break;
 		}
 	}
 	
@@ -214,6 +203,15 @@ bool Calibration::run(const cv::Mat* img)
 			LOGGER.log("Can not write num_ver_corners to " + path);
 		}
 		ConfigurationStorage::instance().realease();
+	}
+	else if (imagePoints_.empty())
+	{
+		LOGGER.log("No image points supplied. Please recalibrate!");
+		calibSuccess_ = false;
+	}
+	else
+	{
+		LOGGER.log("Calibration canceled!");
 	}
 
 	return calibSuccess_;

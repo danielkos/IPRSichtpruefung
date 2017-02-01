@@ -47,8 +47,6 @@ protected:
 	std::vector<std::vector<cv::Point2f> > imagePoints_; 
 	//Corners on the chessboard
 	std::vector<cv::Point2f> corners_;
-	//IO to grav images
-	IDSCamera cam_;
 };
 
 #endif

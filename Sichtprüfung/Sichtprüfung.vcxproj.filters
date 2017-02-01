@@ -63,11 +63,17 @@
     <Filter Include="Source Dateien\Configuration">
       <UniqueIdentifier>{af47f9c6-07bf-4957-8293-09179e48cb24}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Dateien\IDS">
+    <Filter Include="Header Dateien\IO\IDS">
       <UniqueIdentifier>{568e07b2-0b48-4930-8032-5f03ed7d5165}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Dateien\IDS">
+    <Filter Include="Header Dateien\IO\OpenCV">
+      <UniqueIdentifier>{acef39bb-6f39-489f-891b-7cf27c19e013}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Dateien\IO\IDS">
       <UniqueIdentifier>{c8d22fca-60c8-4e86-9eb7-2fce0806f951}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Dateien\IO\OpenCV">
+      <UniqueIdentifier>{fcc5df67-4e62-41d7-94c3-c6fa70ded124}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -97,9 +103,6 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_MethodGuiItem.cpp">
       <Filter>Generierte Dateien\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="UpldFrame.cpp">
-      <Filter>Source Dateien\IO</Filter>
     </ClCompile>
     <ClCompile Include="cvmatandqimage.cpp">
       <Filter>Source Dateien\Utils</Filter>
@@ -141,7 +144,7 @@
       <Filter>Source Dateien\Computation</Filter>
     </ClCompile>
     <ClCompile Include="IDSCamera.cpp">
-      <Filter>Source Dateien\IDS</Filter>
+      <Filter>Source Dateien\IO\IDS</Filter>
     </ClCompile>
     <ClCompile Include="GLogger.cpp">
       <Filter>Source Dateien\Utils</Filter>
@@ -149,11 +152,17 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Source Dateien\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_IDSCamera.cpp">
+    <ClCompile Include="UpldFrame.cpp">
+      <Filter>Source Dateien\IO\OpenCV</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_Camera.cpp">
       <Filter>Generierte Dateien\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_IDSCamera.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_Camera.cpp">
       <Filter>Generierte Dateien\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Dateien\IO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,14 +190,17 @@
     <CustomBuild Include="OptionsGui.h">
       <Filter>Header Dateien\GUI</Filter>
     </CustomBuild>
-    <CustomBuild Include="UpldFrame.h">
-      <Filter>Header Dateien\IO</Filter>
-    </CustomBuild>
     <CustomBuild Include="Calibration.h">
       <Filter>Header Dateien\Computation</Filter>
     </CustomBuild>
     <CustomBuild Include="IDSCamera.h">
-      <Filter>Header Dateien\IDS</Filter>
+      <Filter>Header Dateien\IO\IDS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="UpldFrame.h">
+      <Filter>Header Dateien\IO\OpenCV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Camera.h">
+      <Filter>Header Dateien\IO</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

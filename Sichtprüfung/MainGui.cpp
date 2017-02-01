@@ -88,25 +88,33 @@ MainGui::MainGui(QWidget *parent)
 	options_ = new OptionsGui(this);
 
 	//Create IO
-	idsCam_ = new IDSCamera();
-	
-	connect(idsCam_, SIGNAL(newCameraImage(cv::Mat*)), this, SLOT(setInputImage(cv::Mat*)));
+	IDSCamera* idsCam_ = new IDSCamera();
+	UpldFrame* opencvCam = new UpldFrame();
 
-
-	if (idsCam_->OpenCamera())
+	if (idsCam_->openCamera())
 	{
 		addFileStream("Default Camera");
+		cam_ = idsCam_;
+		delete opencvCam;
 	}
-	
-	LOGGER.log("Start up");
+	else if (opencvCam->openCamera())
+	{
+		addFileStream("Default Camera");
+		cam_ = opencvCam;
+		delete idsCam_;
+	}	
 }
 MainGui::~MainGui()
 {
 	delete inputView_;
-	delete orgImg_;
-	delete idsCam_;
-}
+	//delete orgImg_;
 
+	if (cam_)
+	{
+		delete cam_;
+	}
+	
+}
 
 void MainGui::setInputImage(cv::Mat* img)
 {
@@ -114,10 +122,15 @@ void MainGui::setInputImage(cv::Mat* img)
 	{
 		// Only this copy operation works, otherwise image is always empty
 		// or grey completely
-		cv::Mat tmpFrame (img->rows, img->cols, img->type());
-		tmpFrame.data = img->data;
+		//cv::Mat tmpFrame (img->rows, img->cols, img->type());
+		//tmpFrame.data = img->data;
 
-		*orgImg_ = tmpFrame.clone();
+		//*orgImg_ = img->clone();
+		//orgImg_->data = img->data;
+
+
+		//Opencv works with copy test on IDS
+		img->copyTo(*orgImg_);
 
 		inputView_->showImage(orgImg_);
 	}
@@ -256,13 +269,13 @@ void MainGui::runSelectedMethods()
 			//Get current parametrs from method
 			it->second->setParameters(it->first->parameters());
 			
-			if (methodName == "Calibration")
+			/*if (methodName == "Calibration")
 			{
 				idsCam_->terminateCameraStream();
 				idsCam_->ExitCamera();
-			}
+			}*/
 
-			if (it->second->run(orgImg_))
+			if (orgImg_ && it->second->run(orgImg_))
 			{
 				LOGGER.log("Method: " + methodName + " successful");
 				
@@ -281,6 +294,10 @@ void MainGui::runSelectedMethods()
 					ui_.listWidgetResults->addItem(*it);
 				}
 				ui_.listWidgetResults->addItem("");
+			}
+			else if (!orgImg_)
+			{
+				LOGGER.log("Input Image is empty!");
 			}
 			else
 			{
@@ -381,10 +398,10 @@ void MainGui::removeFile()
 		ui_.treeViewInput->model()->removeRow(index.row());
 	}
 
-	if (idsCam_)
+	/*if (idsCam_)
 	{
 		idsCam_->terminateCameraStream();
-	}
+	}*/
 
 	reset();
 }
@@ -410,33 +427,29 @@ void MainGui::setCurrentItem(QModelIndex index)
 
 		if (currentFile_.isEmpty())
 		{
-			if (idsCam_)
-			{
-				idsCam_->resetCameraStream();
-				std::thread ioThread(&IDSCamera::aquireImageWithParams, idsCam_, options_->cameraConfigPath());
-				ioThread.detach();
-			}
-			else
-			{
-				LOGGER.log("Can not open camera");
-			}
+			QObject::connect(cam_, &Camera::newCameraImage, this, &MainGui::setInputImage);
+			cam_->startStream();
 		}
 		else
 		{
-			idsCam_->terminateCameraStream();
+			QObject::disconnect(cam_, &Camera::newCameraImage, this, &MainGui::setInputImage);
+			cam_->stopStream();
+
 			img = UpldFrame::fromFile(currentFile_.toStdString());
+			statusOutput("Image loaded");
 			LOGGER.log("Using current file: " + currentFile_);
+
+			setInputImage(&img);
 		}
-
-		statusOutput("Image loaded");
-
-		setInputImage(&img);
 	}
 }
 
 void MainGui::reset()
 {
-	orgImg_->release();
+	if (orgImg_)
+	{
+		orgImg_->release();
+	}
 }
 
 void MainGui::statusOutput(QString msg)

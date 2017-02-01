@@ -1,10 +1,10 @@
 #ifndef MAINGUI_H
 #define MAINGUI_H
-
-#include <QtWidgets/QMainWindow>
-
 #include "ui_MainGui.h"
 #include "ResultGenerator.h"
+#include "Camera.h"
+
+#include <QtWidgets/QMainWindow>
 
 class FrameView;
 class VerificationMethod;
@@ -78,7 +78,7 @@ private:
 	//Options dialog
 	OptionsGui* options_;
 
-	IDSCamera* idsCam_;
+	Camera* cam_;
 	
 	//Result presenter
 	ResultGenerator resGenerator;

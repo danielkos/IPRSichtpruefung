@@ -32,16 +32,17 @@
 //                                                                           //
 //===========================================================================//
 #include "uEye.h"
+#include "Camera.h"
 
-#include <opencv2\opencv.hpp>
-#include <QImage>
 #include <mutex>
-#include <QObject>
 
-
-class IDSCamera : public QObject
+namespace cv
 {
-	Q_OBJECT
+	class Mat;
+}
+
+class IDSCamera : public Camera
+{
 
 public:
 
@@ -52,39 +53,16 @@ public:
 	virtual ~IDSCamera();
 
 	// Opens a handle to a connected camera
-	bool OpenCamera();
-	
-	// Returns the current camera frame
-	cv::Mat* currentImage();
+	bool openCamera();
+
+	bool isOpen();
 
 	// Extracts a single frame from the continuous video stream.
-	void AcquireImage();
-
-	// Extracts a single frame from the continuous video stream, but also
-	// applies the parameters from the config file
-	void aquireImageWithParams(const std::string& cameraConfigPath = "");
+	bool acquireImage();
 
 	// Stores the current camera frame on the local file system
 	void storeImage();
 
-	// Appends the loaded camera parameters on the camera stream.
-	// Calls LoadParameters() internally to read the .ini file with the
-	// camera parameters
-	void AppendParameters(const std::string& cameraConfigPath = "");
-	
-	// Kills the camera video stream
-	void terminateCameraStream();
-
-	void resetCameraStream();
-
-	// Exists the instance of the camera
-	void ExitCamera();
-
-Q_SIGNALS:
-
-	void newCameraImage(cv::Mat* img);
-
-	
 private:
 
 	// Time delay (in milliseconds) between the recording of two camera frames.
@@ -108,25 +86,24 @@ private:
 	// If the camera video stream should be terminated or not
 	bool terminate_;
 	
-	// Mutex lock, because this camera class runs in a separate thread (see MainGui)
-	std::mutex imgLock_;
-	
 	// The current camera frame
 	IplImage* currentIlpImg_;
 
-	cv::Mat* currentImg_;
-
 	// Returns the maximum image size of a single camera frame
-	void GetMaxImageSize(INT *pnSizeX, INT *pnSizeY);
+	void getMaxImageSize(INT *pnSizeX, INT *pnSizeY);
 
-
+	// Appends the loaded camera parameters on the camera stream.
+	// Calls LoadParameters() internally to read the .ini file with the
+	// camera parameters
+	void appendParameters(const std::string& cameraConfigPath = "");
 
 	// Loads the camera parameters from an .ini file from the local file system
-	void LoadParameters();
+	void loadParameters();
 
 	// Initializes the camera
-	INT InitCamera(HIDS *hCam, HWND hWnd);
+	INT initCamera(HIDS *hCam, HWND hWnd);
+
+	void exitCamera();
 
 };
-Q_DECLARE_METATYPE(cv::Mat*);
 #endif

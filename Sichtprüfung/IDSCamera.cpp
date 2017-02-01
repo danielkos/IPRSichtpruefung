@@ -31,7 +31,9 @@
 #include "IDSCamera.h"
 #include "Logger.h"
 #include "Configs.h"
+
 #include <opencv2\core\mat.hpp>
+#include <opencv2\opencv.hpp>
 
 #include <QSettings>
 
@@ -41,11 +43,10 @@
 
 IDSCamera::IDSCamera()
 {
-	parameterFilePath_ = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::cameraConfig;
+	parameterFilePath_ = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::cameraConfig + extensions::cameraConfigExt;
 
 	m_pcImageMemory = NULL;
 	currentIlpImg_ = NULL;
-	currentImg_ = NULL;
 	m_lMemoryId = 0;
 	m_hCam = 0;
 	m_nSizeX = 0;
@@ -57,49 +58,82 @@ IDSCamera::IDSCamera()
 
 IDSCamera::~IDSCamera()
 {
-	terminateCameraStream();
-	ExitCamera();
+	stopStream();
+	exitCamera();
 }
 
-
-cv::Mat* IDSCamera::currentImage()
+bool IDSCamera::openCamera()
 {
-	imgLock_.lock();
-
-	if (CV_IS_IMAGE(currentIlpImg_) != NULL)
+	if (m_hCam != 0)
 	{
-		currentImg_ = new cv::Mat();
-		int depth = IPL2CV_DEPTH(currentIlpImg_->depth);
-		size_t esz;
-		currentImg_->cols = currentIlpImg_->width;
-		currentImg_->rows = currentIlpImg_->height;
-		
-		currentImg_->flags = cv::Mat::MAGIC_VAL + CV_MAKETYPE(depth, currentIlpImg_->nChannels); //magic_val from prior cv versions
-		esz = CV_ELEM_SIZE(currentImg_->flags);
-		currentImg_->step[0] = currentIlpImg_->widthStep;
-
-		currentImg_->datastart = (uchar*)currentIlpImg_->imageData;
-		currentImg_->data = (uchar*)currentIlpImg_->imageData;
-		currentImg_->datalimit = currentImg_->datastart + currentImg_->step.p[0] * currentImg_->rows;
-		currentImg_->dataend = currentImg_->datastart + currentImg_->step.p[0] * (currentImg_->rows - 1) + esz * currentImg_->cols;
-
-		currentImg_->flags |= (currentImg_->cols*esz == currentImg_->step.p[0] || currentImg_->rows == 1 ? CV_MAT_CONT_FLAG : 0);
-		currentImg_->step[1] = esz;
+		//free old image mem.
+		is_FreeImageMem(m_hCam, m_pcImageMemory, m_lMemoryId);
+		is_ExitCamera(m_hCam);
 	}
 
-	imgLock_.unlock();
+	// init camera
+	m_hCam = (HIDS)0;						// open next camera
+	m_Ret = initCamera(&m_hCam, NULL);		// init camera - no window handle required
 
-	return currentImg_;
+	if (m_Ret == IS_SUCCESS)
+	{
+		// Get sensor info
+		is_GetSensorInfo(m_hCam, &m_sInfo);
+
+		getMaxImageSize(&m_nSizeX, &m_nSizeY);
+
+		// setup the color depth to the current windows setting
+		is_GetColorDepth(m_hCam, &m_nBitsPerPixel, &m_nColorMode);	// Needs to be called, otherwise the camera memory is not initialized
+		m_nColorMode = IS_CM_BGRA8_PACKED;	// // opencv uses  this mode
+		is_SetColorMode(m_hCam, m_nColorMode);
+
+		// memory initialization
+		is_AllocImageMem(m_hCam,
+			m_nSizeX,
+			m_nSizeY,
+			m_nBitsPerPixel,
+			&m_pcImageMemory,
+			&m_lMemoryId);
+		is_SetImageMem(m_hCam, m_pcImageMemory, m_lMemoryId);	// set memory active
+
+																// display initialization
+		IS_SIZE_2D imageSize;
+		imageSize.s32Width = m_nSizeX;
+		imageSize.s32Height = m_nSizeY;
+
+		is_AOI(m_hCam, IS_AOI_IMAGE_SET_SIZE, (void*)&imageSize, sizeof(imageSize));
+
+		is_SetDisplayMode(m_hCam, IS_SET_DM_DIB);
+
+		// enable the dialog based error report
+		m_Ret = is_SetErrorReport(m_hCam, IS_ENABLE_ERR_REP); //IS_DISABLE_ERR_REP);
+		if (m_Ret != IS_SUCCESS)
+		{
+			LOGGER.log("Can not enable the automatic uEye error report!");
+			return false;
+		}
+
+		loadParameters();
+		appendParameters();
+	}
+	else
+	{
+		LOGGER.log("Can not open uEye camera!");
+		return false;
+	}
+
+	return true;
 }
 
-void IDSCamera::AcquireImage()
+bool IDSCamera::isOpen()
+{
+	return (m_hCam != NULL);
+}
+
+bool IDSCamera::acquireImage()
 {
 	int success = -1;
-
-	if (m_hCam == 0)
-	{
-		OpenCamera();
-	}
+	bool ret = true;
 	
 	if (m_hCam != 0)
 	{
@@ -130,20 +164,55 @@ void IDSCamera::AcquireImage()
 				currentIlpImg_->imageData = m_pcImageMemory;
 				currentIlpImg_->imageDataOrigin = m_pcImageMemory;
 				
+				if (CV_IS_IMAGE(currentIlpImg_) != NULL)
+				{
+					if (currentImg_)
+					{
+						delete currentImg_;
+					}
+
+					currentImg_ = new cv::Mat();
+					int depth = IPL2CV_DEPTH(currentIlpImg_->depth);
+					size_t esz;
+					currentImg_->cols = currentIlpImg_->width;
+					currentImg_->rows = currentIlpImg_->height;
+
+					currentImg_->flags = cv::Mat::MAGIC_VAL + CV_MAKETYPE(depth, currentIlpImg_->nChannels); //magic_val from prior cv versions
+					esz = CV_ELEM_SIZE(currentImg_->flags);
+					currentImg_->step[0] = currentIlpImg_->widthStep;
+
+					currentImg_->datastart = (uchar*)currentIlpImg_->imageData;
+					currentImg_->data = (uchar*)currentIlpImg_->imageData;
+					currentImg_->datalimit = currentImg_->datastart + currentImg_->step.p[0] * currentImg_->rows;
+					currentImg_->dataend = currentImg_->datastart + currentImg_->step.p[0] * (currentImg_->rows - 1) + esz * currentImg_->cols;
+
+					currentImg_->flags |= (currentImg_->cols*esz == currentImg_->step.p[0] || currentImg_->rows == 1 ? CV_MAT_CONT_FLAG : 0);
+					currentImg_->step[1] = esz;
+				}
+				else
+				{
+					LOGGER.log("Received image could not be converted!");
+					ret = false;
+				}
 				//storeImage();
 				//cvShowImage("PROVA", currentImg_);
 				//cv::waitKey(0);
 
 				imgLock_.unlock();
 				
-				Q_EMIT newCameraImage(currentImage());
-
 				// Sleep very important. If sleep not used, the MainGui does not receive
 				// the emitted image (image empty)
-				std::this_thread::sleep_for(std::chrono::milliseconds(CAMERA_RECORD_DELAY));
+				//std::this_thread::sleep_for(std::chrono::milliseconds(CAMERA_RECORD_DELAY));
 			}
 		}
 	}
+	else
+	{
+		LOGGER.log("Camera not opened!");
+		ret = false;
+	}
+
+	return ret;
 }
 
 void IDSCamera::storeImage()
@@ -162,7 +231,7 @@ void IDSCamera::storeImage()
 }
 
 
-void IDSCamera::GetMaxImageSize(INT *pnSizeX, INT *pnSizeY)
+void IDSCamera::getMaxImageSize(INT *pnSizeX, INT *pnSizeY)
 {
 	// Check if the camera supports an arbitrary AOI
 	// Only the ueye xs does not support an arbitrary AOI
@@ -197,71 +266,7 @@ void IDSCamera::GetMaxImageSize(INT *pnSizeX, INT *pnSizeY)
 	}
 }
 
-
-bool IDSCamera::OpenCamera()
-{
-	if (m_hCam != 0)
-	{
-		//free old image mem.
-		is_FreeImageMem(m_hCam, m_pcImageMemory, m_lMemoryId);
-		is_ExitCamera(m_hCam);
-	}
-
-	// init camera
-	m_hCam = (HIDS)0;						// open next camera
-	m_Ret = InitCamera(&m_hCam, NULL);		// init camera - no window handle required
-
-	if (m_Ret == IS_SUCCESS)
-	{
-		// Get sensor info
-		is_GetSensorInfo(m_hCam, &m_sInfo);
-
-		GetMaxImageSize(&m_nSizeX, &m_nSizeY);
-
-		// setup the color depth to the current windows setting
-		is_GetColorDepth(m_hCam, &m_nBitsPerPixel, &m_nColorMode);	// Needs to be called, otherwise the camera memory is not initialized
-		m_nColorMode = IS_CM_BGRA8_PACKED;	// // opencv uses  this mode
-		is_SetColorMode(m_hCam, m_nColorMode);
-
-		// memory initialization
-		is_AllocImageMem(m_hCam,
-			m_nSizeX,
-			m_nSizeY,
-			m_nBitsPerPixel,
-			&m_pcImageMemory,
-			&m_lMemoryId);
-		is_SetImageMem(m_hCam, m_pcImageMemory, m_lMemoryId);	// set memory active
-
-		// display initialization
-		IS_SIZE_2D imageSize;
-		imageSize.s32Width = m_nSizeX;
-		imageSize.s32Height = m_nSizeY;
-
-		is_AOI(m_hCam, IS_AOI_IMAGE_SET_SIZE, (void*)&imageSize, sizeof(imageSize));
-
-		is_SetDisplayMode(m_hCam, IS_SET_DM_DIB);
-
-		// enable the dialog based error report
-		m_Ret = is_SetErrorReport(m_hCam, IS_ENABLE_ERR_REP); //IS_DISABLE_ERR_REP);
-		if (m_Ret != IS_SUCCESS)
-		{
-			LOGGER.log("Can not enable the automatic uEye error report!");
-			return false;
-		}
-
-		LoadParameters();
-	}
-	else
-	{
-		LOGGER.log("Can not open uEye camera!");
-		return false;
-	}
-
-	return true;
-}
-
-
-void IDSCamera::ExitCamera()
+void IDSCamera::exitCamera()
 {
 	if (m_hCam != 0)
 	{
@@ -286,26 +291,17 @@ void IDSCamera::ExitCamera()
 }
 
 
-void IDSCamera::AppendParameters(const std::string& cameraConfigPath)
+void IDSCamera::appendParameters(const std::string& cameraConfigPath)
 {
 	if (!cameraConfigPath.empty())
 	{
 		parameterFilePath_ = cameraConfigPath;
 	}
-	
-	if (m_hCam == 0)
-	{
-		OpenCamera();
-	}
 
 	// Append the loaded parameters on the camera frames
 	if (m_hCam != 0)
 	{
-		//If the conversion should not worl then change &path to &parameterFilePath_
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-		std::wstring path = converter.from_bytes(parameterFilePath_); 
-
-		if (is_ParameterSet(m_hCam, IS_PARAMETERSET_CMD_LOAD_FILE, &path, NULL) == IS_SUCCESS && m_pcImageMemory != NULL)
+		if (is_ParameterSet(m_hCam, IS_PARAMETERSET_CMD_LOAD_FILE, &parameterFilePath_, NULL) == IS_SUCCESS && m_pcImageMemory != NULL)
 		{
 			// determine live capture
 			BOOL bWasLive = (BOOL)(is_CaptureVideo(m_hCam, IS_GET_LIVE));
@@ -426,34 +422,14 @@ void IDSCamera::AppendParameters(const std::string& cameraConfigPath)
 	}
 }
 
-void IDSCamera::terminateCameraStream()
-{
-	terminate_ = true;
-}
-
-void IDSCamera::resetCameraStream()
-{
-	terminate_ = false;
-}
-
-void IDSCamera::aquireImageWithParams(const std::string& cameraConfigPath)
-{
-	AppendParameters(cameraConfigPath);
-	
-	while (!terminate_)
-	{
-		AcquireImage();
-	} 
-}
-
-
-void IDSCamera::LoadParameters()
+void IDSCamera::loadParameters()
 {
 	if (m_hCam == NULL)
 	{
+		LOGGER.log("Camera not opened!");
 		return;
 	}
-	LOGGER.log("Parameter loaded");
+	
 	int nGainR, nGainG, nGainB, nGainM;
 
 	nGainM = is_SetHardwareGain(m_hCam, (int)IS_GET_DEFAULT_MASTER, -1, -1, -1);
@@ -485,11 +461,13 @@ void IDSCamera::LoadParameters()
 	m_Ret = is_SetHardwareGain(m_hCam, nGainM, nGainR, nGainG, nGainB);
 	m_Ret = is_SetColorCorrection(m_hCam, nColorCorrection, NULL);
 	m_Ret = is_SetBayerConversion(m_hCam, nBayerMode);
+
+	LOGGER.log("Parameter loaded");
 }
 
 
 
-INT IDSCamera::InitCamera(HIDS *hCam, HWND hWnd)
+INT IDSCamera::initCamera(HIDS *hCam, HWND hWnd)
 {
 	INT nRet = is_InitCamera(hCam, hWnd);
 	/************************************************************************************************/

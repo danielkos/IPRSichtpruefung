@@ -1,11 +1,9 @@
 #ifndef UPLDFRAME_H
 #define UPLDFRAME_H 
 
-#include <functional>
-#include <opencv2\opencv.hpp>
-#include <mutex>
+#include "Camera.h"
 
-#include <QObject>
+#include <mutex>
 
 namespace cv
 {
@@ -13,24 +11,19 @@ namespace cv
 	class VideoCapture;
 }
 
-class UpldFrame //: public QObject
+class UpldFrame : public Camera
 {
-	//Q_OBJECT
-	
+
 public:
 	UpldFrame();
 	virtual ~UpldFrame();
 
-	static cv::Mat fromFile(std::string file_name);
-	/*cv::Mat* fromCamera(bool returnImg = false);
-	void terminateCameraStream();
 	bool openCamera();
+	bool isOpen();
+	bool acquireImage();
 
-	cv::Mat currentImg();
+	static cv::Mat fromFile(std::string file_name);
 
-Q_SIGNALS:
-	void newCameraImage(cv::Mat* img);
-	
 private:
 
 	// Time delay (in milliseconds) between the recording of two camera frames.
@@ -43,9 +36,5 @@ private:
 	const double CAMERA_FPS = 11.2;
 
 	cv::VideoCapture* videoCapture_;
-	bool exit_;
-	cv::Mat currentImg_;
-	std::mutex imgLock_;
-	*/
 };
 #endif

@@ -63,6 +63,7 @@ public slots:
 private:
 	Ui::Method ui_;
 	std::string name_;
+	std::string baseDir_;
 
 	std::vector<Parameter> parameters_;
 
@@ -76,6 +77,11 @@ private:
 	* Normal means without box
 	*/
 	void changeToNormal(bool toggled);
+
+	void loadProfile(const std::string& profilePath);
+
+	void loadProfileClicked();
+	void saveProfileClicked();
 };
 
 #endif //MethodGuiItem

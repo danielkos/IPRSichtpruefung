@@ -25,6 +25,7 @@ namespace paths
 	const std::string defaultFolder = "../Bilder";
 	const std::string configFolder = "config\\";
 	const std::string cameraFolder = "camera\\";
+	const std::string profilesFolder = "profiles\\";
 
 	static std::string getExecutablePath()
 	{

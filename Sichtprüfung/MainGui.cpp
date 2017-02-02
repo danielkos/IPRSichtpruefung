@@ -124,13 +124,11 @@ void MainGui::setInputImage(cv::Mat* img)
 		/*cv::Mat tmpFrame(img->rows, img->cols, img->type());
 		tmpFrame.data = img->data;
 
-		*orgImg_ = tmpFrame.clone();*/
+		orgImg_ = tmpFrame.clone();
+		orgImg_->data = tmp->data*/
 		*orgImg_ = img->clone();
 		orgImg_->data = img->data;
-
-		//Opencv works with copy test on IDS
-		//img->copyTo(*orgImg_);	// Image grey!
-
+		
 		inputView_->showImage(orgImg_);
 	}
 }

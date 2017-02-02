@@ -14,13 +14,12 @@
 
 Calibration::Calibration()
 {
-	numImgs_ = 11;
-	numCornersH_ = 4;
-	numConrersV_ = 5;
-	numSquares_ = numCornersH_ * numConrersV_;
-	sizeSquare_ = 11;
+	numImgs_ = 3;
+	numCornersH_ = 9;
+	numConrersV_ = 6;
+	sizeSquare_ = 8;
 	boardSize_ = cv::Size(numCornersH_, numConrersV_);
-	calibSuccess_ = true;
+	calibSuccess_ = false;
 	
 	bool exists;
 	bool ret;
@@ -56,7 +55,6 @@ void Calibration::setParameters(std::vector<Parameter> parameters)
 		numCornersH_ = parameters[1].value_.toInt();
 		numConrersV_ = parameters[2].value_.toInt();
 		sizeSquare_ = parameters[3].value_.toDouble();
-		numSquares_ = numCornersH_ * numConrersV_;
 		boardSize_ = cv::Size(numCornersH_, numConrersV_);
 	}
 }
@@ -65,6 +63,7 @@ std::vector<Parameter> Calibration::parameters()
 {
 	std::vector<Parameter> parameters;
 	Parameter param;
+
 	//Setup parameter, name will be displayed on gui
 	param.setUp("Number of images", QVariant(numImgs_), QMetaType::Int);
 	parameters.push_back(param);
@@ -99,94 +98,140 @@ ResultGenerator::ResultMap Calibration::results()
 
 bool Calibration::run(const cv::Mat* img)
 {
-	bool found = false;
-	int counter = 0;
-	int pressedKey = 0;
-	std::string calibWindowName = "Pattern Image";
-	std::vector<cv::Point3f> obj;
+
+	bool found = false;		// If a cheesboard pattern could be detected
+	int counter = 0;		// The number of used/saved images for calibration
+	int pressedKey = 0;		// The key that has been pressed by the user
+	
+	// Creating two matrices that will contain the calibration results
 	std::vector<cv::Mat> rvecs, tvecs;
-	cv::Mat K;
-	cv::Mat D;
+	cv::Mat cameraMatrix = cv::Mat::eye(3, 3, CV_64F);
 
-	//Generate 3D Points of the corners
-	for (int i = 0; i < numCornersH_; i++)
+	cameraMatrix.at<double>(0, 0) = 1.0;
+	cameraMatrix.at<double>(0, 2) = 1.0;
+	cameraMatrix.at<double>(1, 1) = 1.0;
+	cameraMatrix.at<double>(1, 2) = 1.0;
+	cameraMatrix.at<double>(2, 2) = 1.0;
+
+
+	// TODO: Define camera matrix
+	/*if (CV_CALIB_FIX_ASPECT_RATIO)
 	{
-		for (int j = 0; j < numConrersV_; j++)
-		{
-			obj.push_back(cv::Point3f((float)i * sizeSquare_, (float)j * sizeSquare_, 0));
-		}
-	}
+		cameraMatrix.at<double>(0, 0) = 1.0;
+	}*/
+	
+	// Output matrix with distortion coefficients. Has 4, 5 or 8 values.
+	// See: http://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html
+	cv::Mat distCoefficients = cv::Mat::zeros(8, 1, CV_64F);
+	
 
-	cv::namedWindow(calibWindowName, cv::WINDOW_NORMAL);
-	cv::resizeWindow(calibWindowName, 600, 500); 
+	// Configuring the window that will display the certain calibration images
+	cv::namedWindow(CALIB_WINDOW_NAME, cv::WINDOW_NORMAL);
+	cv::resizeWindow(CALIB_WINDOW_NAME, 600, 500);
 	
 	
-	//Run corner aquisition as long as needed 
-	//THIS IMPLEMENTATION IS BAD BECAUS OPENCV HANDLES ITS OWN WINDOW--> Different Execution flow
-	while (cv::getWindowProperty(calibWindowName, 0) == 0)
+	// Run corner aquisition as long as needed
+	// THIS IMPLEMENTATION IS BAD BECAUS OPENCV HANDLES ITS OWN WINDOW--> Different Execution flow
+	while (counter < numImgs_)
 	{
 		if (!img->empty())
 		{
 			initializeResultImage(img);
 			cv::cvtColor(*resImg_, *processedImg_, CV_BGR2GRAY);
 
-			//Find chessboard
-			found = cv::findChessboardCorners(*resImg_, boardSize_, corners_, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+			// Find chessboard calibration pattern in current camera frame
+			found = cv::findChessboardCorners(*resImg_, boardSize_, corners_, CV_CALIB_CB_ADAPTIVE_THRESH 
+						| CV_CALIB_CB_FAST_CHECK | CV_CALIB_CB_NORMALIZE_IMAGE | CV_CALIB_CB_FILTER_QUADS);
 
 			if (found)
 			{
-				cv::cornerSubPix(*processedImg_, corners_, cv::Size(5, 5), cv::Size(-1, -1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
-				cv::drawChessboardCorners(*processedImg_, boardSize_, corners_, found);
+				cv::cornerSubPix(*processedImg_, corners_, cv::Size(5, 5), cv::Size(-1, -1), 
+									cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+				cv::drawChessboardCorners(*processedImg_, boardSize_, cv::Mat(corners_), found);
 			}
 
 
-			//Show input img and chessboard corners
-			//
-			//Wait for input
-			cv::imshow(calibWindowName, *processedImg_);
-			pressedKey = cv::waitKey(1);
-
-			//ESC-> abort, Space-> store this run, Else-> skip run
+			// Show input image and detected chessboard corners
+			cv::imshow(CALIB_WINDOW_NAME, *processedImg_);
+			pressedKey = cv::waitKey(0);	// 0 = window should stay open for an infinite
+											// amount of time until the user presses a key
 
 			switch (pressedKey)
 			{
 			case 27:
-				calibSuccess_ = false;
+				// ESC pressed: abort calibration process completely
+				imagePoints_.clear();
+				counter = INT32_MAX;	// Leave the loop
 				break;
 			case ' ':
+				// Space pressed: store results of current calibration run
 				if (!corners_.empty())
 				{
 					imagePoints_.push_back(corners_);
-					objectPoints_.push_back(obj);
+					counter++;
 				}
-				counter++;
 				break;
 			default:
+				// Other key pressed: skip current calibration image and try a new one,
+				// if number of images not already reached
 				break;
 			}
 		}
+	}
 
-		if (!calibSuccess_)
-		{
-			break;
-		}
+	// Calibration loop completed so close calibration window
+	cv::destroyWindow(CALIB_WINDOW_NAME);
+
+	// Check if calibration was successfull: Calibration is only successfull if
+	// the set amount of images have been recoreded and considered for the calculation
+	if (counter == numImgs_)
+	{
+		calibSuccess_ = true;
+	}
+	else
+	{
+		calibSuccess_ = false;
 	}
 	
-	//Calibrate if possible
+	
+	// Calculate calibration results if possible
 	if (calibSuccess_ && !imagePoints_.empty())
 	{
-		calibrateCamera(objectPoints_, imagePoints_, resImg_->size(), K, D, rvecs, tvecs);
+		// Generate 3D points of the corners
+		std::vector<std::vector<cv::Point3f> > objectPoints(1);
 
-		cv::undistort(*resImg_, *resImg_, K, D);
+		for (int i = 0; i < numCornersH_; i++)
+		{
+			for (int j = 0; j < numConrersV_; j++)
+			{
+				objectPoints[0].push_back(cv::Point3f((float)j * sizeSquare_, (float)i * sizeSquare_, 0));
+			}
+		}
 
-		std::string path = paths::getExecutablePath() + paths::configFolder + paths::profilesFolder + typeid(Calibration).name() + extensions::calibrationExt;
+		// Realign points so that the following operation can work correctly
+		objectPoints.resize(imagePoints_.size(), objectPoints[0]);
 
-		//Write results
-		if (!ConfigurationStorage::instance().write(path, "K", K))
+		// Calculate the actual calibration results
+		double calibrationError = calibrateCamera(objectPoints, imagePoints_, resImg_->size(), cameraMatrix, 
+									distCoefficients, rvecs, tvecs);
+		std::ostringstream calib;
+		calib << "Calibration error " << calibrationError;
+		LOGGER.log(calib.str());		// Calibration error should be as close to 0 as possible
+		
+
+		// Show undistorted image after calibration
+		cv::Mat tmp = resImg_->clone();		// Next line causes an exception otherwise 
+		cv::undistort(tmp, *resImg_, cameraMatrix, distCoefficients);	
+
+		std::string path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder 
+								+ filenames::calibrationName + extensions::calibrationExt;
+		
+		// Write calibration results to file
+		if (!ConfigurationStorage::instance().write(path, "camera_matrix", cameraMatrix))
 		{
 			LOGGER.log("Can not write K to " + path);
 		}
-		if (!ConfigurationStorage::instance().write(path, "D", D))
+		if (!ConfigurationStorage::instance().write(path, "distortion_coefficients", distCoefficients))
 		{
 			LOGGER.log("Can not write D to " + path);
 		}
@@ -194,7 +239,7 @@ bool Calibration::run(const cv::Mat* img)
 		{
 			LOGGER.log("Can not write square_size to " + path);
 		}
-		if (ConfigurationStorage::instance().write(path, "num_hor_corners", numCornersH_))
+		if (!ConfigurationStorage::instance().write(path, "num_hor_corners", numCornersH_))
 		{
 			LOGGER.log("Can not write num_hor_corners to " + path);
 		}
@@ -203,6 +248,10 @@ bool Calibration::run(const cv::Mat* img)
 			LOGGER.log("Can not write num_ver_corners to " + path);
 		}
 		ConfigurationStorage::instance().realease();
+
+		// TODO: cameraMatrix wird nicht rausgeschrieben
+		// TODO: wie PixelRatio berechnen, die diese Klasse zurückliefern soll? rvecs, tvecs auch rausschreiben?
+		// TODO: wie vorhandene Kalibrierungsergebnisse nutzen bei Start des Programms? => ResultGenerator einbauen
 	}
 	else if (imagePoints_.empty())
 	{
@@ -216,3 +265,4 @@ bool Calibration::run(const cv::Mat* img)
 
 	return calibSuccess_;
 }
+

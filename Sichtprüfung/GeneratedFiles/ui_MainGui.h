@@ -150,6 +150,7 @@ public:
         verticalLayout_11->setObjectName(QStringLiteral("verticalLayout_11"));
         listWidgetResults = new QListWidget(groupBoxResults);
         listWidgetResults->setObjectName(QStringLiteral("listWidgetResults"));
+        listWidgetResults->setMinimumSize(QSize(0, 0));
 
         verticalLayout_11->addWidget(listWidgetResults);
 

@@ -141,8 +141,6 @@ bool IDSCamera::acquireImage()
 		{
 			if (m_pcImageMemory != NULL)
 			{
-				imgLock_.lock();
-
 				currentIlpImg_ = cvCreateImageHeader(cvSize(m_nSizeX, m_nSizeY), IPL_DEPTH_8U, 4);
 				currentIlpImg_->nSize = sizeof(IplImage);
 				currentIlpImg_->dataOrder = 0; //has to be 0 for intervealed images
@@ -163,14 +161,11 @@ bool IDSCamera::acquireImage()
 				currentIlpImg_->imageId = NULL;
 				currentIlpImg_->imageData = m_pcImageMemory;
 				currentIlpImg_->imageDataOrigin = m_pcImageMemory;
-				
+
+
+				// Convert image IplImage to OpenCV Mat image
 				if (CV_IS_IMAGE(currentIlpImg_) != NULL)
 				{
-					if (currentImg_)
-					{
-						delete currentImg_;
-					}
-
 					currentImg_ = new cv::Mat();
 					int depth = IPL2CV_DEPTH(currentIlpImg_->depth);
 					size_t esz;
@@ -188,17 +183,19 @@ bool IDSCamera::acquireImage()
 
 					currentImg_->flags |= (currentImg_->cols*esz == currentImg_->step.p[0] || currentImg_->rows == 1 ? CV_MAT_CONT_FLAG : 0);
 					currentImg_->step[1] = esz;
+					
+					//cv::imshow("Display window", *currentImg_);
+					//cv::waitKey(0);
 				}
 				else
 				{
 					LOGGER.log("Received image could not be converted!");
 					ret = false;
 				}
+				
 				//storeImage();
 				//cvShowImage("PROVA", currentImg_);
 				//cv::waitKey(0);
-
-				imgLock_.unlock();
 				
 				// Sleep very important. If sleep not used, the MainGui does not receive
 				// the emitted image (image empty)

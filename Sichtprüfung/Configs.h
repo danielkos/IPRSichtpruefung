@@ -56,7 +56,7 @@ namespace paths
 namespace filenames
 {
 	const std::string optionsName = "options";
-	//const std::string calibrationName = "calibration";
+	const std::string calibrationName = "calibration";
 	const std::string cameraConfig = "IPR";
 }
 

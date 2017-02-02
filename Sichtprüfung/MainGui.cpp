@@ -13,7 +13,6 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <utility>
-#include <thread>
 
 #include <QDialogButtonBox>
 #include <QFileDialog>
@@ -93,7 +92,7 @@ MainGui::MainGui(QWidget *parent)
 
 	if (idsCam_->openCamera())
 	{
-		addFileStream("Default Camera");
+		addFileStream("IDS camera");
 		cam_ = idsCam_;
 		delete opencvCam;
 	}
@@ -107,7 +106,7 @@ MainGui::MainGui(QWidget *parent)
 MainGui::~MainGui()
 {
 	delete inputView_;
-	//delete orgImg_;
+	delete orgImg_;
 
 	if (cam_)
 	{
@@ -120,17 +119,17 @@ void MainGui::setInputImage(cv::Mat* img)
 {
 	if (!img->empty())
 	{
-		// Only this copy operation works, otherwise image is always empty
+		// Only this copy operation seems to work for now, otherwise image is always empty
 		// or grey completely
-		//cv::Mat tmpFrame (img->rows, img->cols, img->type());
-		//tmpFrame.data = img->data;
+		/*cv::Mat tmpFrame(img->rows, img->cols, img->type());
+		tmpFrame.data = img->data;
 
-		//*orgImg_ = img->clone();
-		//orgImg_->data = img->data;
-
+		*orgImg_ = tmpFrame.clone();*/
+		*orgImg_ = img->clone();
+		orgImg_->data = img->data;
 
 		//Opencv works with copy test on IDS
-		img->copyTo(*orgImg_);
+		//img->copyTo(*orgImg_);	// Image grey!
 
 		inputView_->showImage(orgImg_);
 	}
@@ -269,11 +268,6 @@ void MainGui::runSelectedMethods()
 			//Get current parametrs from method
 			it->second->setParameters(it->first->parameters());
 			
-			/*if (methodName == "Calibration")
-			{
-				idsCam_->terminateCameraStream();
-				idsCam_->ExitCamera();
-			}*/
 
 			if (orgImg_ && it->second->run(orgImg_))
 			{
@@ -281,7 +275,7 @@ void MainGui::runSelectedMethods()
 				
 				it->first->setMode(true);
 
-				//Show imgs on gui
+				//Show imgages on gui
 				//preprocView_->showImage(preprocImg_);
 				addMethodResults(QString::fromStdString(it->first->name()), it->second->resultImg(), it->second->processed());
 				//resultView_->showImage(resultImg_);

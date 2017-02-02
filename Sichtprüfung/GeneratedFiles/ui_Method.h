@@ -14,11 +14,15 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QComboBox>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
-#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -26,55 +30,81 @@ QT_BEGIN_NAMESPACE
 class Ui_Method
 {
 public:
-    QHBoxLayout *horizontalLayout_2;
+    QVBoxLayout *verticalLayout;
     QGroupBox *groupBoxMethod;
-    QHBoxLayout *horizontalLayout_4;
+    QGridLayout *gridLayout;
+    QLineEdit *lineEditProfile;
     QComboBox *comboBoxParams;
-    QRadioButton *radioButtonBoolInput;
     QLineEdit *lineEditNumInput;
+    QRadioButton *radioButtonBoolInput;
+    QLabel *label;
+    QToolButton *openProfileButton;
+    QPushButton *pushButtonSaveProfile;
 
     void setupUi(QWidget *Method)
     {
         if (Method->objectName().isEmpty())
             Method->setObjectName(QStringLiteral("Method"));
-        Method->resize(318, 59);
+        Method->resize(239, 112);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(Method->sizePolicy().hasHeightForWidth());
         Method->setSizePolicy(sizePolicy);
-        horizontalLayout_2 = new QHBoxLayout(Method);
-        horizontalLayout_2->setSpacing(0);
-        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
-        horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
+        Method->setMaximumSize(QSize(16777215, 16777215));
+        verticalLayout = new QVBoxLayout(Method);
+        verticalLayout->setSpacing(0);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
         groupBoxMethod = new QGroupBox(Method);
         groupBoxMethod->setObjectName(QStringLiteral("groupBoxMethod"));
+        groupBoxMethod->setEnabled(true);
+        groupBoxMethod->setMaximumSize(QSize(16777215, 16777215));
         groupBoxMethod->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
         groupBoxMethod->setFlat(false);
         groupBoxMethod->setCheckable(true);
         groupBoxMethod->setChecked(false);
-        horizontalLayout_4 = new QHBoxLayout(groupBoxMethod);
-        horizontalLayout_4->setSpacing(6);
-        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
-        horizontalLayout_4->setContentsMargins(-1, 15, -1, 9);
+        gridLayout = new QGridLayout(groupBoxMethod);
+        gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        gridLayout->setContentsMargins(-1, 15, -1, 9);
+        lineEditProfile = new QLineEdit(groupBoxMethod);
+        lineEditProfile->setObjectName(QStringLiteral("lineEditProfile"));
+
+        gridLayout->addWidget(lineEditProfile, 2, 0, 1, 1);
+
         comboBoxParams = new QComboBox(groupBoxMethod);
         comboBoxParams->setObjectName(QStringLiteral("comboBoxParams"));
         comboBoxParams->setMinimumSize(QSize(140, 0));
 
-        horizontalLayout_4->addWidget(comboBoxParams);
-
-        radioButtonBoolInput = new QRadioButton(groupBoxMethod);
-        radioButtonBoolInput->setObjectName(QStringLiteral("radioButtonBoolInput"));
-
-        horizontalLayout_4->addWidget(radioButtonBoolInput);
+        gridLayout->addWidget(comboBoxParams, 0, 0, 1, 1);
 
         lineEditNumInput = new QLineEdit(groupBoxMethod);
         lineEditNumInput->setObjectName(QStringLiteral("lineEditNumInput"));
 
-        horizontalLayout_4->addWidget(lineEditNumInput);
+        gridLayout->addWidget(lineEditNumInput, 0, 2, 1, 1);
+
+        radioButtonBoolInput = new QRadioButton(groupBoxMethod);
+        radioButtonBoolInput->setObjectName(QStringLiteral("radioButtonBoolInput"));
+
+        gridLayout->addWidget(radioButtonBoolInput, 0, 1, 1, 1);
+
+        label = new QLabel(groupBoxMethod);
+        label->setObjectName(QStringLiteral("label"));
+
+        gridLayout->addWidget(label, 1, 0, 1, 1);
+
+        openProfileButton = new QToolButton(groupBoxMethod);
+        openProfileButton->setObjectName(QStringLiteral("openProfileButton"));
+
+        gridLayout->addWidget(openProfileButton, 2, 2, 1, 1);
+
+        pushButtonSaveProfile = new QPushButton(groupBoxMethod);
+        pushButtonSaveProfile->setObjectName(QStringLiteral("pushButtonSaveProfile"));
+
+        gridLayout->addWidget(pushButtonSaveProfile, 2, 3, 1, 1);
 
 
-        horizontalLayout_2->addWidget(groupBoxMethod);
+        verticalLayout->addWidget(groupBoxMethod);
 
 
         retranslateUi(Method);
@@ -87,6 +117,10 @@ public:
         Method->setWindowTitle(QApplication::translate("Method", "Form", 0));
         groupBoxMethod->setTitle(QApplication::translate("Method", "GroupBox", 0));
         radioButtonBoolInput->setText(QString());
+        label->setText(QApplication::translate("Method", "Profile", 0));
+        openProfileButton->setText(QApplication::translate("Method", "...", 0));
+        pushButtonSaveProfile->setText(QApplication::translate("Method", "Save Profile", 0));
+        pushButtonSaveProfile->setShortcut(QApplication::translate("Method", "Ctrl+S", 0));
     } // retranslateUi
 
 };

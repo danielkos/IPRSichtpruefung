@@ -106,19 +106,12 @@ bool Calibration::run(const cv::Mat* img)
 	// Creating two matrices that will contain the calibration results
 	std::vector<cv::Mat> rvecs, tvecs;
 	cv::Mat cameraMatrix = cv::Mat::eye(3, 3, CV_64F);
-
-	cameraMatrix.at<double>(0, 0) = 1.0;
-	cameraMatrix.at<double>(0, 2) = 1.0;
-	cameraMatrix.at<double>(1, 1) = 1.0;
-	cameraMatrix.at<double>(1, 2) = 1.0;
-	cameraMatrix.at<double>(2, 2) = 1.0;
-
-
+	
 	// TODO: Define camera matrix
-	/*if (CV_CALIB_FIX_ASPECT_RATIO)
+	if (CV_CALIB_FIX_ASPECT_RATIO)
 	{
 		cameraMatrix.at<double>(0, 0) = 1.0;
-	}*/
+	}
 	
 	// Output matrix with distortion coefficients. Has 4, 5 or 8 values.
 	// See: http://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html
@@ -200,9 +193,9 @@ bool Calibration::run(const cv::Mat* img)
 		// Generate 3D points of the corners
 		std::vector<std::vector<cv::Point3f> > objectPoints(1);
 
-		for (int i = 0; i < numCornersH_; i++)
+		for (int i = 0; i < numConrersV_; i++)
 		{
-			for (int j = 0; j < numConrersV_; j++)
+			for (int j = 0; j < numCornersH_; j++)
 			{
 				objectPoints[0].push_back(cv::Point3f((float)j * sizeSquare_, (float)i * sizeSquare_, 0));
 			}
@@ -212,12 +205,13 @@ bool Calibration::run(const cv::Mat* img)
 		objectPoints.resize(imagePoints_.size(), objectPoints[0]);
 
 		// Calculate the actual calibration results
+		//cv::Size size (640, 480);
 		double calibrationError = calibrateCamera(objectPoints, imagePoints_, resImg_->size(), cameraMatrix, 
-									distCoefficients, rvecs, tvecs);
+									distCoefficients, rvecs, tvecs, CV_CALIB_FIX_K4 | CV_CALIB_FIX_K5);
 		std::ostringstream calib;
 		calib << "Calibration error " << calibrationError;
 		LOGGER.log(calib.str());		// Calibration error should be as close to 0 as possible
-		
+
 
 		// Show undistorted image after calibration
 		cv::Mat tmp = resImg_->clone();		// Next line causes an exception otherwise 
@@ -226,6 +220,10 @@ bool Calibration::run(const cv::Mat* img)
 		std::string path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder 
 								+ filenames::calibrationName + extensions::calibrationExt;
 		
+		std::ostringstream calib2;
+		calib2 << cameraMatrix;
+		LOGGER.log(calib2.str());
+
 		// Write calibration results to file
 		if (!ConfigurationStorage::instance().write(path, "camera_matrix", cameraMatrix))
 		{

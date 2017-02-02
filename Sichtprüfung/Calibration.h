@@ -54,6 +54,9 @@ private:
 	std::vector<std::vector<cv::Point2f> > imagePoints_; 
 	// Corners on the chessboard
 	std::vector<cv::Point2f> corners_;
+
+	// The calibration error
+	double calibrationError_;
 };
 
 #endif

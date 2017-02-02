@@ -22,7 +22,9 @@ void ResultGenerator::setSettings(ResultGenerator::SettingsMap settings)
 
 QString ResultGenerator::calibRes(ResultGenerator::ResultMap::iterator it)
 {
-	QSize refSize = settings_.at(mapping_.at(it->first)).value_.toSize();
+	return QString("Calibration error: " + it->second.value_.toString());
+
+	/*QSize refSize = settings_.at(mapping_.at(it->first)).value_.toSize();
 	QSize objSize = it->second.value_.toSize();
 
 	QVariant widthRatio = (double)refSize.width() / objSize.width();
@@ -30,7 +32,7 @@ QString ResultGenerator::calibRes(ResultGenerator::ResultMap::iterator it)
 
 	pixelRatio_ = (widthRatio.toDouble() + heightRatio.toDouble()) / 2;
 
-	return QString("Ratio between 1 cm and 1 Pixel is: " + pixelRatio_.toString());
+	return QString("Ratio between 1 cm and 1 Pixel is: " + pixelRatio_.toString());*/
 }
 
 QString ResultGenerator::circleRes(ResultGenerator::ResultMap::iterator it)

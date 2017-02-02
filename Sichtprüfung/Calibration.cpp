@@ -20,6 +20,7 @@ Calibration::Calibration()
 	sizeSquare_ = 8;
 	boardSize_ = cv::Size(numCornersH_, numConrersV_);
 	calibSuccess_ = false;
+	calibrationError_ = 100;
 	
 	bool exists;
 	bool ret;
@@ -85,13 +86,10 @@ std::vector<Parameter> Calibration::parameters()
 ResultGenerator::ResultMap Calibration::results()
 {
 	ResultGenerator::ResultMap results;
-	/*Parameter param;
-	QSize size(boundingBox_.size.width, boundingBox_.size.height);
+	Parameter param;
 
-	param.setUp("Pixel ratio", size, QMetaType::QSize);
-
-	//Set a paramter definied for the generator
-	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_CALIBRATION, param));*/
+	param.setUp("Calibration error", calibrationError_, QMetaType::Double);
+	results.insert(ResultGenerator::ResultPair(ResultGenerator::Results::RES_CALIBRATION, param));
 
 	return results;
 }
@@ -205,11 +203,10 @@ bool Calibration::run(const cv::Mat* img)
 		objectPoints.resize(imagePoints_.size(), objectPoints[0]);
 
 		// Calculate the actual calibration results
-		//cv::Size size (640, 480);
-		double calibrationError = calibrateCamera(objectPoints, imagePoints_, resImg_->size(), cameraMatrix, 
+		calibrationError_ = calibrateCamera(objectPoints, imagePoints_, resImg_->size(), cameraMatrix, 
 									distCoefficients, rvecs, tvecs, CV_CALIB_FIX_K4 | CV_CALIB_FIX_K5);
 		std::ostringstream calib;
-		calib << "Calibration error " << calibrationError;
+		calib << "Calibration error " << calibrationError_;
 		LOGGER.log(calib.str());		// Calibration error should be as close to 0 as possible
 
 
@@ -219,10 +216,6 @@ bool Calibration::run(const cv::Mat* img)
 
 		std::string path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder 
 								+ filenames::calibrationName + extensions::calibrationExt;
-		
-		std::ostringstream calib2;
-		calib2 << cameraMatrix;
-		LOGGER.log(calib2.str());
 
 		// Write calibration results to file
 		if (!ConfigurationStorage::instance().write(path, "camera_matrix", cameraMatrix))
@@ -246,10 +239,6 @@ bool Calibration::run(const cv::Mat* img)
 			LOGGER.log("Can not write num_ver_corners to " + path);
 		}
 		ConfigurationStorage::instance().realease();
-
-		// TODO: cameraMatrix wird nicht rausgeschrieben
-		// TODO: wie PixelRatio berechnen, die diese Klasse zurückliefern soll? rvecs, tvecs auch rausschreiben?
-		// TODO: wie vorhandene Kalibrierungsergebnisse nutzen bei Start des Programms? => ResultGenerator einbauen
 	}
 	else if (imagePoints_.empty())
 	{

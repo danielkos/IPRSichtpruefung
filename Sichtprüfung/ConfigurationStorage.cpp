@@ -65,7 +65,8 @@ bool ConfigurationStorage::write(const std::string& configPath, std::string node
 	{
 		ret = storage_.open(configPath, cv::FileStorage::WRITE);
 	}
-	else if (!matrix.empty() && !node.empty())
+	
+	if (!matrix.empty() && !node.empty())
 	{
 		storage_ << node << matrix;
 	}

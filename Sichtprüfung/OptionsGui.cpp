@@ -131,7 +131,7 @@ void OptionsGui::selectPathClicked()
 {
 	QFileDialog dialog(this);
 	QString filename;
-	QString filter = "Configuration Files(*." + QString::fromStdString(extensions::optionsExt) + ")";
+	QString filter = "Configuration Files(*" + QString::fromStdString(extensions::optionsExt) + ")";
 	std::string path = paths::getExecutablePath() + paths::configFolder;
 	filename = dialog.getOpenFileName(this, "Select an image", QString::fromStdString(path), filter);
 

@@ -105,7 +105,6 @@ bool Calibration::run(const cv::Mat* img)
 	std::vector<cv::Mat> rvecs, tvecs;
 	cv::Mat cameraMatrix = cv::Mat::eye(3, 3, CV_64F);
 	
-	// TODO: Define camera matrix
 	if (CV_CALIB_FIX_ASPECT_RATIO)
 	{
 		cameraMatrix.at<double>(0, 0) = 1.0;

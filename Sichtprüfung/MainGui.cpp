@@ -121,11 +121,11 @@ void MainGui::setInputImage(cv::Mat* img)
 	{
 		// Only this copy operation seems to work for now, otherwise image is always empty
 		// or grey completely
-		//cv::Mat tmpFrame(img->rows, img->cols, img->type());
-		//tmpFrame.data = img->data;
-		//*orgImg_ = tmpFrame.clone();
+		cv::Mat tmpFrame(img->rows, img->cols, img->type());
+		tmpFrame.data = img->data;
+		*orgImg_ = tmpFrame.clone();
 
-		*orgImg_ = img->clone();
+		//*orgImg_ = img->clone();
 		
 		inputView_->showImage(orgImg_);
 	}

@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
 	VerificationMethod* materialVer = new MaterialVerification();
 
 	mainGui.addVerificationMethod("Calibration", calib);
-	mainGui.addVerificationMethod("Hole detection", holeVer);
-	mainGui.addVerificationMethod("Angle detection", angleVer);
+	mainGui.addVerificationMethod("Hole Detection", holeVer);
+	mainGui.addVerificationMethod("Angle Detection", angleVer);
 	mainGui.addVerificationMethod("Shape Verification", shapeVer);
 	mainGui.addVerificationMethod("Material Verification", materialVer);
 

@@ -416,15 +416,17 @@ void MainGui::setCurrentItem(QModelIndex index)
 
 		if (currentFile_.isEmpty())
 		{
-			QObject::connect(cam_, &Camera::newCameraImage, this, &MainGui::setInputImage);
-			cam_->startStream();
+			if (cam_ != 0)
+			{
+				QObject::connect(cam_, &Camera::newCameraImage, this, &MainGui::setInputImage);
+				cam_->startStream();
+			}
 		}
 		else
 		{
-			QObject::disconnect(cam_, &Camera::newCameraImage, this, &MainGui::setInputImage);
-
 			if (cam_ != 0)
 			{
+				QObject::disconnect(cam_, &Camera::newCameraImage, this, &MainGui::setInputImage);
 				cam_->stopStream();
 			}
 

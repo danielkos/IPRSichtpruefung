@@ -121,13 +121,11 @@ void MainGui::setInputImage(cv::Mat* img)
 	{
 		// Only this copy operation seems to work for now, otherwise image is always empty
 		// or grey completely
-		/*cv::Mat tmpFrame(img->rows, img->cols, img->type());
-		tmpFrame.data = img->data;
+		//cv::Mat tmpFrame(img->rows, img->cols, img->type());
+		//tmpFrame.data = img->data;
+		//*orgImg_ = tmpFrame.clone();
 
-		orgImg_ = tmpFrame.clone();
-		orgImg_->data = tmp->data*/
 		*orgImg_ = img->clone();
-		orgImg_->data = img->data;
 		
 		inputView_->showImage(orgImg_);
 	}
@@ -265,7 +263,6 @@ void MainGui::runSelectedMethods()
 			
 			//Get current parametrs from method
 			it->second->setParameters(it->first->parameters());
-			
 
 			if (orgImg_ && it->second->run(orgImg_))
 			{
@@ -425,7 +422,11 @@ void MainGui::setCurrentItem(QModelIndex index)
 		else
 		{
 			QObject::disconnect(cam_, &Camera::newCameraImage, this, &MainGui::setInputImage);
-			cam_->stopStream();
+
+			if (cam_ != 0)
+			{
+				cam_->stopStream();
+			}
 
 			img = UpldFrame::fromFile(currentFile_.toStdString());
 			statusOutput("Image loaded");

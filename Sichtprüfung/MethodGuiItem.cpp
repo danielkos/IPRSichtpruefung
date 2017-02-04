@@ -57,7 +57,8 @@ MethodGuiItem::MethodGuiItem(std::string name, std::vector<Parameter>& parameter
 
 	//Connections to manage inputs and selection of parameters
 	QObject::connect(ui_.comboBoxParams, SIGNAL(currentIndexChanged(int)), this, SLOT(paramIndexChanged(int)));
-	QObject::connect(ui_.lineEditNumInput, SIGNAL(textEdited(QString)), this, SLOT(paramInputChanged(QString)));
+	QObject::connect(ui_.doubleSpinBoxNumInput, SIGNAL(valueChanged(double)), this, SLOT(paramInputChanged(double)));
+	QObject::connect(ui_.spinBoxNumInput, SIGNAL(valueChanged(int)), this, SLOT(paramInputChanged(int)));
 	QObject::connect(ui_.radioButtonBoolInput, SIGNAL(toggled(bool)), this, SLOT(paramInputChanged(bool)));
 	QObject::connect(ui_.groupBoxMethod, &QGroupBox::toggled, this, &MethodGuiItem::changeToNormal);
 	QObject::connect(ui_.openProfileButton, &QToolButton::clicked, this, &MethodGuiItem::loadProfileClicked);
@@ -74,27 +75,23 @@ void MethodGuiItem::paramIndexChanged(int index)
 	changeParams(index);
 }
 
-void MethodGuiItem::paramInputChanged(const QString& input)
+void MethodGuiItem::paramInputChanged(const double& input)
 {
 	int index = ui_.comboBoxParams->currentIndex();
 	QVariant value = input;
-	value.convert(parameters_[index].type_);
+	//value.convert(parameters_[index].type_);
 	parameters_[index].value_ = value;
-	/*switch (parameters_[i].type_)
-	{
-	case QMetaType::Int:
-		parameters_[i].value_ = input.toInt();
-		break;
-	case QMetaType::Double:
-		parameters_[i].value_ = input.toDouble();
-		break;
-	case QMetaType::Bool:
-		parameters_[i].value_ = input.toBool();
-		break;
-	case QVariant::String:
-		parameters_[i].value_ = input.toString();
-		break;
-	} */
+
+	changeParams(index);
+}
+
+void MethodGuiItem::paramInputChanged(const int& input)
+{
+	int index = ui_.comboBoxParams->currentIndex();
+	QVariant value = input;
+	//value.convert(parameters_[index].type_);
+	parameters_[index].value_ = value;
+
 	changeParams(index);
 }
 
@@ -138,22 +135,27 @@ void MethodGuiItem::changeParams(int index)
 	{
 	case QMetaType::Double:
 		ui_.radioButtonBoolInput->setVisible(false);
-		ui_.lineEditNumInput->setVisible(true);
-		ui_.lineEditNumInput->setText(parameters_[index].value_.toString());
+		ui_.spinBoxNumInput->setVisible(false);
+		ui_.doubleSpinBoxNumInput->setVisible(true);
+		ui_.doubleSpinBoxNumInput->setValue(parameters_[index].value_.toDouble());
+		ui_.doubleSpinBoxNumInput->show();
 		break;
 	case QMetaType::Int:
 		ui_.radioButtonBoolInput->setVisible(false);
-		ui_.lineEditNumInput->setVisible(true);
-		ui_.lineEditNumInput->setText(parameters_[index].value_.toString());
+		ui_.doubleSpinBoxNumInput->setVisible(false);
+		ui_.spinBoxNumInput->setVisible(true);
+		ui_.spinBoxNumInput->setValue(parameters_[index].value_.toInt());
+		ui_.spinBoxNumInput->show();
 		break;
 	case QMetaType::Bool:
-		ui_.lineEditNumInput->setVisible(false);
+		ui_.doubleSpinBoxNumInput->setVisible(false);
+		ui_.spinBoxNumInput->setVisible(false);
 		ui_.radioButtonBoolInput->setVisible(true);
 		ui_.radioButtonBoolInput->setChecked(parameters_[index].value_.toBool());
 		ui_.radioButtonBoolInput->setText(parameters_[index].value_.toBool() ? "Enabled" : "Disabled");
 		break;
 	default:
-		ui_.lineEditNumInput->setVisible(false);
+		ui_.doubleSpinBoxNumInput->setVisible(false);
 		ui_.radioButtonBoolInput->setVisible(false);
 		break;
 	}

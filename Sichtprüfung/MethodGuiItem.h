@@ -53,7 +53,9 @@ public slots:
 	/**
 	* \brief Updates the current parameter if the type is string, double, int
 	*/
-	void paramInputChanged(const QString& input);
+	void paramInputChanged(const double& input);
+
+	void paramInputChanged(const int& input);
 
 	/**
 	* \brief Updates the current parameter if the type is bool

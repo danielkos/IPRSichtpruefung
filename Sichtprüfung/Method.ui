@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>239</width>
-    <height>112</height>
+    <width>411</width>
+    <height>111</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -74,9 +74,6 @@
       <property name="bottomMargin">
        <number>9</number>
       </property>
-      <item row="2" column="0">
-       <widget class="QLineEdit" name="lineEditProfile"/>
-      </item>
       <item row="0" column="0">
        <widget class="QComboBox" name="comboBoxParams">
         <property name="minimumSize">
@@ -87,16 +84,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLineEdit" name="lineEditNumInput"/>
-      </item>
-      <item row="0" column="1">
-       <widget class="QRadioButton" name="radioButtonBoolInput">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
@@ -104,22 +91,69 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QToolButton" name="openProfileButton">
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
+      <item row="2" column="0">
+       <widget class="QLineEdit" name="lineEditProfile"/>
       </item>
-      <item row="2" column="3">
-       <widget class="QPushButton" name="pushButtonSaveProfile">
-        <property name="text">
-         <string>Save Profile</string>
+      <item row="2" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="leftMargin">
+         <number>0</number>
         </property>
-        <property name="shortcut">
-         <string>Ctrl+S</string>
-        </property>
-       </widget>
+        <item>
+         <widget class="QToolButton" name="openProfileButton">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonSaveProfile">
+          <property name="text">
+           <string>Save Profile</string>
+          </property>
+          <property name="shortcut">
+           <string>Ctrl+S</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QRadioButton" name="radioButtonBoolInput">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxNumInput">
+          <property name="decimals">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <double>1111111111111111153989017879107234925673909001785395663339520.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.100000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBoxNumInput">
+          <property name="minimumSize">
+           <size>
+            <width>133</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximum">
+           <number>1111111111</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

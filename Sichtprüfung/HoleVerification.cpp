@@ -29,12 +29,12 @@ void HoleVerification::setParameters(std::vector<Parameter>parameters)
 	{
 		minRadius_ = parameters[0].value_.toInt();
 		maxRadius_ = parameters[1].value_.toInt();
-		cannyLowerThresh_ = parameters[2].value_.toInt();
-		cannyUpperThresh_ = parameters[3].value_.toInt();
+		cannyLowerThresh_ = parameters[2].value_.toDouble();
+		cannyUpperThresh_ = parameters[3].value_.toDouble();
 		morphIterations_ = parameters[4].value_.toInt();
 		houghUpperCannyThresh_ = parameters[5].value_.toDouble();
 		centerThresh_ = parameters[6].value_.toDouble();
-		centerEqualTolerance_ = parameters[7].value_.toDouble();
+		centerEqualTolerance_ = parameters[7].value_.toInt();
 	}
 }
 
@@ -51,10 +51,10 @@ std::vector<Parameter> HoleVerification::parameters()
 	param.setUp("Maximal radius", QVariant(maxRadius_), QMetaType::Int);
 	parameters.push_back(param);
 
-	param.setUp("Canny: Lower Threshold", QVariant(cannyLowerThresh_), QMetaType::Int);
+	param.setUp("Canny: Lower Threshold", QVariant(cannyLowerThresh_), QMetaType::Double);
 	parameters.push_back(param);
 
-	param.setUp("Canny: Upper Threshold", QVariant(cannyUpperThresh_), QMetaType::Int);
+	param.setUp("Canny: Upper Threshold", QVariant(cannyUpperThresh_), QMetaType::Double);
 	parameters.push_back(param);
 
 	param.setUp("Morph Close Iteration", QVariant(morphIterations_), QMetaType::Int);
@@ -66,7 +66,7 @@ std::vector<Parameter> HoleVerification::parameters()
 	param.setUp("Hough: Center Threshold", QVariant(centerThresh_), QMetaType::Double);
 	parameters.push_back(param);
 
-	param.setUp("Object Center tolerance", QVariant(centerEqualTolerance_), QMetaType::Double);
+	param.setUp("Object Center tolerance", QVariant(centerEqualTolerance_), QMetaType::Int);
 	parameters.push_back(param);
 
 	parametersSize_ = parameters.size();

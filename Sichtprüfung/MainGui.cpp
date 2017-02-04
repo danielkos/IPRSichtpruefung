@@ -124,7 +124,7 @@ void MainGui::setInputImage(cv::Mat* img)
 		cv::Mat tmpFrame(img->rows, img->cols, img->type());
 		tmpFrame.data = img->data;
 		*orgImg_ = tmpFrame.clone();
-
+		
 		//*orgImg_ = img->clone();
 		
 		inputView_->showImage(orgImg_);

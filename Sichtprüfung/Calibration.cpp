@@ -187,6 +187,9 @@ bool Calibration::run(const cv::Mat* img)
 		calibrationError_ = calibrateCamera(objectPoints, imagePoints_, resImg_->size(), cameraMatrix, 
 									distCoefficients, rvecs, tvecs, CV_CALIB_FIX_K4 | CV_CALIB_FIX_K5);
 
+		std::ostringstream t;
+		t << cameraMatrix;
+		LOGGER.log(t.str());
 		LOGGER.log("Calibration error: " + QVariant(calibrationError_).toString());		// Calibration error should be as close to 0 as possible
 
 		// Show undistorted image after calibration

@@ -56,7 +56,7 @@ public slots:
 	void paramInputChanged(const double& input);
 
 	void paramInputChanged(const int& input);
-
+	void paramInputChanged();
 	/**
 	* \brief Updates the current parameter if the type is bool
 	*/

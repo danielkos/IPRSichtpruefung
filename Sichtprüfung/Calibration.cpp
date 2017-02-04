@@ -217,7 +217,6 @@ bool Calibration::run(const cv::Mat* img)
 		{
 			LOGGER.log("Can not write num_ver_corners to " + path);
 		}
-		ConfigurationStorage::instance().realease();
 	}
 	else if (imagePoints_.empty())
 	{

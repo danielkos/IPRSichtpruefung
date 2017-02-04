@@ -4,7 +4,7 @@
 #include <sys/stat.h>
 #include <opencv2\core\core.hpp>
 #include <QVariant>
-
+#include <QSettings>
 class ConfigurationStorage
 {
 public:
@@ -19,9 +19,9 @@ public:
 	*  \param node node which will be created in the config file
 	*  \param value value to be written
 	*/
-	bool write(const std::string& configPath, std::string node, QVariant value);
+	bool write(const std::string& configPath, const std::string node, QVariant value);
 
-	bool write(const std::string& configPath, std::string node, cv::Mat& matrix);
+	bool write(const std::string& configPath, const std::string node, cv::Mat& matrix);
 	
 	/** \brief Read the \a value from \a node in the config at \a configPath
 	*  The variable \a value will be read
@@ -30,13 +30,14 @@ public:
 	*  \param type value type from QMetaType
 	*  \param value value readed at \a node 
 	*/
-	bool read(const std::string& configPath,  const std::string& node, int type, QVariant& value);
+	bool read(const std::string& configPath,  const std::string& node, QVariant& value);
 
-	void realease();
+	bool read(const std::string& configPath, const std::string node, cv::Mat& matrix);
+
 
 private:
 	ConfigurationStorage();
-	cv::FileStorage storage_;
+	QSettings settings_;
 
 	
 };

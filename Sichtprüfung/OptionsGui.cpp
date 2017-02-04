@@ -22,7 +22,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 	{
 		LOGGER.log("Reading file: " + configFile_);
 
-		if (ConfigurationStorage::instance().read(configFile_, "object_width", QMetaType::Double, value))
+		if (ConfigurationStorage::instance().read(configFile_, "object_width", value))
 		{
 			objSize_.setWidth(value.toDouble());
 		}
@@ -31,7 +31,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 			LOGGER.log("Can not read object_width from " + configFile_);
 		}
 
-		if (ConfigurationStorage::instance().read(configFile_, "object_length", QMetaType::Double, value))
+		if (ConfigurationStorage::instance().read(configFile_, "object_length", value))
 		{
 			objSize_.setHeight(value.toDouble());
 		}
@@ -40,7 +40,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 			LOGGER.log("Can not read object_length from " + configFile_);
 		}
 		
-		if (ConfigurationStorage::instance().read(configFile_, "object_hole_radius", QMetaType::Double, value))
+		if (ConfigurationStorage::instance().read(configFile_, "object_hole_radius", value))
 		{
 			holeRadius_ = value;
 		}
@@ -49,7 +49,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 			LOGGER.log("Can not read object_hole_radius from " + configFile_);
 		}
 
-		if (ConfigurationStorage::instance().read(configFile_, "object_side_angle", QMetaType::Double, value))
+		if (ConfigurationStorage::instance().read(configFile_, "object_side_angle", value))
 		{
 			angle_ = value;
 		}
@@ -58,7 +58,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 			LOGGER.log("Can not read object_side_angle from " + configFile_);
 		}
 		
-		if (ConfigurationStorage::instance().read(configFile_, "camera_config_path", QVariant::String, value))
+		if (ConfigurationStorage::instance().read(configFile_, "camera_config_path", value))
 		{
 			cameraConfig_ = value.toString().toStdString();
 		}
@@ -166,7 +166,6 @@ void OptionsGui::saveValues()
 		LOGGER.log("Can not write camera_config_path to " + configFile_);
 	}
 
-	ConfigurationStorage::instance().realease();
 	close();
 }
 

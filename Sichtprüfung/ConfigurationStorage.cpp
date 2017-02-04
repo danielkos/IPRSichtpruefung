@@ -1,4 +1,5 @@
 #include "ConfigurationStorage.h"
+#include "Logger.h"
 
 ConfigurationStorage::ConfigurationStorage()
 {
@@ -24,92 +25,176 @@ bool ConfigurationStorage::exists(const std::string& configPath)
 bool ConfigurationStorage::write(const std::string& configPath, std::string node, QVariant value)
 {
 	bool ret = true;
-	if (!storage_.isOpened())
-	{
-		ret = storage_.open(configPath, cv::FileStorage::WRITE);
-	}
+	QSettings settings(QString::fromStdString(configPath), QSettings::IniFormat);
+	QString key = QString::fromStdString(node);
+	int status = settings.status();
 
-	if (value.isNull() && !node.empty())
+	if (status == QSettings::Status::NoError)
 	{
-		storage_ << node.c_str();
-	}
-	else if (!value.isNull() && !node.empty())
-	{
-		switch (value.type())
+		if (!key.isEmpty())
 		{
-		case QMetaType::Int:
-			storage_ << node << value.toInt();
-			break;
-		case QMetaType::Double:
-			storage_ << node << value.toDouble();
-			break;
-		case QMetaType::Bool:
-			storage_ << node << value.toInt();
-			break;
-		case QVariant::String:
-			storage_ << node << value.toString().toStdString();
-			break;
+			settings.setValue(key, value);
+		}
+		else
+		{
+			ret = false;
 		}
 	}
 	else
 	{
+		switch (status)
+		{
+		case QSettings::Status::AccessError:
+			LOGGER.log("Cannot access the file located at " + configPath);
+			break;
+		case QSettings::Status::FormatError:
+			LOGGER.log("File located at " + configPath + "is malformed");
+			break;
+		}
+
 		ret = false;
 	}
+
 	return ret;
 }
 
 bool ConfigurationStorage::write(const std::string& configPath, std::string node, cv::Mat& matrix)
 {
 	bool ret = true;
-	if (!storage_.isOpened())
+	QSettings settings(QString::fromStdString(configPath), QSettings::IniFormat);
+	QString key = QString::fromStdString(node);
+	int status = settings.status();
+	int curElem = 0;
+
+	if (status == QSettings::Status::NoError)
 	{
-		ret = storage_.open(configPath, cv::FileStorage::WRITE);
-	}
-	
-	if (!matrix.empty() && !node.empty())
-	{
-		storage_ << node << matrix;
+		if (!key.isEmpty())
+		{
+			settings.beginWriteArray(key);
+			for (int i = 0; i < matrix.rows; ++i) 
+			{
+				for (int k = 0; k < matrix.cols; k++)
+				{
+					curElem = i * matrix.cols + k;
+					settings.setArrayIndex(curElem);
+					double elem = matrix.at<double>(i, k);
+					settings.setValue(key + QString::number(i) + QString::number(k), elem);
+				}
+			}
+			settings.endArray();
+		}
+		else
+		{
+			ret = false;
+		}
 	}
 	else
 	{
+		switch (status)
+		{
+		case QSettings::Status::AccessError:
+			LOGGER.log("Cannot access the file located at " + configPath);
+			break;
+		case QSettings::Status::FormatError:
+			LOGGER.log("File located at " + configPath + "is malformed");
+			break;
+		}
+
 		ret = false;
 	}
+
 	return ret;
 }
 
-bool ConfigurationStorage::read(const std::string& configPath, const std::string& node, int type, QVariant& value)
+bool ConfigurationStorage::read(const std::string& configPath, const std::string& node, QVariant& value)
 {
 	bool ret = true;
-	if (storage_.open(configPath, cv::FileStorage::READ))
+	QSettings settings(QString::fromStdString(configPath), QSettings::IniFormat);
+	QString key = QString::fromStdString(node);
+	int status = settings.status();
+
+	if (status == QSettings::Status::NoError)
 	{
-		if (!node.empty())
+		if (!key.isEmpty() && settings.contains(key))
 		{
-			switch (type)
-			{
-			case QMetaType::Int:
-				value = QVariant((int)storage_[node]);
-				break;
-			case QMetaType::Double:
-				value = QVariant((double)storage_[node]);
-				break;
-			case QMetaType::Bool:
-				value = QVariant((int)storage_[node]);
-				break;
-			case QVariant::String:
-				value = QVariant(QString::fromStdString((std::string)storage_[node]));
-				break;
-			}
+			value = settings.value(key);
 		}
-		storage_.release();
+		else
+		{
+			ret = false;
+		}
 	}
 	else
 	{
+		switch (status)
+		{
+		case QSettings::Status::AccessError:
+			LOGGER.log("Cannot access the file located at " + configPath);
+			break;
+		case QSettings::Status::FormatError:
+			LOGGER.log("File located at " + configPath + "is malformed");
+			break;
+		}
+
 		ret = false;
 	}
+	
 	return ret;
 }
 
-void ConfigurationStorage::realease()
+bool ConfigurationStorage::read(const std::string& configPath, std::string node, cv::Mat& matrix)
 {
-	storage_.release();
+	bool ret = true;
+	QSettings settings(QString::fromStdString(configPath), QSettings::IniFormat);
+	QString key = QString::fromStdString(node);
+	int status = settings.status();
+	int curElem = 0;
+	int size = matrix.rows * matrix.cols;
+	double *data = new double[size];
+
+	if (status == QSettings::Status::NoError)
+	{
+		QStringList list = settings.allKeys().filter(key);
+		if (!key.isEmpty() && !list.empty() && !matrix.empty())
+		{
+			settings.beginReadArray(key);
+			for (int i = 0; i < matrix.rows; ++i)
+			{
+				for (int k = 0; k < matrix.cols; k++)
+				{
+					curElem = i * matrix.cols + k;
+					settings.setArrayIndex(curElem);
+					data[curElem] = settings.value(key + QString::number(i) + QString::number(k)).toDouble();
+				}
+			}
+			settings.endArray();
+			matrix = cv::Mat(matrix.rows, matrix.cols, matrix.type());
+			std::memcpy(matrix.data, data, sizeof(double) * size);
+		}
+		else
+		{
+			ret = false;
+		}
+	}
+	else
+	{
+		switch (status)
+		{
+		case QSettings::Status::AccessError:
+			LOGGER.log("Cannot access the file located at " + configPath);
+			break;
+		case QSettings::Status::FormatError:
+			LOGGER.log("File located at " + configPath + "is malformed");
+			break;
+		}
+
+		ret = false;
+	}
+	
+	if (data)
+	{
+		delete data;
+	}
+
+	return ret;
 }

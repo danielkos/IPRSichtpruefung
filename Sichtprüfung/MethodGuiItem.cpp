@@ -187,7 +187,7 @@ void MethodGuiItem::loadProfile(const std::string& profilePath)
 
 	for (size_t i = 0; i < parameters_.size(); i++)
 	{
-		if (ConfigurationStorage::instance().read(profilePath, parameters_[i].name_.toStdString(), parameters_[i].type_, value))
+		if (ConfigurationStorage::instance().read(profilePath, parameters_[i].name_.toStdString(), value))
 		{
 			switch (parameters_[i].type_)
 			{
@@ -237,8 +237,7 @@ void MethodGuiItem::saveProfileClicked()
 				LOGGER.log("Cannot write parameter " + parameters_[i].name_ + " for method " + QString::fromStdString(name_) + " to " + filename);
 			}
 		}
-
-		ConfigurationStorage::instance().realease();
 	}
+	ui_.lineEditProfile->setText(QString::fromStdString(path));
 	LOGGER.log("Saved file " + path);
 }

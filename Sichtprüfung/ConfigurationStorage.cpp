@@ -82,6 +82,9 @@ bool ConfigurationStorage::write(const std::string& configPath, std::string node
 				}
 			}
 			settings.endArray();
+
+			settings.setValue(key + "/rows", matrix.rows);
+			settings.setValue(key + "/cols", matrix.cols);
 		}
 		else
 		{
@@ -157,19 +160,25 @@ bool ConfigurationStorage::read(const std::string& configPath, std::string node,
 		QStringList list = settings.allKeys().filter(key);
 		if (!key.isEmpty() && !list.empty() && !matrix.empty())
 		{
-			settings.beginReadArray(key);
-			for (int i = 0; i < matrix.rows; ++i)
+			QString rows = key + "/rows";
+			QString cols = key + "/cols";
+			if (settings.contains(rows) && settings.contains(cols))
 			{
-				for (int k = 0; k < matrix.cols; k++)
+				matrix = cv::Mat(settings.value(rows).toInt(), settings.value(cols).toInt(), CV_64F);
+
+				settings.beginReadArray(key);
+				for (int i = 0; i < matrix.rows; ++i)
 				{
-					curElem = i * matrix.cols + k;
-					settings.setArrayIndex(curElem);
-					data[curElem] = settings.value(key + QString::number(i) + QString::number(k)).toDouble();
+					for (int k = 0; k < matrix.cols; k++)
+					{
+						curElem = i * matrix.cols + k;
+						settings.setArrayIndex(curElem);
+						data[curElem] = settings.value(key + QString::number(i) + QString::number(k)).toDouble();
+					}
 				}
+				settings.endArray();
+				std::memcpy(matrix.data, data, sizeof(double) * size);
 			}
-			settings.endArray();
-			matrix = cv::Mat(matrix.rows, matrix.cols, matrix.type());
-			std::memcpy(matrix.data, data, sizeof(double) * size);
 		}
 		else
 		{

@@ -71,24 +71,7 @@ OptionsGui::OptionsGui(QWidget* parent)
 	}
 	else
 	{
-		LOGGER.log(configFile_ + " does not exist. File will be created at same destination");
-		
-		bool exists;
-		std::string path = paths::getExecutablePath() + paths::configFolder;
-		bool ret = paths::createDir(path, exists);
-	
-		if (!ret && exists)
-		{
-			LOGGER.log("Reusing directory: " + path);
-		}
-		else if (ret)
-		{
-			LOGGER.log("Directory: " + path + "  created");
-		}
-		else if (!ret && !exists)
-		{
-			LOGGER.log("Unknown error while creating directory: " + path);
-		}
+		LOGGER.log(configFile_ + " does not exist. Directory could not be created. Please restart with administrative rights!");
 	}
 	
 	QPushButton* save = ui_.buttonBoxOptions->button(QDialogButtonBox::Save);

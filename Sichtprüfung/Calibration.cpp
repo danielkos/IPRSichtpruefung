@@ -21,24 +21,6 @@ Calibration::Calibration()
 	boardSize_ = cv::Size(numCornersH_, numConrersV_);
 	calibSuccess_ = false;
 	calibrationError_ = 100;
-	
-	bool exists;
-	bool ret;
-	std::string path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder;
-	ret = paths::createDir(path, exists);
-	
-	if (!ret && exists)
-	{
-		LOGGER.log("Reusing directory: " + path);
-	}
-	else if(ret)
-	{
-		LOGGER.log("Directory: " + path + "  created");
-	}
-	else if (!ret && !exists)
-	{
-		LOGGER.log("Unknown error while creating directory: " + path);
-	}
 }
 
 Calibration::~Calibration()
@@ -206,7 +188,6 @@ bool Calibration::run(const cv::Mat* img)
 									distCoefficients, rvecs, tvecs, CV_CALIB_FIX_K4 | CV_CALIB_FIX_K5);
 
 		LOGGER.log("Calibration error: " + QVariant(calibrationError_).toString());		// Calibration error should be as close to 0 as possible
-
 
 		// Show undistorted image after calibration
 		cv::Mat tmp = resImg_->clone();		// Next line causes an exception otherwise 

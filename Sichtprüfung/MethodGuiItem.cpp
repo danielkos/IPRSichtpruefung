@@ -11,8 +11,9 @@
 #include <QComboBox>
 
 MethodGuiItem::MethodGuiItem(std::string name, std::vector<Parameter>& parameters, QWidget* parent)
-	: QWidget(parent), name_(name), parameters_(parameters)
+	: QWidget(parent), name_(name), fileName_(name), parameters_(parameters)
 {
+	//fileName_.erase(std::remove_if(fileName_.begin(), fileName_.end(), std::isspace), fileName_.end());
 	ui_.setupUi(this);
 	ui_.groupBoxMethod->setTitle(QString::fromStdString(name));
 	
@@ -26,11 +27,11 @@ MethodGuiItem::MethodGuiItem(std::string name, std::vector<Parameter>& parameter
 	ui_.comboBoxParams->setCurrentIndex(0);
 	changeParams(0);
 
-	baseDir_ = paths::getExecutablePath() + paths::configFolder + paths::profilesFolder + name_ + "\\";
+	baseDir_ = paths::getExecutablePath() + paths::configFolder + paths::profilesFolder + fileName_ + "\\";
 	
-	if (ConfigurationStorage::instance().exists(baseDir_))
+	if (ConfigurationStorage::instance().exists(baseDir_ + fileName_ + extensions::profileExt))
 	{
-		std::string path = baseDir_ + name_ + extensions::profileExt;
+		std::string path = baseDir_ + fileName_ + extensions::profileExt;
 		loadProfile(path);
 	}
 	else
@@ -52,10 +53,7 @@ MethodGuiItem::MethodGuiItem(std::string name, std::vector<Parameter>& parameter
 		{
 			LOGGER.log("Unknown error while creating directory: " + baseDir_);
 		}
-	}
-
-	
-	
+	}	
 
 	//Connections to manage inputs and selection of parameters
 	QObject::connect(ui_.comboBoxParams, SIGNAL(currentIndexChanged(int)), this, SLOT(paramIndexChanged(int)));
@@ -227,7 +225,7 @@ void MethodGuiItem::saveProfileClicked()
 	QFileDialog dialog(this);
 	QString filename;
 	QString filter = "Configuration Files(*" + QString::fromStdString(extensions::profileExt) + ")";
-	std::string path = baseDir_ + name_ + extensions::profileExt;
+	std::string path = baseDir_ + fileName_ + extensions::profileExt;
 	filename = dialog.getSaveFileName(this, "Save current profile", QString::fromStdString(path), filter);
 
 	if (!filename.isEmpty())

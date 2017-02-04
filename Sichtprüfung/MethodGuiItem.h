@@ -63,6 +63,7 @@ public slots:
 private:
 	Ui::Method ui_;
 	std::string name_;
+	std::string fileName_;
 	std::string baseDir_;
 
 	std::vector<Parameter> parameters_;

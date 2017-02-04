@@ -13,18 +13,25 @@
 #include "AngleVerification.h"
 #include "ShapeVerification.h"
 #include "MaterialVerification.h"
+#include "Configs.h"
+#include "Logger.h"
+
+void createDirectories();
+void loggerOutput(const std::string& path, bool& ret, bool& exists);
 
 int main(int argc, char *argv[])
 {
 	// Delete log file to make sure a new empty one is created
 	// during execution
 	std::remove("log.txt");
-
+	
 	//main application
 	QApplication app(argc, argv);
 	//GUI generated from ui file
 	MainGui mainGui;
 	QDesktopWidget *desktop = QApplication::desktop();
+
+	createDirectories();
 
 	VerificationMethod* calib = new Calibration();
 	VerificationMethod* holeVer = new HoleVerification();
@@ -54,4 +61,42 @@ int main(int argc, char *argv[])
 	delete materialVer;
 
 	return res;
+}
+
+void createDirectories()
+{
+	bool exists;
+	std::string path;
+	bool ret;
+
+	path = paths::getExecutablePath() + paths::configFolder;
+	ret = paths::createDir(path, exists);
+	loggerOutput(path, ret, exists);
+
+	if (ret || exists)
+	{
+		path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder;
+		ret = paths::createDir(path, exists);
+		loggerOutput(path, ret, exists);
+
+		path = paths::getExecutablePath() + paths::configFolder + paths::profilesFolder;
+		ret = paths::createDir(path, exists);
+		loggerOutput(path, ret, exists);
+	}	
+}
+
+void loggerOutput(const std::string& path, bool& ret, bool& exists)
+{
+	if (!ret && exists)
+	{
+		LOGGER.log("Reusing directory: " + path);
+	}
+	else if (ret)
+	{
+		LOGGER.log("Directory: " + path + "  created");
+	}
+	else if (!ret && !exists)
+	{
+		LOGGER.log("Unknown error while creating directory: " + path);
+	}
 }

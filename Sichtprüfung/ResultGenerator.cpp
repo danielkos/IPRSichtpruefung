@@ -1,4 +1,9 @@
 #include "ResultGenerator.h"
+#include "ConfigurationStorage.h"
+#include "Logger.h"
+#include "Configs.h"
+
+#include <opencv2\opencv.hpp>
 
 #include <QSize>
 
@@ -8,11 +13,31 @@ ResultGenerator::ResultGenerator()
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_ANGLE_LEFT, ResultGenerator::Settings::SET_OBJ_ANGLE));
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_ANGLE_RIGHT, ResultGenerator::Settings::SET_OBJ_ANGLE));
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_SIZE, ResultGenerator::Settings::SET_OBJ_SIZE));
-	pixelRatio_ = 1;
+
+	calibmatrixPath_ = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::calibrationName + extensions::calibrationExt;
 }
 
 ResultGenerator::~ResultGenerator()
 {
+}
+
+cv::Mat ResultGenerator::loadCalibrationMatrix(const std::string& path)
+{
+	cv::Mat mat;
+
+	if (!path.empty())
+	{
+		if (!ConfigurationStorage::instance().read(path, "camera_matrix", mat))
+		{
+			LOGGER.log("Cannot read calibration matrix (K) from " + path);
+		}
+	}
+	else
+	{
+		LOGGER.log("Invalid path: " + path + " supplied to load calibration matrix!");
+	}
+	
+	return mat;
 }
 
 void ResultGenerator::setSettings(ResultGenerator::SettingsMap settings)
@@ -37,14 +62,25 @@ QString ResultGenerator::calibRes(ResultGenerator::ResultMap::iterator it)
 
 QString ResultGenerator::circleRes(ResultGenerator::ResultMap::iterator it)
 {
-	QVariant radius = settings_.at(mapping_.at(it->first)).value_;
-	QVariant est = it->second.value_.toDouble() * pixelRatio_.toDouble();
-	QVariant dev = radius.toDouble() - est.toDouble();
-	QVariant percent = (dev.toDouble() / radius.toDouble()) * 100;
+	double radius = settings_.at(mapping_.at(it->first)).value_.toDouble();
+	cv::Mat calibMat = loadCalibrationMatrix(calibmatrixPath_);
+	std::vector<double> points;
+
+	points.push_back(it->second.value_.toDouble());
+	points.push_back(0);
+	points.push_back(1);
+
+	cv::Mat vec(points);
+
+	vec = vec * calibMat;
+
+	QVariant est = vec.at<double>(0,0);
+	QVariant dev = radius - est.toDouble();
+	QVariant percent = (dev.toDouble() / radius) * 100;
 
 	QString percentString = QString::number(percent.toDouble(), 'f', 2);	// Round percent number
 
-	return QString("Real radius: " + radius.toString() + "cm, Estimated radius: " + est.toString() +
+	return QString("Real radius: " + QString::number(radius) + "cm, Estimated radius: " + est.toString() +
 		"cm, Deviation: " + dev.toString() + "cm (" + percentString + "%)");
 }
 
@@ -78,7 +114,7 @@ QString ResultGenerator::objSizeRes(ResultGenerator::ResultMap::iterator it)
 	QSize size = settings_.at(mapping_.at(it->first)).value_.toSize();
 	QSize est = it->second.value_.toSize();
 
-	double ratio = pixelRatio_.toDouble();
+	double ratio = 1;
 	double estWidth = (double)(est.width() * ratio);
 	double estHeight = (double)(est.height() * ratio);
 

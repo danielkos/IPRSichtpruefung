@@ -5,6 +5,11 @@
 #include <QVariant>
 #include "Parameter.h"
 
+namespace cv
+{
+	class Mat;
+}
+
 class ResultGenerator
 {
 public:
@@ -58,17 +63,17 @@ private:
 	QString objSizeRes(ResultGenerator::ResultMap::iterator it);
 	QString	materialRes(ResultGenerator::ResultMap::iterator it);
 
+	cv::Mat loadCalibrationMatrix(const std::string& path);
+
 	//Current settings
 	SettingsMap settings_;
 
+	std::string calibmatrixPath_;
 	typedef std::map<ResultGenerator::Results, ResultGenerator::Settings> SetResMap;
 	typedef std::pair<ResultGenerator::Results, ResultGenerator::Settings> SetResPair;
 
 	//mapping between Results and Settings
 	SetResMap mapping_;
-
-	//Calibration result
-	QVariant pixelRatio_;
 };
 #endif // !RESULT_GENERATOR_H
 

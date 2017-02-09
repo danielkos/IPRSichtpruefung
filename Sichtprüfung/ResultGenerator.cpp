@@ -64,17 +64,27 @@ QString ResultGenerator::circleRes(ResultGenerator::ResultMap::iterator it)
 {
 	double radius = settings_.at(mapping_.at(it->first)).value_.toDouble();
 	cv::Mat calibMat = loadCalibrationMatrix(calibmatrixPath_);
-	std::vector<double> points;
 
-	points.push_back(it->second.value_.toDouble());
-	points.push_back(0);
-	points.push_back(1);
+	cv::Mat vec(1, 3, CV_64FC1);
+	vec.at<double>(0, 0) = it->second.value_.toDouble();
+	vec.at<double>(0, 1) = 0.0;
+	vec.at<double>(0, 2) = 1.0;
 
-	cv::Mat vec(points);
+	cv::Mat resultMat;
+	QVariant est;
 
-	vec = vec * calibMat;
-
-	QVariant est = vec.at<double>(0,0);
+	if (vec.cols == calibMat.rows)
+	{
+		// Matrix and vector size correct, so convert radius in pixels to world size
+		resultMat = vec * calibMat;
+		est = resultMat.at<double>(0, 0);
+	}
+	else
+	{
+		// Matrix or vector size incorrect, so just print out the radius in pixels
+		est = it->second.value_.toDouble();
+	}
+	
 	QVariant dev = radius - est.toDouble();
 	QVariant percent = (dev.toDouble() / radius) * 100;
 

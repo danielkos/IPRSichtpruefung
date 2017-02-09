@@ -17,7 +17,7 @@ Calibration::Calibration()
 	numImgs_ = 3;
 	numCornersH_ = 9;
 	numConrersV_ = 6;
-	sizeSquare_ = 8;
+	sizeSquare_ = 3.5;
 	boardSize_ = cv::Size(numCornersH_, numConrersV_);
 	calibSuccess_ = false;
 	calibrationError_ = 100;
@@ -89,7 +89,7 @@ bool Calibration::run(const cv::Mat* img)
 	
 	if (CV_CALIB_FIX_ASPECT_RATIO)
 	{
-		cameraMatrix.at<double>(0, 0) = 1.0;
+		cameraMatrix.at<double>(2, 2) = 1.0;
 	}
 	
 	// Output matrix with distortion coefficients. Has 4, 5 or 8 values.
@@ -110,6 +110,7 @@ bool Calibration::run(const cv::Mat* img)
 		{
 			initializeResultImage(img);
 			cv::cvtColor(*resImg_, *processedImg_, CV_BGR2GRAY);
+			//cv::cvtColor(*resImg_, *processedImg_, CV_BGR2BGRA);
 
 			// Find chessboard calibration pattern in current camera frame
 			found = cv::findChessboardCorners(*resImg_, boardSize_, corners_, CV_CALIB_CB_ADAPTIVE_THRESH 
@@ -186,10 +187,7 @@ bool Calibration::run(const cv::Mat* img)
 		// Calculate the actual calibration results
 		calibrationError_ = calibrateCamera(objectPoints, imagePoints_, resImg_->size(), cameraMatrix, 
 									distCoefficients, rvecs, tvecs, CV_CALIB_FIX_K4 | CV_CALIB_FIX_K5);
-
-		std::ostringstream t;
-		t << cameraMatrix;
-		LOGGER.log(t.str());
+		
 		LOGGER.log("Calibration error: " + QVariant(calibrationError_).toString());		// Calibration error should be as close to 0 as possible
 
 		// Show undistorted image after calibration

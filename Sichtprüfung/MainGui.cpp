@@ -123,6 +123,7 @@ void MainGui::setInputImage(cv::Mat* img)
 		// or grey completely
 		cv::Mat tmpFrame(img->rows, img->cols, img->type());
 		tmpFrame.data = img->data;
+		
 		*orgImg_ = tmpFrame.clone();
 		
 		//*orgImg_ = img->clone();

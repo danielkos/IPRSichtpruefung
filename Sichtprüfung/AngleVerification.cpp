@@ -84,7 +84,7 @@ bool AngleVerification::run(const cv::Mat* img)
 		// Filter surrounding lights, optimum: only object contours are visible with straight thin lines
 		cv::cvtColor(*img, *processedImg_, cv::COLOR_BGR2GRAY);
 		cv::medianBlur(*img, *resImg_, 5);
-		inRange(*processedImg_, 50, 70, *processedImg_);
+		inRange(*processedImg_, 50, 60, *processedImg_);
 		cv::Canny(*processedImg_, *processedImg_, cannyLowerThresh_, cannyUpperThresh_);
 		cv::morphologyEx(*processedImg_, *processedImg_, cv::MORPH_CLOSE, cv::noArray(), cv::Point(-1, -1), 2);
 		cv::dilate(*processedImg_, *processedImg_, cv::getStructuringElement(cv::MORPH_DILATE, cv::Size(3, 3)));

@@ -152,16 +152,19 @@ bool ConfigurationStorage::read(const std::string& configPath, std::string node,
 	QString key = QString::fromStdString(node);
 	int status = settings.status();
 	int curElem = 0;
-	int size = matrix.rows * matrix.cols;
-	double *data = new double[size];
+	double *data;
 
 	if (status == QSettings::Status::NoError)
 	{
 		QStringList list = settings.allKeys().filter(key);
-		if (!key.isEmpty() && !list.empty() && !matrix.empty())
+		if (!key.isEmpty() && !list.empty())
 		{
 			QString rows = key + "/rows";
 			QString cols = key + "/cols";
+
+			int size = settings.value(rows).toInt() * settings.value(cols).toInt();
+			data = new double[size];
+
 			if (settings.contains(rows) && settings.contains(cols))
 			{
 				matrix = cv::Mat(settings.value(rows).toInt(), settings.value(cols).toInt(), CV_64F);

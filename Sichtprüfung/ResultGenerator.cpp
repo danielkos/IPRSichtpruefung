@@ -21,6 +21,57 @@ ResultGenerator::~ResultGenerator()
 {
 }
 
+double ResultGenerator::getCameraPixelRatio()
+{
+	double pixelRatio = 1.0;	// 1 as default value so that in error cases at
+								// least the calculated result of the certain optical 
+								// control processes is printed out on the GUI
+
+	cv::Mat calibMat = loadCalibrationMatrix(calibmatrixPath_);
+
+	if (calibMat.empty() == false)
+	{
+		// Calibration matrix contains focal lenght in pixel, so conert to mm. Also calculate
+		// mean value to improve results. Focal length should be more or less equal for x and y, because
+		// the pixels of the IDS camera sensor have the same size in x and y direction 
+		double focalLengthX = CAMERA_PIXEL_SIZE * calibMat.at<double>(0, 0);
+		double focalLengthY = CAMERA_PIXEL_SIZE * calibMat.at<double>(1, 1);
+		
+		double focalLength = (focalLengthX + focalLengthY) / 2.0;	// In mm
+		//focalLength = 28.0;	// TODO: Or just use focal length of lens (28mm) without any further calculation 
+		LOGGER.log("Focal length: " + QVariant(focalLength).toString());
+		
+
+		double g = 0;	// Distance from camera lens to object in mm
+
+		// Calculating the distance between the camera lens and the object. For every
+		// calibration image a translation and rotation vector (define the extrinsic parameters
+		// of the camera) is stored. So calculate the average length of all translation vectors
+		// the get an idead of the overal distance
+		std::vector<cv::Mat> extrinsicParameters_Trans = loadMatrices("tvec", calibmatrixPath_);
+
+		if (extrinsicParameters_Trans.empty() == false)
+		{
+			for (int i = 0; i < extrinsicParameters_Trans.size(); i++)
+			{
+				g += getVectorLength(&extrinsicParameters_Trans[i]);
+			}
+
+			g /= extrinsicParameters_Trans.size();
+		}
+
+		//g = 230;	 // TODO: Or just use manually measured object distance without any further calculation
+		LOGGER.log("Object distance: " + QVariant(g).toString());
+
+		pixelRatio = focalLength / (g - focalLength);
+	}
+
+	LOGGER.log("Pixel ratio: " + QVariant(pixelRatio).toString());
+
+	return pixelRatio;
+}
+
+
 cv::Mat ResultGenerator::loadCalibrationMatrix(const std::string& path)
 {
 	cv::Mat mat;
@@ -40,6 +91,65 @@ cv::Mat ResultGenerator::loadCalibrationMatrix(const std::string& path)
 	return mat;
 }
 
+std::vector<cv::Mat> ResultGenerator::loadMatrices(const std::string& matrixName, const std::string& path)
+{
+	std::vector<cv::Mat> matrices;
+
+	if (!path.empty())
+	{
+		bool newMatrixLoaded = true;
+		int i = 0;
+
+		// Try to load matrices with the given name as often as possible
+		while (newMatrixLoaded)
+		{
+			cv::Mat mat;
+
+			if (!ConfigurationStorage::instance().read(path, matrixName + std::to_string(i), mat))
+			{
+				newMatrixLoaded = false;
+				LOGGER.log("Cannot read matrix " + matrixName + std::to_string(i) + " from " + path);
+			}
+			else
+			{
+				matrices.push_back(mat);
+				i++;
+			}
+		}
+	}
+	else
+	{
+		LOGGER.log("Invalid path: " + path + " supplied to load calibration matrix!");
+	}
+
+	return matrices;
+}
+
+
+double ResultGenerator::getVectorLength(const cv::Mat* vector)
+{
+	double length = 0;
+
+	if (vector)
+	{
+		// Only allow calculation for vectors with 1 column and n rows
+		if (vector->size().height > 0 && vector->size().width == 1)
+		{
+			double curResult = 0.0;
+
+			for (int i = 0; i < vector->rows; i++) 
+			{
+				curResult += vector->at<double>(i) * vector->at<double>(i);
+			}
+
+			length = std::sqrt(curResult);
+		}
+	}
+
+	return length;
+}
+
+
 void ResultGenerator::setSettings(ResultGenerator::SettingsMap settings)
 {
 	settings_ = settings;
@@ -48,50 +158,22 @@ void ResultGenerator::setSettings(ResultGenerator::SettingsMap settings)
 QString ResultGenerator::calibRes(ResultGenerator::ResultMap::iterator it)
 {
 	return QString("Calibration error: " + it->second.value_.toString());
-
-	/*QSize refSize = settings_.at(mapping_.at(it->first)).value_.toSize();
-	QSize objSize = it->second.value_.toSize();
-
-	QVariant widthRatio = (double)refSize.width() / objSize.width();
-	QVariant heightRatio = (double)refSize.height() / objSize.height();
-
-	pixelRatio_ = (widthRatio.toDouble() + heightRatio.toDouble()) / 2;
-
-	return QString("Ratio between 1 cm and 1 Pixel is: " + pixelRatio_.toString());*/
 }
 
 QString ResultGenerator::circleRes(ResultGenerator::ResultMap::iterator it)
 {
-	double radius = settings_.at(mapping_.at(it->first)).value_.toDouble();
-	cv::Mat calibMat = loadCalibrationMatrix(calibmatrixPath_);
+	double pixelRatio = getCameraPixelRatio();	// Ratio between one Pixel and one mm
+	double radius = settings_.at(mapping_.at(it->first)).value_.toDouble();		// In Pixel
 
-	cv::Mat vec(1, 3, CV_64FC1);
-	vec.at<double>(0, 0) = it->second.value_.toDouble();
-	vec.at<double>(0, 1) = 0.0;
-	vec.at<double>(0, 2) = 1.0;
-
-	cv::Mat resultMat;
-	QVariant est;
-
-	if (vec.cols == calibMat.rows)
-	{
-		// Matrix and vector size correct, so convert radius in pixels to world size
-		resultMat = vec * calibMat;
-		est = resultMat.at<double>(0, 0);
-	}
-	else
-	{
-		// Matrix or vector size incorrect, so just print out the radius in pixels
-		est = it->second.value_.toDouble();
-	}
-	
+	LOGGER.log("Radius in Pixel: " + QVariant(it->second.value_.toDouble()).toString());
+	QVariant est = it->second.value_.toDouble() * pixelRatio;
 	QVariant dev = radius - est.toDouble();
 	QVariant percent = (dev.toDouble() / radius) * 100;
 
 	QString percentString = QString::number(percent.toDouble(), 'f', 2);	// Round percent number
 
-	return QString("Real radius: " + QString::number(radius) + "cm, Estimated radius: " + est.toString() +
-		"cm, Deviation: " + dev.toString() + "cm (" + percentString + "%)");
+	return QString("Real radius: " + QString::number(radius) + "mm, Estimated radius: " + est.toString() +
+		"mm, Deviation: " + dev.toString() + "mm (" + percentString + "%)");
 }
 
 QString ResultGenerator::circleCenterRes(ResultGenerator::ResultMap::iterator it)
@@ -125,8 +207,8 @@ QString ResultGenerator::objSizeRes(ResultGenerator::ResultMap::iterator it)
 	QSize est = it->second.value_.toSize();
 
 	double ratio = 1;
-	double estWidth = (double)(est.width() * ratio);
-	double estHeight = (double)(est.height() * ratio);
+	double estWidth = (double) (est.width() * ratio);
+	double estHeight = (double) (est.height() * ratio);
 
 	QString ret = "Real Size:" + QString::number(size.width()) + "x" + QString::number(size.height()) + ", Estimated size: " +
 		QString::number(estWidth) + "x" + QString::number(estHeight);

@@ -84,12 +84,12 @@ bool Calibration::run(const cv::Mat* img)
 	int pressedKey = 0;		// The key that has been pressed by the user
 	
 	// Creating two matrices that will contain the calibration results
-	std::vector<cv::Mat> rvecs, tvecs;
-	cv::Mat cameraMatrix = cv::Mat::eye(3, 3, CV_64F);
+	std::vector<cv::Mat> rvecs, tvecs;					// Extrinsic parameters (translation and rotation) 
+	cv::Mat cameraMatrix = cv::Mat::eye(3, 3, CV_64F);	// Intrinsic parameters
 	
 	if (CV_CALIB_FIX_ASPECT_RATIO)
 	{
-		cameraMatrix.at<double>(2, 2) = 1.0;
+		cameraMatrix.at<double>(0, 0) = 1.0;
 	}
 	
 	// Output matrix with distortion coefficients. Has 4, 5 or 8 values.
@@ -202,6 +202,23 @@ bool Calibration::run(const cv::Mat* img)
 		{
 			LOGGER.log("Can not write K to " + path);
 		}
+
+		for (int i = 0; i < tvecs.size(); i++)
+		{
+			if (!ConfigurationStorage::instance().write(path, "tvec" + std::to_string(i), tvecs[i]))
+			{
+				LOGGER.log("Can not write tvecs to " + path);
+			}
+		}
+
+		for (int i = 0; i < rvecs.size(); i++)
+		{
+			if (!ConfigurationStorage::instance().write(path, "rvec" + std::to_string(i), rvecs[i]))
+			{
+				LOGGER.log("Can not write rvecs to " + path);
+			}
+		}
+
 		if (!ConfigurationStorage::instance().write(path, "distortion_coefficients", distCoefficients))
 		{
 			LOGGER.log("Can not write D to " + path);

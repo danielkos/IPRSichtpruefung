@@ -153,10 +153,11 @@ bool ConfigurationStorage::read(const std::string& configPath, std::string node,
 	int status = settings.status();
 	int curElem = 0;
 	double *data;
+	QStringList list;
 
 	if (status == QSettings::Status::NoError)
 	{
-		QStringList list = settings.allKeys().filter(key);
+		list = settings.allKeys().filter(key);
 		if (!key.isEmpty() && !list.empty())
 		{
 			QString rows = key + "/rows";
@@ -203,7 +204,7 @@ bool ConfigurationStorage::read(const std::string& configPath, std::string node,
 		ret = false;
 	}
 	
-	if (data)
+	if (data && !list.empty())	// Need to check also for list. Only for data not enough, exception occurrs
 	{
 		delete data;
 	}

@@ -27,6 +27,8 @@ double ResultGenerator::getCameraPixelRatio()
 								// least the calculated result of the certain optical 
 								// control processes is printed out on the GUI
 
+	// if (RadioButton = Kalibrierverfahren für Berechnung der Ratio verwenden)
+	//{
 	cv::Mat calibMat = loadCalibrationMatrix(calibmatrixPath_);
 
 	if (calibMat.empty() == false)
@@ -60,7 +62,7 @@ double ResultGenerator::getCameraPixelRatio()
 			g /= extrinsicParameters_Trans.size();
 		}
 		
-		//g = 230;	 // Or just use manually measured object distance without any further calculation
+		// g = 230;	 // Or just use manually measured object distance without any further calculation
 		LOGGER.log("Object distance: " + QVariant(g).toString());
 
 		// Use intercept theorem and pinhole camera to calculate the pixel ratio.
@@ -69,7 +71,20 @@ double ResultGenerator::getCameraPixelRatio()
 		pixelRatio = 1.0 / (focalLength / (g - focalLength) / CAMERA_PIXEL_SIZE);
 	}
 	
-	//pixelRatio = 0.028131;		// Manually calculated pixel ratio of shape verification method
+	// RadioButton = Shape-Verfahren für Berechnung der Ratio verwenden
+	//else 
+	//{
+	// TODO: Kalibrierung durch Shape-Verfahren:
+	// Würde folgende Berechnung für Width und Height getrennt machen und dann aus beiden Ergebnissen den Mittelwert bilden,
+	// also:
+	// ratioHeight = ObjekthöheInMMAusOptions / ObjekthöheInPixelVonShapeVerfahren;
+	// ratioWidth = ObjektbreiteInMMAusOptions / ObjektbreiteInPixelVonShapeVerfahren;
+	// pixelRatio = (ratioHeight + ratioWidth) / 2.0;
+	//
+	// pixelRatio sollte in etwa 0.028 sein.
+	//
+	//}
+
 	LOGGER.log("Pixel ratio: " + QVariant(pixelRatio).toString());
 
 	return pixelRatio;

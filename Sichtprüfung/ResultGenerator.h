@@ -69,8 +69,8 @@ private:
 	QString objSizeRes(ResultGenerator::ResultMap::iterator it);
 	QString	materialRes(ResultGenerator::ResultMap::iterator it);
 
-	// Calculates the ratio between pixel and mm and returns it (how many pixel describe
-	// one mm in the real world).
+	// Calculates the ratio between Pixel and mm. 
+	// It is returned how many Pixel describe one mm in the real world.
 	// Use this method to calculate real-world values!
 	double getCameraPixelRatio();
 

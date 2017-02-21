@@ -38,7 +38,7 @@ double ResultGenerator::getCameraPixelRatio()
 		double focalLengthY = CAMERA_PIXEL_SIZE * calibMat.at<double>(1, 1);
 		
 		double focalLength = (focalLengthX + focalLengthY) / 2.0;	// In mm
-		//focalLength = 25.0;	// TODO: Or just use focal length of lens (25mm) without any further calculation 
+		//focalLength = 25.0;	// Or just use focal length of lens without any further calculation 
 		LOGGER.log("Focal length: " + QVariant(focalLength).toString());
 		
 
@@ -53,23 +53,23 @@ double ResultGenerator::getCameraPixelRatio()
 		if (extrinsicParameters_Trans.empty() == false)
 		{
 			for (int i = 0; i < extrinsicParameters_Trans.size(); i++)
-			{
+			{	
 				g += getVectorLength(&extrinsicParameters_Trans[i]);
 			}
 
 			g /= extrinsicParameters_Trans.size();
-			g -= 7;		// Objects have height of 7mm, so distance from object to camera is
-						// less than distance from the used calibration pattern and the camera
 		}
-
 		
-		//g = 230;	 // TODO: Or just use manually measured object distance without any further calculation
+		//g = 230;	 // Or just use manually measured object distance without any further calculation
 		LOGGER.log("Object distance: " + QVariant(g).toString());
 
-		pixelRatio = focalLength / (g - focalLength);
+		// Use intercept theorem and pinhole camera to calculate the pixel ratio.
+		// Pixel ratio is later used to convert a length in a camera image (in pixel)
+		// to mm, so the size of one camera pixel on the sensor needs to be considered also
+		pixelRatio = 1.0 / (focalLength / (g - focalLength) / CAMERA_PIXEL_SIZE);
 	}
 	
-	pixelRatio = 0.028131;		// Manually calculated pixel ratio of shape verification method
+	//pixelRatio = 0.028131;		// Manually calculated pixel ratio of shape verification method
 	LOGGER.log("Pixel ratio: " + QVariant(pixelRatio).toString());
 
 	return pixelRatio;
@@ -112,12 +112,20 @@ std::vector<cv::Mat> ResultGenerator::loadMatrices(const std::string& matrixName
 			if (!ConfigurationStorage::instance().read(path, matrixName + std::to_string(i), mat))
 			{
 				newMatrixLoaded = false;
-				LOGGER.log("Cannot read matrix " + matrixName + std::to_string(i) + " from " + path);
 			}
 			else
 			{
-				matrices.push_back(mat);
-				i++;
+				// Check if loaded matrix contains values. Because the key word "matrixName" might
+				// occur in the calibration file without containing a real matrix!
+				if (mat.empty() == false)
+				{
+					matrices.push_back(mat);
+					i++;
+				}
+				else
+				{
+					newMatrixLoaded = false;
+				}
 			}
 		}
 	}
@@ -149,7 +157,7 @@ double ResultGenerator::getVectorLength(const cv::Mat* vector)
 			length = std::sqrt(curResult);
 		}
 	}
-
+	
 	return length;
 }
 

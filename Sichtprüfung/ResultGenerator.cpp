@@ -38,7 +38,7 @@ double ResultGenerator::getCameraPixelRatio()
 		double focalLengthY = CAMERA_PIXEL_SIZE * calibMat.at<double>(1, 1);
 		
 		double focalLength = (focalLengthX + focalLengthY) / 2.0;	// In mm
-		//focalLength = 28.0;	// TODO: Or just use focal length of lens (28mm) without any further calculation 
+		//focalLength = 25.0;	// TODO: Or just use focal length of lens (25mm) without any further calculation 
 		LOGGER.log("Focal length: " + QVariant(focalLength).toString());
 		
 
@@ -58,14 +58,18 @@ double ResultGenerator::getCameraPixelRatio()
 			}
 
 			g /= extrinsicParameters_Trans.size();
+			g -= 7;		// Objects have height of 7mm, so distance from object to camera is
+						// less than distance from the used calibration pattern and the camera
 		}
 
+		
 		//g = 230;	 // TODO: Or just use manually measured object distance without any further calculation
 		LOGGER.log("Object distance: " + QVariant(g).toString());
 
 		pixelRatio = focalLength / (g - focalLength);
 	}
-
+	
+	pixelRatio = 0.028131;		// Manually calculated pixel ratio of shape verification method
 	LOGGER.log("Pixel ratio: " + QVariant(pixelRatio).toString());
 
 	return pixelRatio;
@@ -164,8 +168,7 @@ QString ResultGenerator::circleRes(ResultGenerator::ResultMap::iterator it)
 {
 	double pixelRatio = getCameraPixelRatio();	// Ratio between one Pixel and one mm
 	double radius = settings_.at(mapping_.at(it->first)).value_.toDouble();		// In Pixel
-
-	LOGGER.log("Radius in Pixel: " + QVariant(it->second.value_.toDouble()).toString());
+	
 	QVariant est = it->second.value_.toDouble() * pixelRatio;
 	QVariant dev = radius - est.toDouble();
 	QVariant percent = (dev.toDouble() / radius) * 100;
@@ -203,15 +206,15 @@ QString ResultGenerator::angleRes(ResultGenerator::ResultMap::iterator it)
 
 QString ResultGenerator::objSizeRes(ResultGenerator::ResultMap::iterator it)
 {
-	QSize size = settings_.at(mapping_.at(it->first)).value_.toSize();
+	double pixelRatio = getCameraPixelRatio();		// Ratio between one Pixel and one mm
+	QSize size = settings_.at(mapping_.at(it->first)).value_.toSize();	// In Pixel
 	QSize est = it->second.value_.toSize();
 
-	double ratio = 1;
-	double estWidth = (double) (est.width() * ratio);
-	double estHeight = (double) (est.height() * ratio);
+	double estWidth = (double) (est.width() * pixelRatio);
+	double estHeight = (double) (est.height() * pixelRatio);
 
-	QString ret = "Real Size:" + QString::number(size.width()) + "x" + QString::number(size.height()) + ", Estimated size: " +
-		QString::number(estWidth) + "x" + QString::number(estHeight);
+	QString ret = "Real Size:" + QString::number(size.width()) + "x" + QString::number(size.height()) + " (mm), Estimated size: " +
+		QString::number(estWidth) + "x" + QString::number(estHeight) + " (mm)";
 
 	return ret;
 }

@@ -14,7 +14,7 @@
 
 Calibration::Calibration()
 {
-	numImgs_ = 3;
+	numImgs_ = 18;
 	numCornersH_ = 9;
 	numConrersV_ = 6;
 	sizeSquare_ = 3.5;
@@ -110,7 +110,6 @@ bool Calibration::run(const cv::Mat* img)
 		{
 			initializeResultImage(img);
 			cv::cvtColor(*resImg_, *processedImg_, CV_BGR2GRAY);
-			//cv::cvtColor(*resImg_, *processedImg_, CV_BGR2BGRA);
 
 			// Find chessboard calibration pattern in current camera frame
 			found = cv::findChessboardCorners(*resImg_, boardSize_, corners_, CV_CALIB_CB_ADAPTIVE_THRESH 
@@ -138,7 +137,7 @@ bool Calibration::run(const cv::Mat* img)
 				break;
 			case ' ':
 				// Space pressed: store results of current calibration run
-				if (!corners_.empty())
+				if (!corners_.empty() && found)
 				{
 					imagePoints_.push_back(corners_);
 					counter++;
@@ -186,7 +185,7 @@ bool Calibration::run(const cv::Mat* img)
 
 		// Calculate the actual calibration results
 		calibrationError_ = calibrateCamera(objectPoints, imagePoints_, resImg_->size(), cameraMatrix, 
-									distCoefficients, rvecs, tvecs, CV_CALIB_FIX_K4 | CV_CALIB_FIX_K5);
+									distCoefficients, rvecs, tvecs, CV_CALIB_FIX_ASPECT_RATIO | CV_CALIB_FIX_K4 | CV_CALIB_FIX_K5);
 		
 		LOGGER.log("Calibration error: " + QVariant(calibrationError_).toString());		// Calibration error should be as close to 0 as possible
 

@@ -77,8 +77,8 @@ double ResultGenerator::getCameraPixelRatio()
 	// TODO: Kalibrierung durch Shape-Verfahren:
 	// Würde folgende Berechnung für Width und Height getrennt machen und dann aus beiden Ergebnissen den Mittelwert bilden,
 	// also:
-	// ratioHeight = ObjekthöheInMMAusOptions / ObjekthöheInPixelVonShapeVerfahren;
-	// ratioWidth = ObjektbreiteInMMAusOptions / ObjektbreiteInPixelVonShapeVerfahren;
+	// double ratioHeight = ObjekthöheInMMAusOptions / ObjekthöheInPixelVonShapeVerfahren;
+	// double ratioWidth = ObjektbreiteInMMAusOptions / ObjektbreiteInPixelVonShapeVerfahren;
 	// pixelRatio = (ratioHeight + ratioWidth) / 2.0;
 	//
 	// pixelRatio sollte in etwa 0.028 sein.

@@ -103,6 +103,8 @@ bool MaterialVerification::run(const cv::Mat* img)
 		cv::Mat mask;
 		//get the mask
 		cv::threshold(brightness, mask, minBrightness_, 255, cv::THRESH_BINARY);
+		mask.copyTo(*processedImg_);	// Display the mask image with the extracted reflections
+
 		//morphologyEx(mask, mask, cv::MORPH_CLOSE, cv::noArray(), cv::Point(-1, -1), 2);
 		//get contours of Reflection field
 		findContours(mask, contoursReflection, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
@@ -133,7 +135,7 @@ bool MaterialVerification::run(const cv::Mat* img)
 
 			if (abs(cv::contourArea(cv::Mat(contoursReflection[i]))) > minPixelAmount_ && boundRect.width>minWidth_ && boundRect.height>minHeight_)
 			{
-				//	drawRectangle(boundRect.tl(), boundRect.br(), colors::contourColor);
+				//drawRectangle(boundRect.tl(), boundRect.br(), colors::contourColor);
 				if (boundRect.width >= boundRect.height)
 				{
 					temp = float(boundRect.width) / float(boundRect.height);

@@ -8,12 +8,12 @@
 MaterialVerification::MaterialVerification()
 {
 	minBrightness_ = 243;
-	ratio_ = 2.5;
+	ratio_ = 3.5;
 	materialMetal_ = false;
-	pixelAmount_ = 400000;
-	minPixelAmount_ = 8000;
-	minWidth_ = 10;
-	minHeight_ = 10;
+	pixelAmount_ = 800000;
+	minPixelAmount_ = 80000;
+	minWidth_ = 60;
+	minHeight_ = 45;
 }
 
 MaterialVerification::~MaterialVerification()

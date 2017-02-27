@@ -1,5 +1,7 @@
 #include "ShapeVerification.h"
 #include "Configs.h"
+#include "ConfigurationStorage.h"
+
 #include <QVariant>
 #include <QSize>
 #include <opencv2\opencv.hpp>
@@ -120,6 +122,26 @@ bool ShapeVerification::run(const cv::Mat* img)
 	else
 	{
 		res = false;
+	}
+
+	// Write size of shape to the calibration file, so that the values can be used
+	// for calibration later
+	if (res)
+	{
+		std::string path = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder
+			+ filenames::calibrationName + extensions::calibrationExt;
+		double width = boundingBox_.size.width;
+		double height = boundingBox_.size.height;
+		
+		if (!ConfigurationStorage::instance().write(path, "shape_horizontal", width))
+		{
+			LOGGER.log("Can not write horizontal shape size to " + path);
+		}
+
+		if (!ConfigurationStorage::instance().write(path, "shape_vertical", height))
+		{
+			LOGGER.log("Can not write vertical shape size to " + path);
+		}
 	}
 
 	return res;

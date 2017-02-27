@@ -27,63 +27,66 @@ double ResultGenerator::getCameraPixelRatio()
 								// least the calculated result of the certain optical 
 								// control processes is printed out on the GUI
 
-	// if (RadioButton = Kalibrierverfahren für Berechnung der Ratio verwenden)
-	//{
-	cv::Mat calibMat = loadCalibrationMatrix(calibmatrixPath_);
-
-	if (calibMat.empty() == false)
+	if (USE_SHAPE_VERIFICATION == false)
 	{
-		// Calibration matrix contains focal lenght in pixel, so conert to mm. Also calculate
-		// mean value to improve results. Focal length should be more or less equal for x and y, because
-		// the pixels of the IDS camera sensor have the same size in x and y direction 
-		double focalLengthX = CAMERA_PIXEL_SIZE * calibMat.at<double>(0, 0);
-		double focalLengthY = CAMERA_PIXEL_SIZE * calibMat.at<double>(1, 1);
-		
-		double focalLength = (focalLengthX + focalLengthY) / 2.0;	// In mm
-		//focalLength = 25.0;	// Or just use focal length of lens without any further calculation 
-		LOGGER.log("Focal length: " + QVariant(focalLength).toString());
-		
+		// Use calibration method for calculation of pixel ratio
+		cv::Mat calibMat = loadCalibrationMatrix(calibmatrixPath_);
 
-		double g = 0;	// Distance from camera lens to object in mm
-
-		// Calculating the distance between the camera lens and the object. For every
-		// calibration image a translation and rotation vector (define the extrinsic parameters
-		// of the camera) is stored. So calculate the average length of all translation vectors
-		// the get an idead of the overal distance
-		std::vector<cv::Mat> extrinsicParameters_Trans = loadMatrices("tvec", calibmatrixPath_);
-
-		if (extrinsicParameters_Trans.empty() == false)
+		if (calibMat.empty() == false)
 		{
-			for (int i = 0; i < extrinsicParameters_Trans.size(); i++)
-			{	
-				g += getVectorLength(&extrinsicParameters_Trans[i]);
+			// Calibration matrix contains focal lenght in pixel, so conert to mm. Also calculate
+			// mean value to improve results. Focal length should be more or less equal for x and y, because
+			// the pixels of the IDS camera sensor have the same size in x and y direction 
+			double focalLengthX = CAMERA_PIXEL_SIZE * calibMat.at<double>(0, 0);
+			double focalLengthY = CAMERA_PIXEL_SIZE * calibMat.at<double>(1, 1);
+
+			double focalLength = (focalLengthX + focalLengthY) / 2.0;	// In mm
+			//focalLength = 25.0;	// Or just use focal length of lens without any further calculation 
+			LOGGER.log("Focal length: " + QVariant(focalLength).toString());
+
+
+			double g = 0;	// Distance from camera lens to object in mm
+
+			// Calculating the distance between the camera lens and the object. For every
+			// calibration image a translation and rotation vector (define the extrinsic parameters
+			// of the camera) is stored. So calculate the average length of all translation vectors
+			// the get an idead of the overal distance
+			std::vector<cv::Mat> extrinsicParameters_Trans = loadMatrices("tvec", calibmatrixPath_);
+
+			if (extrinsicParameters_Trans.empty() == false)
+			{
+				for (int i = 0; i < extrinsicParameters_Trans.size(); i++)
+				{
+					g += getVectorLength(&extrinsicParameters_Trans[i]);
+				}
+
+				g /= extrinsicParameters_Trans.size();
 			}
 
-			g /= extrinsicParameters_Trans.size();
-		}
-		
-		// g = 230;	 // Or just use manually measured object distance without any further calculation
-		LOGGER.log("Object distance: " + QVariant(g).toString());
+			// g = 230;	 // Or just use manually measured object distance without any further calculation
+			LOGGER.log("Object distance: " + QVariant(g).toString());
 
-		// Use intercept theorem and pinhole camera to calculate the pixel ratio.
-		// Pixel ratio is later used to convert a length in a camera image (in pixel)
-		// to mm, so the size of one camera pixel on the sensor needs to be considered also
-		pixelRatio = 1.0 / (focalLength / (g - focalLength) / CAMERA_PIXEL_SIZE);
+			// Use intercept theorem and pinhole camera to calculate the pixel ratio.
+			// Pixel ratio is later used to convert a length in a camera image (in pixel)
+			// to mm, so the size of one camera pixel on the sensor needs to be considered also
+			pixelRatio = 1.0 / (focalLength / (g - focalLength) / CAMERA_PIXEL_SIZE);
+		}
 	}
-	
-	// RadioButton = Shape-Verfahren für Berechnung der Ratio verwenden
-	//else 
-	//{
-	// TODO: Kalibrierung durch Shape-Verfahren:
-	// Würde folgende Berechnung für Width und Height getrennt machen und dann aus beiden Ergebnissen den Mittelwert bilden,
-	// also:
-	// double ratioHeight = ObjekthöheInMMAusOptions / ObjekthöheInPixelVonShapeVerfahren;
-	// double ratioWidth = ObjektbreiteInMMAusOptions / ObjektbreiteInPixelVonShapeVerfahren;
-	// pixelRatio = (ratioHeight + ratioWidth) / 2.0;
-	//
-	// pixelRatio sollte in etwa 0.028 sein.
-	//
-	//}
+	else 
+	{
+		// Use shape verification method for calculation of pixel ratio
+		QSize realSize = settings_.at(mapping_.at(RES_OBJ_SIZE)).value_.toSize();	// The size of the object in mm
+		QVariant calculatedShapeWidth;
+		QVariant calculatedShapeHeight;
+
+		// The size of the object in pixel from the shape verification method
+		ConfigurationStorage::instance().read(calibmatrixPath_, "shape_horizontal", calculatedShapeWidth);
+		ConfigurationStorage::instance().read(calibmatrixPath_, "shape_vertical", calculatedShapeHeight);
+		
+		double ratioWidth = (double) realSize.width() / QVariant(calculatedShapeWidth).toDouble();
+		double ratioHeight = (double)realSize.height() / QVariant(calculatedShapeHeight).toDouble();
+		pixelRatio = (ratioHeight + ratioWidth) / 2.0;
+	}
 
 	LOGGER.log("Pixel ratio: " + QVariant(pixelRatio).toString());
 

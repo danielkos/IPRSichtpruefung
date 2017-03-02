@@ -14,6 +14,8 @@ ResultGenerator::ResultGenerator()
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_ANGLE_RIGHT, ResultGenerator::Settings::SET_OBJ_ANGLE));
 	mapping_.insert(SetResPair(ResultGenerator::Results::RES_OBJ_SIZE, ResultGenerator::Settings::SET_OBJ_SIZE));
 
+	useCalibration_ = true;
+
 	calibmatrixPath_ = paths::getExecutablePath() + paths::configFolder + paths::cameraFolder + filenames::calibrationName + extensions::calibrationExt;
 }
 
@@ -26,8 +28,9 @@ double ResultGenerator::getCameraPixelRatio()
 	double pixelRatio = 1.0;	// 1 as default value so that in error cases at
 								// least the calculated result of the certain optical 
 								// control processes is printed out on the GUI
+	useCalibration_ = settings_.at(ResultGenerator::Settings::SET_USE_CALIBRATION).value_.toBool();
 
-	if (USE_SHAPE_VERIFICATION == false)
+	if (useCalibration_)
 	{
 		// Use calibration method for calculation of pixel ratio
 		cv::Mat calibMat = loadCalibrationMatrix(calibmatrixPath_);
@@ -75,17 +78,22 @@ double ResultGenerator::getCameraPixelRatio()
 	else 
 	{
 		// Use shape verification method for calculation of pixel ratio
-		QSize realSize = settings_.at(mapping_.at(RES_OBJ_SIZE)).value_.toSize();	// The size of the object in mm
+		QSize realSize = settings_.at(ResultGenerator::Settings::SET_OBJ_SIZE).value_.toSize();	// The size of the object in mm
 		QVariant calculatedShapeWidth;
 		QVariant calculatedShapeHeight;
+		bool valuesRead = false;
 
 		// The size of the object in pixel from the shape verification method
-		ConfigurationStorage::instance().read(calibmatrixPath_, "shape_horizontal", calculatedShapeWidth);
-		ConfigurationStorage::instance().read(calibmatrixPath_, "shape_vertical", calculatedShapeHeight);
+		valuesRead = ConfigurationStorage::instance().read(calibmatrixPath_, "shape_horizontal", calculatedShapeWidth);
+		valuesRead = valuesRead && ConfigurationStorage::instance().read(calibmatrixPath_, "shape_vertical", calculatedShapeHeight);
 		
-		double ratioWidth = (double) realSize.width() / QVariant(calculatedShapeWidth).toDouble();
-		double ratioHeight = (double)realSize.height() / QVariant(calculatedShapeHeight).toDouble();
-		pixelRatio = (ratioHeight + ratioWidth) / 2.0;
+		if (valuesRead)
+		{
+			double ratioWidth = (double)realSize.width() / QVariant(calculatedShapeWidth).toDouble();
+			double ratioHeight = (double)realSize.height() / QVariant(calculatedShapeHeight).toDouble();
+			pixelRatio = (ratioHeight + ratioWidth) / 2.0;
+		}
+		
 	}
 
 	LOGGER.log("Pixel ratio: " + QVariant(pixelRatio).toString());

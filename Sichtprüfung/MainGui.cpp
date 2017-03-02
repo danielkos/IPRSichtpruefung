@@ -475,5 +475,8 @@ ResultGenerator::SettingsMap MainGui::generateSettings()
 	param.setUp("Real object size", options_->objSize(), QVariant::Size);
 	map.insert(ResultGenerator::SettingsPair(ResultGenerator::Settings::SET_OBJ_SIZE, param));
 
+	param.setUp("Use calibration", options_->useCalibration(), QMetaType::Bool);
+	map.insert(ResultGenerator::SettingsPair(ResultGenerator::Settings::SET_USE_CALIBRATION, param));
+
 	return map;
 }

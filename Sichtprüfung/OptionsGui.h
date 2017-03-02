@@ -21,6 +21,7 @@ public:
 	QVariant holeRadius();
 	QVariant angle();
 
+	bool useCalibration();
 	std::string cameraConfigPath();
 
 private:
@@ -29,6 +30,8 @@ private:
 	QSize objSize_;
 	QVariant holeRadius_;
 	QVariant angle_;
+
+	bool useCalibration_;
 
 	std::string configFile_;
 	std::string cameraConfig_;

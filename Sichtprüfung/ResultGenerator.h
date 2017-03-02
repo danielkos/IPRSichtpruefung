@@ -31,6 +31,7 @@ public:
 		SET_OBJ_SIZE,
 		SET_CIRCLE_RADIUS,
 		SET_OBJ_ANGLE,
+		SET_USE_CALIBRATION
 	};
 
 	//Storage for results from methods
@@ -58,7 +59,7 @@ private:
 
 	// If the shape verification method should be used for calculating the pixel ratio. If false
 	// the real calibration method is use.
-	const bool USE_SHAPE_VERIFICATION = true;
+	bool useCalibration_;
 
 	// The size of a single pixel of the camera image sensor in mm
 	// Value just valid for IDS UI-1460LE camera (https://en.ids-imaging.com/store/ui-1460le.html)!

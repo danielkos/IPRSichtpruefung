@@ -57,6 +57,15 @@ OptionsGui::OptionsGui(QWidget* parent)
 		{
 			LOGGER.log("Can not read object_side_angle from " + configFile_);
 		}
+
+		if (ConfigurationStorage::instance().read(configFile_, "use_calibration", value))
+		{
+			useCalibration_ = value.toBool();
+		}
+		else
+		{
+			LOGGER.log("Can not read use_calibration from " + configFile_);
+		}
 		
 		if (ConfigurationStorage::instance().read(configFile_, "camera_config_path", value))
 		{
@@ -95,6 +104,7 @@ void OptionsGui::setValues()
 
 	ui_.doubleSpinBoxDiameter->setValue(holeRadius_.toDouble());
 	ui_.doubleSpinBoxAngle->setValue(angle_.toDouble());
+	ui_.checkBoxCalibration->setChecked(useCalibration_);
 
 	ui_.lineEditConfig->setText(QString::fromStdString(cameraConfig_));
 }
@@ -106,6 +116,7 @@ void OptionsGui::getValues()
 
 	holeRadius_ = ui_.doubleSpinBoxDiameter->value();
 	angle_ = ui_.doubleSpinBoxAngle->value();
+	useCalibration_ = ui_.checkBoxCalibration->isChecked();
 
 	cameraConfig_ = ui_.lineEditConfig->text().toStdString();
 }
@@ -139,6 +150,8 @@ void OptionsGui::saveValues()
 	holeRadius_ = ui_.doubleSpinBoxDiameter->value();
 	angle_ = ui_.doubleSpinBoxAngle->value();
 
+	useCalibration_ = ui_.checkBoxCalibration->isChecked();
+
 	cameraConfig_ = ui_.lineEditConfig->text().toStdString();
 
 	if (!ConfigurationStorage::instance().write(configFile_, "object_width", objSize_.width()))
@@ -159,6 +172,11 @@ void OptionsGui::saveValues()
 	if (!ConfigurationStorage::instance().write(configFile_, "object_side_angle", angle_))
 	{
 		LOGGER.log("Can not write object_side_angle to " + configFile_);
+	}
+
+	if (!ConfigurationStorage::instance().write(configFile_, "use_calibration", useCalibration_))
+	{
+		LOGGER.log("Can not write camera_config_path to " + configFile_);
 	}
 
 	if (!ConfigurationStorage::instance().write(configFile_, "camera_config_path", QString::fromStdString(cameraConfig_)))
@@ -182,6 +200,11 @@ QVariant OptionsGui::holeRadius()
 QVariant OptionsGui::angle()
 {
 	return angle_;
+}
+
+bool OptionsGui::useCalibration()
+{
+	return useCalibration_;
 }
 
 std::string OptionsGui::cameraConfigPath()

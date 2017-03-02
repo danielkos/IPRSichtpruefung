@@ -4,5 +4,5 @@
 <object_length>39</object_length>
 <object_hole_radius>2.7500000000000000e+00</object_hole_radius>
 <object_side_angle>5.</object_side_angle>
-<camera_config_path>C:/Users/Sven/Desktop/IPR.ini</camera_config_path>
+<camera_config_path>"C:/Users/Sven/Documents/Visual Studio 2015/Projects/IPRSichtpruefung/x64/Debug/config/camera/IPR.ini"</camera_config_path>
 </opencv_storage>

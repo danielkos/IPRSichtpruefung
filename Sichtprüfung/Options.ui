@@ -163,8 +163,11 @@
        </item>
        <item row="0" column="0">
         <widget class="QCheckBox" name="checkBoxCalibration">
+         <property name="toolTip">
+          <string>If checked the intrinsic and extrinsic camera parameters are used to calculate the pixel-mm-ratio. Otherwise the Shape verification method is used (calibration with object of known size).</string>
+         </property>
          <property name="text">
-          <string>Use calibration</string>
+          <string>Use OpenCV calibration</string>
          </property>
         </widget>
        </item>
